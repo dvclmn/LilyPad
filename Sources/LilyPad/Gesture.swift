@@ -5,10 +5,8 @@
 //  Created by Dave Coleman on 26/11/2024.
 //
 
-
 import SwiftUI
 
-// 3. Create the NSViewRepresentable
 struct TrackpadGestureView: NSViewRepresentable {
   @Binding var gestureState: TrackpadGestureState
   var onGestureUpdate: ((TrackpadGestureState) -> Void)?
@@ -21,7 +19,7 @@ struct TrackpadGestureView: NSViewRepresentable {
     }
     
     func didUpdateGesture(_ state: TrackpadGestureState) {
-      Task { @MainActor [state] in
+      DispatchQueue.main.async {
         self.parent.gestureState = state
         self.parent.onGestureUpdate?(state)
       }
@@ -43,16 +41,6 @@ struct TrackpadGestureView: NSViewRepresentable {
   }
 }
 
-
-
-// 1. First, let's create a struct to hold gesture state
-struct TrackpadGestureState {
-  var scrollDeltaX: CGFloat = 0
-  var scrollDeltaY: CGFloat = 0
-  var magnification: CGFloat = 1.0
-  var rotation: CGFloat = 0
-  var phase: NSEvent.Phase = []
-}
 
 
 // 2. Create a protocol for gesture callbacks
@@ -100,20 +88,20 @@ class GestureDetectingView: NSView {
   @objc private func handleMagnification(_ gesture: NSMagnificationGestureRecognizer) {
     gestureState.magnification = gesture.magnification + 1.0
     
-    // Update phase based on gesture state
-    switch gesture.state {
-      case .began:
-        gestureState.phase = .began
-      case .changed:
-        gestureState.phase = .changed
-      case .ended:
-        gestureState.phase = .ended
-      case .cancelled:
-        gestureState.phase = .cancelled
-      default:
-        gestureState.phase = []
-    }
-    
+    //    // Update phase based on gesture state
+    //    switch gesture.state {
+    //      case .began:
+    //        gestureState.phase = .began
+    //      case .changed:
+    //        gestureState.phase = .changed
+    //      case .ended:
+    //        gestureState.phase = .ended
+    //      case .cancelled:
+    //        gestureState.phase = .cancelled
+    //      default:
+    //        gestureState.phase = []
+    //    }
+    //
     delegate?.didUpdateGesture(gestureState)
   }
   
