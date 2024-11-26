@@ -20,13 +20,13 @@ struct ExampleView: View {
       .padding(40)
       .trackpadGestures { state in
 
-        self.displayText = """
-        Magnification: \(state.accumulatedMagnification)
-        Rotation: \(state.rotation)
-        Gesture phase: \(state.phase.name)
-        Scroll X: \(state.scrollDeltaX)
-        Scroll Y: \(state.scrollDeltaY)
-        """
+//        self.displayText = """
+//        Magnification: \(state.accumulatedMagnification)
+//        Rotation: \(state.rotation)
+//        Gesture phase: \(state.phase.name)
+//        Scroll X: \(state.scrollDeltaX)
+//        Scroll Y: \(state.scrollDeltaY)
+//        """
       }
     VStack {
       Text(displayText)

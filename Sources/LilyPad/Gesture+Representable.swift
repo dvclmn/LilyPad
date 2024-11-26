@@ -11,20 +11,28 @@ public typealias GestureOutput = (TrackpadGestureState) -> Void
 
 public struct TrackpadGestureView: NSViewRepresentable {
   
+  var config: TrackpadGestureConfig
   var onGestureUpdate: GestureOutput
   
-  public init(onGestureUpdate: @escaping GestureOutput) {
+  public init(
+    config: TrackpadGestureConfig = TrackpadGestureConfig(),
+    onGestureUpdate: @escaping GestureOutput
+  ) {
+    self.config = config
     self.onGestureUpdate = onGestureUpdate
+  }
+  
+  public func makeNSView(context: Context) -> GestureDetectingView {
+    
+    let view = GestureDetectingView()
+    view.delegate = context.coordinator
+    view.gestureState.config = config
+    return view
+    
   }
   
   public func makeCoordinator() -> Coordinator {
     Coordinator(parent: self)
-  }
-  
-  public func makeNSView(context: Context) -> GestureDetectingView {
-    let view = GestureDetectingView()
-    view.delegate = context.coordinator
-    return view
   }
   
   public func updateNSView(_ nsView: GestureDetectingView, context: Context) {

@@ -7,12 +7,12 @@
 
 import AppKit
 
-
+@MainActor
 public class GestureDetectingView: NSView {
   
   weak var delegate: TrackpadGestureDelegate?
   
-  private var gestureState = TrackpadGestureState()
+  var gestureState = TrackpadGestureState()
   
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
@@ -36,21 +36,43 @@ public class GestureDetectingView: NSView {
   }
   
   public override func scrollWheel(with event: NSEvent) {
-    gestureState.scrollDeltaX += event.scrollingDeltaX
-    gestureState.scrollDeltaY += event.scrollingDeltaY
+    
+    gestureState.updateScroll(
+      deltaX: event.scrollingDeltaX,
+      deltaY: event.scrollingDeltaY
+    )
     gestureState.phase = event.phase
-    delegate?.didUpdateGesture(gestureState)
+    Task { @MainActor in
+      delegate?.didUpdateGesture(gestureState)
+    }
   }
   
   @objc private func handleMagnification(_ gesture: NSMagnificationGestureRecognizer) {
-    gestureState.magnification = gesture.magnification + 1.0
-    gestureState.accumulatedMagnification *= gesture.magnification
+    
+    gestureState.updateMagnification(gesture.magnification)
+    
+    /// Reset the gesture recognizer's magnification
+    if gesture.state == .ended {
+      gesture.magnification = 0
+    }
+    
+    Task { @MainActor in
+      delegate?.didUpdateGesture(gestureState)
+    }
     delegate?.didUpdateGesture(gestureState)
   }
   
   @objc private func handleRotation(_ gesture: NSRotationGestureRecognizer) {
-    gestureState.rotation = gesture.rotation
-    delegate?.didUpdateGesture(gestureState)
+
+    gestureState.updateRotation(gesture.rotation)
+    
+    if gesture.state == .ended {
+      gesture.rotation = 0
+    }
+    
+    Task { @MainActor in
+      delegate?.didUpdateGesture(gestureState)
+    }
   }
 }
 
