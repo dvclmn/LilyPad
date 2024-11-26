@@ -11,14 +11,17 @@ import AppKit
 public class GestureDetectingView: NSView {
   
   weak var delegate: TrackpadGestureDelegate?
-  
-  var gestureState = TrackpadGestureState()
-  
-  public var configs: [GestureType : GestureConfig]
-  public var states: [GestureType : TrackpadGestureState]
+
+  var configs: [GestureType: GestureConfig] = [:] {
+    didSet {
+      // Optionally handle config changes
+    }
+  }
+  private var states: [GestureType: TrackpadGestureState] = [:]
   
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
+    
     setupGestureRecognisers()
   }
   
@@ -37,48 +40,50 @@ public class GestureDetectingView: NSView {
     let rotationGesture = NSRotationGestureRecognizer(target: self, action: #selector(handleRotation(_:)))
     self.addGestureRecognizer(rotationGesture)
   }
+
+  private func updateGesture(_ type: GestureType, delta: CGFloat) {
+    guard let config = configs[type] else { return }
+    
+    let currentState = states[type] ?? TrackpadGestureState()
+    let newState = type.updateState(currentState, delta: delta, config: config)
+    states[type] = newState
+    
+    Task { @MainActor in
+      delegate?.didUpdateGesture(type, with: newState)
+    }
+  }
   
   public override func scrollWheel(with event: NSEvent) {
     
-//    print("`event.scrollingDeltaX`: \(event.scrollingDeltaX)")
-//    print("`event.scrollingDeltaY`: \(event.scrollingDeltaY)")
+    guard !event.scrollingDeltaX.isNaN && !event.scrollingDeltaY.isNaN else { return }
     
-    gestureState.updateScroll(
-      deltaX: event.scrollingDeltaX,
-      deltaY: event.scrollingDeltaY
-    )
-    gestureState.phase = event.phase
-    Task { @MainActor in
-      delegate?.didUpdateGesture(gestureState)
-    }
+    updateGesture(.panX, delta: event.scrollingDeltaX)
+    updateGesture(.panY, delta: event.scrollingDeltaY)
+    
+    // Update phase for both pan gestures
+    states[.panX]?.phase = event.phase
+    states[.panY]?.phase = event.phase
+
   }
   
   @objc private func handleMagnification(_ gesture: NSMagnificationGestureRecognizer) {
     
-    gestureState.updateMagnification(gesture.magnification)
+    updateGesture(.zoom, delta: gesture.magnification)
     
-    /// Reset the gesture recognizer's magnification
     if gesture.state == .ended {
       gesture.magnification = 0
     }
-    
-    Task { @MainActor in
-      delegate?.didUpdateGesture(gestureState)
-    }
-    delegate?.didUpdateGesture(gestureState)
+
   }
   
   @objc private func handleRotation(_ gesture: NSRotationGestureRecognizer) {
 
-    gestureState.updateRotation(gesture.rotation)
+    updateGesture(.rotation, delta: gesture.rotation)
     
     if gesture.state == .ended {
       gesture.rotation = 0
     }
     
-    Task { @MainActor in
-      delegate?.didUpdateGesture(gestureState)
-    }
   }
 }
 

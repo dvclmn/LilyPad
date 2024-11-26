@@ -7,18 +7,25 @@
 
 import SwiftUI
 
-public typealias GestureOutput = (TrackpadGestureState) -> Void
+//public typealias GestureOutput = (TrackpadGestureState) -> Void
 
 public struct TrackpadGestureView: NSViewRepresentable {
   
-  var config: TrackpadGestureConfig
-  var onGestureUpdate: GestureOutput
+  public typealias GestureCallback = (GestureType, TrackpadGestureState) -> Void
+  
+  private var configs: [GestureType: GestureConfig]
+  
+//  var config: TrackpadGestureConfig
+  var onGestureUpdate: GestureCallback
   
   public init(
-    config: TrackpadGestureConfig = TrackpadGestureConfig(),
-    onGestureUpdate: @escaping GestureOutput
+    configs: [GestureType: GestureConfig]? = nil,
+    onGestureUpdate: @escaping GestureCallback
   ) {
-    self.config = config
+    // Use provided configs or defaults
+    self.configs = configs ?? Dictionary(
+      uniqueKeysWithValues: GestureType.allCases.map { ($0, $0.defaultConfig) }
+    )
     self.onGestureUpdate = onGestureUpdate
   }
   
@@ -26,22 +33,24 @@ public struct TrackpadGestureView: NSViewRepresentable {
     
     let view = GestureDetectingView()
     view.delegate = context.coordinator
-    view.gestureState.config = config
+    view.configs = configs
     return view
     
+  }
+  
+  public func updateNSView(_ nsView: GestureDetectingView, context: Context) {
+    // Update configs if needed
+    nsView.configs = configs
   }
   
   public func makeCoordinator() -> Coordinator {
     Coordinator(parent: self)
   }
-  
-  public func updateNSView(_ nsView: GestureDetectingView, context: Context) {
-  }
 }
 
 @MainActor
 protocol TrackpadGestureDelegate: AnyObject {
-  func didUpdateGesture(_ state: TrackpadGestureState)
+  func didUpdateGesture(_ type: GestureType, with state: TrackpadGestureState)
 }
 
 public class Coordinator: NSObject, TrackpadGestureDelegate {
@@ -51,11 +60,18 @@ public class Coordinator: NSObject, TrackpadGestureDelegate {
     self.parent = parent
   }
   
-  func didUpdateGesture(_ state: TrackpadGestureState) {
+  func didUpdateGesture(_ type: GestureType, with state: TrackpadGestureState) {
     DispatchQueue.main.async {
-      self.parent.onGestureUpdate(state)
+      self.parent.onGestureUpdate(type, state)
+//      self.onGestureUpdate(type, state)
     }
   }
+  
+//  func didUpdateGesture(_ state: TrackpadGestureState) {
+//    DispatchQueue.main.async {
+//      self.parent.onGestureUpdate(state, <#TrackpadGestureState#>)
+//    }
+//  }
 }
 
 

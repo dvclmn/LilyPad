@@ -18,7 +18,7 @@ struct ExampleView: View {
     
     Text("Hello")
       .padding(40)
-      .trackpadGestures { state in
+//      .trackpadGestures { state in
 
 //        self.displayText = """
 //        Magnification: \(state.accumulatedMagnification)
@@ -27,7 +27,7 @@ struct ExampleView: View {
 //        Scroll X: \(state.scrollDeltaX)
 //        Scroll Y: \(state.scrollDeltaY)
 //        """
-      }
+//      }
     VStack {
       Text(displayText)
         .padding()

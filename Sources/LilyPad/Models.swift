@@ -12,9 +12,17 @@ import SwiftUI
 
 
 public struct TrackpadGestureState {
-  var delta: CGFloat
-  var total: CGFloat
-  var phase: NSEvent.Phase
+  public var delta: CGFloat
+  public var total: CGFloat
+  public var phase: NSEvent.Phase
+  
+  public init(delta: CGFloat = 0, total: CGFloat = 0, phase: NSEvent.Phase = []) {
+    self.delta = delta
+    self.total = total
+    self.phase = phase
+//    self.normalized = 0
+  }
+  
 //  var normalised: CGFloat
 }
 
@@ -150,7 +158,7 @@ public extension Comparable {
   }
 }
 
-public enum GestureType {
+public enum GestureType: CaseIterable {
   case zoom
   case rotation
   case panX
@@ -216,6 +224,16 @@ public struct GestureConfig {
 //  var type: GestureType
   var range: ClosedRange<CGFloat>
   var sensitivity: CGFloat
+  
+  func normalize(_ value: CGFloat) -> CGFloat {
+    // Handle infinite ranges differently for pan gestures
+    guard range.upperBound.isFinite && range.lowerBound.isFinite else {
+      return 0.5 // Or some other appropriate default for infinite ranges
+    }
+    
+    return ((value - range.lowerBound) / (range.upperBound - range.lowerBound))
+      .clamped(to: 0...1)
+  }
   
 //  private var _minScale: CGFloat
 //  private var _maxScale: CGFloat
