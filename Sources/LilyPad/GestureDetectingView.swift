@@ -14,6 +14,9 @@ public class GestureDetectingView: NSView {
   
   var gestureState = TrackpadGestureState()
   
+  public var configs: [GestureType : GestureConfig]
+  public var states: [GestureType : TrackpadGestureState]
+  
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
     setupGestureRecognisers()
