@@ -13,9 +13,7 @@ public struct TrackpadGestureView: NSViewRepresentable {
   
   var onGestureUpdate: GestureOutput
   
-  public init(
-    onGestureUpdate: @escaping GestureOutput
-  ) {
+  public init(onGestureUpdate: @escaping GestureOutput) {
     self.onGestureUpdate = onGestureUpdate
   }
   
@@ -26,12 +24,15 @@ public struct TrackpadGestureView: NSViewRepresentable {
   public func makeNSView(context: Context) -> GestureDetectingView {
     let view = GestureDetectingView()
     view.delegate = context.coordinator
-    
     return view
   }
   
   public func updateNSView(_ nsView: GestureDetectingView, context: Context) {
   }
+}
+
+protocol TrackpadGestureDelegate: AnyObject {
+  func didUpdateGesture(_ state: TrackpadGestureState)
 }
 
 public class Coordinator: NSObject, TrackpadGestureDelegate {
@@ -48,7 +49,5 @@ public class Coordinator: NSObject, TrackpadGestureDelegate {
   }
 }
 
-protocol TrackpadGestureDelegate: AnyObject {
-  func didUpdateGesture(_ state: TrackpadGestureState)
-}
+
 

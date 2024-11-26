@@ -8,13 +8,12 @@
 import SwiftUI
 
 struct TrackpadGestureModifier: ViewModifier {
-  @State private var gestureState = TrackpadGestureState()
-  var onGestureUpdate: ((TrackpadGestureState) -> Void)?
+  var onGestureUpdate: GestureOutput
   
   func body(content: Content) -> some View {
     ZStack {
       content
-      TrackpadGestureView(gestureState: $gestureState, onGestureUpdate: onGestureUpdate)
+      TrackpadGestureView(onGestureUpdate: onGestureUpdate)
     }
   }
 }

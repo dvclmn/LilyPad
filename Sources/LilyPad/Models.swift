@@ -37,37 +37,27 @@ public struct TrackpadGestureState {
   var isGestureInProgress: Bool {
     phase.contains(.changed) || phase.contains(.ended)
   }
+
   
-  /// This should be handled in the `NSView`
-//  mutating func handleGesture(_ event: NSEvent) {
-//    switch event.type {
-//      case .magnify:
-//        magnification = event.magnification
-//        accumulatedMagnification *= magnification
-//      case .rotate:
-//        rotation = event.rotation
-//
-//
-//      case .smartMagnify:
-//        self.didPerformSmartMagnify.toggle()
-//        
-//      case .quickLook:
-//        self.didPerformSmartMagnify.toggle()
-//
-//      default:
-//        break
-//    }
-//  }
   func getValue(
     for gesture: GestureType,
     with sensitivity: Double,
     in range: ClosedRange<Double>
   ) -> Double {
     
-    let result = self[keyPath: gesture.keyPath] * sensitivity
-    let clampedResult = result.clamped(to: range)
+    let baseValue: Double = self[keyPath: gesture.keyPath]
     
-    return clampedResult
+    let result: Double
+    
+    if gesture == .rotation {
+      result = baseValue * .pi * 2
+    } else {
+      result = baseValue
+    }
+    
+    let adjustedResult = result.clamped(to: range) * sensitivity
+    
+    return adjustedResult
 
   }
 }
@@ -77,7 +67,6 @@ enum GestureType {
   case scrollY
   case magnification
   case rotation
-//  case pan
   
   var keyPath: WritableKeyPath<TrackpadGestureState, CGFloat> {
     switch self {
@@ -87,6 +76,8 @@ enum GestureType {
       case .rotation: \.rotation
     }
   }
+  
+  
 }
 
 extension NSEvent.Phase {
