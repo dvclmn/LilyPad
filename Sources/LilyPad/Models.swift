@@ -46,6 +46,31 @@ public struct TrackpadGestureState {
   }
 }
 
+public struct TrackPadTouch: Identifiable, Hashable {
+  
+  public var id: Int
+  
+  /// Normalized touch X position on a device (0.0 - 1.0).
+  public let normalizedX: CGFloat
+  
+  /// Normalized touch Y position on a device (0.0 - 1.0).
+  public let normalizedY: CGFloat
+  
+  public init(_ nsTouch: NSTouch) {
+    self.normalizedX = nsTouch.normalizedPosition.x
+    /// `NSTouch.normalizedPosition.y` is flipped -> 0.0 means bottom. But the
+    /// `Touch` structure is meants to be used with the SwiftUI -> flip it.
+    self.normalizedY = 1.0 - nsTouch.normalizedPosition.y
+    self.id = nsTouch.hash
+  }
+  
+  public init(x: CGFloat, y: CGFloat) {
+    self.id = UUID().hashValue
+    self.normalizedX = x
+    self.normalizedY = 1.0 - y
+  }
+}
+
 
 public enum GestureType: CaseIterable {
   case zoom
@@ -56,11 +81,11 @@ public enum GestureType: CaseIterable {
   var defaultConfig: GestureConfig {
     switch self {
       case .zoom:
-        return GestureConfig(range: 0.01...6.0, sensitivity: 0.05)
+        return GestureConfig(range: 0.1...6.0, sensitivity: 1.0)
       case .rotation:
-        return GestureConfig(range: -(.pi*2)...(.pi*2), sensitivity: 0.05)
+        return GestureConfig(range: -(.pi*2)...(.pi*2), sensitivity: 1.0)
       case .panX, .panY:
-        return GestureConfig(range: -CGFloat.infinity...CGFloat.infinity, sensitivity: 0.5)
+        return GestureConfig(range: -CGFloat.infinity...CGFloat.infinity, sensitivity: 0.8)
     }
   }
   
