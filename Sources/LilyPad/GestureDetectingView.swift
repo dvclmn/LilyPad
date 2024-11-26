@@ -37,6 +37,9 @@ public class GestureDetectingView: NSView {
   
   public override func scrollWheel(with event: NSEvent) {
     
+//    print("`event.scrollingDeltaX`: \(event.scrollingDeltaX)")
+//    print("`event.scrollingDeltaY`: \(event.scrollingDeltaY)")
+    
     gestureState.updateScroll(
       deltaX: event.scrollingDeltaX,
       deltaY: event.scrollingDeltaY

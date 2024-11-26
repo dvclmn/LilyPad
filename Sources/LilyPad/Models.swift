@@ -21,7 +21,7 @@ public struct TrackpadGestureState {
   
   // Rotation
   private(set) var rotationDelta: CGFloat = 0
-  private(set) var totalRotation: CGFloat = 0
+  public var totalRotation: CGFloat = 0
   private(set) var normalizedRotation: CGFloat = 0.5
   
   // Translation
@@ -35,25 +35,23 @@ public struct TrackpadGestureState {
   
   // Configuration
   var config: TrackpadGestureConfig = .init()
-//  var minScale: CGFloat = 0.1
-//  var maxScale: CGFloat = 10.0
-//  var scrollSensitivity: CGFloat = 1.0
-//  var rotationSensitivity: CGFloat = 1.0
-  
+
   // Maximum rotation in radians (default ±2π, one full rotation)
   var maxRotation: CGFloat = .pi * 2
   
-  
   mutating func updateMagnification(_ delta: CGFloat) {
+    
     magnificationDelta = delta
     
-    // Update total magnification
-    totalMagnification = (totalMagnification * (1.0 + delta))
-      .clamped(to: config.minScale...config.maxScale)
+    let newTotal = (totalMagnification * (1.0 + delta))
     
-    // Convert to normalized value (0...1)
-    normalizedScale = ((totalMagnification - config.minScale) / (config.maxScale - config.minScale))
-      .clamped(to: 0...1)
+    totalMagnification = newTotal.clamped(to: config.minScale...config.maxScale)
+    
+    let range = config.maxScale - config.minScale
+    guard range > 0 else {
+      normalizedScale = 0.5
+      return
+    }
   }
   
   mutating func updateRotation(_ delta: CGFloat) {
@@ -69,12 +67,29 @@ public struct TrackpadGestureState {
   }
   
   
+//  mutating func updateScroll(deltaX: CGFloat, deltaY: CGFloat) {
+//    scrollDeltaX = deltaX * config.scrollSensitivity
+//    scrollDeltaY = deltaY * config.scrollSensitivity
+//    
+//    totalTranslationX += scrollDeltaX
+//    totalTranslationY += scrollDeltaY
+//  }
+  
   mutating func updateScroll(deltaX: CGFloat, deltaY: CGFloat) {
+    guard !deltaX.isNaN && !deltaX.isInfinite &&
+            !deltaY.isNaN && !deltaY.isInfinite else { return }
+    
     scrollDeltaX = deltaX * config.scrollSensitivity
     scrollDeltaY = deltaY * config.scrollSensitivity
     
-    totalTranslationX += scrollDeltaX
-    totalTranslationY += scrollDeltaY
+    let newX = totalTranslationX + scrollDeltaX
+    let newY = totalTranslationY + scrollDeltaY
+    
+    guard !newX.isNaN && !newX.isInfinite &&
+            !newY.isNaN && !newY.isInfinite else { return }
+    
+    totalTranslationX = newX
+    totalTranslationY = newY
   }
   
   // Helper to get scale factor for SwiftUI
@@ -96,73 +111,14 @@ public struct TrackpadGestureState {
     totalTranslationX = 0
     totalTranslationY = 0
   }
-  
-//  public var scrollDeltaX: CGFloat = 0
-//  public var scrollDeltaY: CGFloat = 0
-//
-//  public var magnification: CGFloat = 1.0
-//  public var accumulatedMagnification: CGFloat = 1.0
-//  
-//  
-//  public var didPerformQuickLook: Bool = false
-//  
-//  /// Two-finger double tap on trackpads
-//  public var didPerformSmartMagnify: Bool = false
-//  
-//  public var rotation: CGFloat = 0
-//  
-//  public var phase: NSEvent.Phase = []
-  
-//  public var effectiveMagnification: CGFloat {
-//    isGestureInProgress ? (accumulatedMagnification * magnification) : accumulatedMagnification
-//  }
-  
+
   public var isGestureInProgress: Bool {
     phase.contains(.changed) || phase.contains(.ended)
   }
 
   public init() {}
   
-//  public func getValue(
-//    for gesture: GestureType,
-//    with sensitivity: Double,
-//    in range: ClosedRange<Double>
-//  ) -> Double {
-//    
-//    let baseValue: Double = self[keyPath: gesture.keyPath]
-//    
-//    let result: Double
-//    
-//    if gesture == .rotation {
-//      result = baseValue * .pi * 2
-//    } else {
-//      result = baseValue
-//    }
-//    
-//    let adjustedResult = result.clamped(to: range) * sensitivity
-//    
-//    return adjustedResult
-//
-//  }
 }
-
-//public enum GestureType {
-//  case scrollX
-//  case scrollY
-//  case magnification
-//  case rotation
-//  
-//  var keyPath: WritableKeyPath<TrackpadGestureState, CGFloat> {
-//    switch self {
-//      case .scrollX: \.scrollDeltaX
-//      case .scrollY: \.scrollDeltaY
-//      case .magnification: \.accumulatedMagnification
-//      case .rotation: \.rotation
-//    }
-//  }
-//  
-//  
-//}
 
 public extension NSEvent.Phase {
   var name: String {
@@ -177,29 +133,45 @@ public extension NSEvent.Phase {
   }
 }
 
-extension Comparable {
+public extension Comparable {
   func clamped(to limits: ClosedRange<Self>) -> Self {
-    min(max(self, limits.lowerBound), limits.upperBound)
+    // Ensure the range is valid
+    let validRange = min(limits.lowerBound, limits.upperBound)...max(limits.lowerBound, limits.upperBound)
+    return min(max(self, validRange.lowerBound), validRange.upperBound)
   }
 }
 
 
+
 public struct TrackpadGestureConfig {
-  var minScale: CGFloat = 0.1
-  var maxScale: CGFloat = 10.0
-  var scrollSensitivity: CGFloat = 1.0
-  var rotationSensitivity: CGFloat = 1.0
-  var maxRotation: CGFloat = .pi * 2
+  
+  private var _minScale: CGFloat
+  private var _maxScale: CGFloat
+  
+  var minScale: CGFloat {
+    get { _minScale }
+    set { _minScale = max(0.0001, newValue) }
+  }
+  
+  var maxScale: CGFloat {
+    get { _maxScale }
+    set { _maxScale = max(_minScale, newValue) }
+  }
+  
+
+  var scrollSensitivity: CGFloat
+  var rotationSensitivity: CGFloat
+  var maxRotation: CGFloat
   
   public init(
     minScale: CGFloat = 0.1,
     maxScale: CGFloat = 10.0,
     scrollSensitivity: CGFloat = 1.0,
-    rotationSensitivity: CGFloat = 1.0,
+    rotationSensitivity: CGFloat = 0.005,
     maxRotation: CGFloat = .pi * 2
   ) {
-    self.minScale = minScale
-    self.maxScale = maxScale
+    self._minScale = minScale
+    self._maxScale = maxScale
     self.scrollSensitivity = scrollSensitivity
     self.rotationSensitivity = rotationSensitivity
     self.maxRotation = maxRotation
