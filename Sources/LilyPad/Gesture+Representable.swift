@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-//public typealias GestureOutput = (TrackpadGestureState) -> Void
-
 public struct TrackpadGestureView: NSViewRepresentable {
   
   public typealias GestureCallback = (GestureType, TrackpadGestureState) -> Void

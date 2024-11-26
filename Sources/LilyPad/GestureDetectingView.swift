@@ -25,18 +25,16 @@ public class GestureDetectingView: NSView {
     setupGestureRecognisers()
   }
   
-  required init?(coder: NSCoder) {
-    super.init(coder: coder)
-    setupGestureRecognisers()
+  public required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
   }
   
   private func setupGestureRecognisers() {
     
     self.wantsRestingTouches = true
+    self.allowedTouchTypes = [.indirect]
     
-    let magnificationGesture = NSMagnificationGestureRecognizer(target: self, action: #selector(handleMagnification(_:)))
-    self.addGestureRecognizer(magnificationGesture)
-    
+
     let rotationGesture = NSRotationGestureRecognizer(target: self, action: #selector(handleRotation(_:)))
     self.addGestureRecognizer(rotationGesture)
   }
@@ -60,22 +58,12 @@ public class GestureDetectingView: NSView {
     updateGesture(.panX, delta: event.scrollingDeltaX)
     updateGesture(.panY, delta: event.scrollingDeltaY)
     
-    // Update phase for both pan gestures
+    /// Update phase for both pan gestures
     states[.panX]?.phase = event.phase
     states[.panY]?.phase = event.phase
 
   }
-  
-  @objc private func handleMagnification(_ gesture: NSMagnificationGestureRecognizer) {
-    
-    updateGesture(.zoom, delta: gesture.magnification)
-    
-    if gesture.state == .ended {
-      gesture.magnification = 0
-    }
 
-  }
-  
   @objc private func handleRotation(_ gesture: NSRotationGestureRecognizer) {
 
     updateGesture(.rotation, delta: gesture.rotation)
