@@ -10,36 +10,36 @@ import AppKit
 /// https://developer.apple.com/documentation/appkit/nsevent/eventtype/pressure
 /// https://developer.apple.com/documentation/appkit/nsevent/phase-swift.property
 
+@MainActor
 public struct TrackpadGestureState {
   
-  var scrollDeltaX: CGFloat = 0
-  var scrollDeltaY: CGFloat = 0
+  public var scrollDeltaX: CGFloat = 0
+  public var scrollDeltaY: CGFloat = 0
+
+  public var magnification: CGFloat = 1.0
+  public var accumulatedMagnification: CGFloat = 1.0
   
-  var magnification: CGFloat = 1.0
-  var accumulatedMagnification: CGFloat = 1.0
   
-  
-  var didPerformQuickLook: Bool = false
+  public var didPerformQuickLook: Bool = false
   
   /// Two-finger double tap on trackpads
-  var didPerformSmartMagnify: Bool = false
+  public var didPerformSmartMagnify: Bool = false
   
-  var rotation: CGFloat = 0
+  public var rotation: CGFloat = 0
   
-  var pressure: CGFloat = 0
+  public var phase: NSEvent.Phase = []
   
-  var phase: NSEvent.Phase = []
-  
-  var effectiveMagnification: CGFloat {
+  public var effectiveMagnification: CGFloat {
     isGestureInProgress ? (accumulatedMagnification * magnification) : accumulatedMagnification
   }
   
-  var isGestureInProgress: Bool {
+  public var isGestureInProgress: Bool {
     phase.contains(.changed) || phase.contains(.ended)
   }
 
+  public init() {}
   
-  func getValue(
+  public func getValue(
     for gesture: GestureType,
     with sensitivity: Double,
     in range: ClosedRange<Double>
@@ -62,7 +62,7 @@ public struct TrackpadGestureState {
   }
 }
 
-enum GestureType {
+public enum GestureType {
   case scrollX
   case scrollY
   case magnification
@@ -80,7 +80,7 @@ enum GestureType {
   
 }
 
-extension NSEvent.Phase {
+public extension NSEvent.Phase {
   var name: String {
     switch self {
       case .began: "Began"

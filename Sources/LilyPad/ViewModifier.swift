@@ -7,10 +7,14 @@
 
 import SwiftUI
 
-struct TrackpadGestureModifier: ViewModifier {
+public struct TrackpadGestureModifier: ViewModifier {
   var onGestureUpdate: GestureOutput
   
-  func body(content: Content) -> some View {
+  public init(onGestureUpdate: @escaping GestureOutput) {
+    self.onGestureUpdate = onGestureUpdate
+  }
+  
+  public func body(content: Content) -> some View {
     ZStack {
       content
       TrackpadGestureView(onGestureUpdate: onGestureUpdate)
@@ -18,8 +22,8 @@ struct TrackpadGestureModifier: ViewModifier {
   }
 }
 
-extension View {
-  func trackpadGestures(onUpdate: @escaping (TrackpadGestureState) -> Void) -> some View {
+public extension View {
+  func trackpadGestures(onUpdate: @escaping GestureOutput) -> some View {
     modifier(TrackpadGestureModifier(onGestureUpdate: onUpdate))
   }
 }

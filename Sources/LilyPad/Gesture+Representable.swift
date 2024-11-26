@@ -31,6 +31,7 @@ public struct TrackpadGestureView: NSViewRepresentable {
   }
 }
 
+@MainActor
 protocol TrackpadGestureDelegate: AnyObject {
   func didUpdateGesture(_ state: TrackpadGestureState)
 }

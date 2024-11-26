@@ -7,7 +7,7 @@
 
 import AppKit
 
-@MainActor
+
 public class GestureDetectingView: NSView {
   
   weak var delegate: TrackpadGestureDelegate?
