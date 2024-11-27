@@ -12,32 +12,23 @@ extension GestureView {
   func handleTouches(with event: NSEvent) {
     let touches = event.touches(matching: .touching, in: self)
     let trackpadTouches = Set(touches.map(TrackPadTouch.init))
-    
     delegate?.didUpdateTouches(trackpadTouches)
     
     if touches.count == 2 {
       
       let touchesArray = Array(touches)
       
-      if initialTouchDistance == nil {
+      if currentGestureState?.initialDistance == nil {
         let touch1 = touchesArray[0].normalizedPosition
         let touch2 = touchesArray[1].normalizedPosition
         
-        initialTouchDistance = hypot(touch2.x - touch1.x, touch2.y - touch1.y)
-        initialTouchAngle = atan2(touch2.y - touch1.y, touch2.x - touch1.x)
-        gestureStartTime = event.timestamp
+        currentGestureState?.initialDistance = hypot(touch2.x - touch1.x, touch2.y - touch1.y)
+        currentGestureState?.initialAngle = atan2(touch2.y - touch1.y, touch2.x - touch1.x)
       }
       
-//      handleCombinedGesture(touchesArray)
       handleRotationFromTouches(touchesArray)
-      
-//      let touchesArray = Array(touches)
-//      handleZoomFromTouches(touchesArray)
-//      handleRotationFromTouches(touchesArray)
+
     } else {
-//      previousTouchDistance = nil
-//      previousTouchAngle = nil
-      
       resetGestureState()
     }
   }
@@ -52,13 +43,13 @@ extension GestureView {
   
   public override func touchesEnded(with event: NSEvent) {
     handleTouches(with: event)
-    previousTouchDistance = nil
   }
   
   public override func touchesCancelled(with event: NSEvent) {
     handleTouches(with: event)
-    previousTouchDistance = nil
   }
+  
+  
   
   
 //  private func handleCombinedGesture(_ touches: [NSTouch]) {

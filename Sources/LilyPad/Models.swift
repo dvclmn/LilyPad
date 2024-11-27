@@ -12,11 +12,20 @@ public struct GestureConfig {
   var sensitivity: CGFloat
 }
 
+/// Distance/angle between two fingers forming gesture
+public struct CurrentGestureState {
+  public var initialDistance: CGFloat
+  public var initialAngle: CGFloat
+  public var previousDistance: CGFloat
+  public var previousAngle: CGFloat
+}
+
+
 public struct GestureState {
   public var delta: CGFloat
   public var total: CGFloat
   public var phase: NSEvent.Phase
-  
+
   public init(
     delta: CGFloat = 0,
     total: CGFloat = 0,
@@ -29,27 +38,20 @@ public struct GestureState {
 }
 
 public struct TrackPadTouch: Identifiable, Hashable {
-  
   public var id: Int
-  
-  /// Normalized touch X position on a device (0.0 - 1.0).
-  public let normalizedX: CGFloat
-  
-  /// Normalized touch Y position on a device (0.0 - 1.0).
-  public let normalizedY: CGFloat
+  public let position: CGPoint
   
   public init(_ nsTouch: NSTouch) {
     self.id = nsTouch.hash
-    self.normalizedX = nsTouch.normalizedPosition.x
-    /// `NSTouch.normalizedPosition.y` is flipped -> 0.0 means bottom. But the
-    /// `Touch` structure is meants to be used with the SwiftUI -> flip it.
-    self.normalizedY = 1.0 - nsTouch.normalizedPosition.y
+    self.position = CGPoint(
+      x: nsTouch.normalizedPosition.x,
+      y: 1.0 - nsTouch.normalizedPosition.y
+    )
   }
   
   public init(x: CGFloat, y: CGFloat) {
     self.id = UUID().hashValue
-    self.normalizedX = x
-    self.normalizedY = 1.0 - y
+    self.position = CGPoint(x: x, y: 1.0 - y)
   }
 }
 
@@ -70,8 +72,6 @@ public enum GestureType: CaseIterable {
         return GestureConfig(range: -CGFloat.infinity...CGFloat.infinity, sensitivity: 0.8)
     }
   }
-
-  
   
   func updateState(
     _ currentState: GestureState,
@@ -100,12 +100,12 @@ public enum GestureType: CaseIterable {
       case .panX, .panY:
         newState.total = currentState.total + newState.delta
     }
-
+    
     return newState
   }
   
   
-
+  
 }
 
 public extension NSEvent.Phase {
@@ -123,37 +123,7 @@ public extension NSEvent.Phase {
 
 public extension Comparable {
   func clamped(to limits: ClosedRange<Self>) -> Self {
-    // Ensure the range is valid
     let validRange = min(limits.lowerBound, limits.upperBound)...max(limits.lowerBound, limits.upperBound)
     return min(max(self, validRange.lowerBound), validRange.upperBound)
   }
 }
-
-
-//extension GestureState: @preconcurrency CustomStringConvertible {
-//
-//  public var description: String {
-//    return """
-//
-//    -----
-//    `scaleEffect`: \(scaleEffect)
-//    `rotationAngle`: \(rotationAngle)
-//
-//    `magnificationDelta`: \(magnificationDelta)
-//    `totalMagnification`: \(totalMagnification)
-//
-//    `rotationDelta`: \(rotationDelta)
-//    `totalRotation`: \(totalRotation)
-//
-//    `scrollDeltaX`: \(scrollDeltaX)
-//    `scrollDeltaY`: \(scrollDeltaY)
-//    `totalTranslationX`: \(totalTranslationX)
-//    `totalTranslationY`: \(totalTranslationY)
-//
-//    Phase: \(phase.name)
-//
-//    -----
-//
-//    """
-//  }
-//}

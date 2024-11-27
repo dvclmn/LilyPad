@@ -15,22 +15,10 @@ public class GestureView: NSView {
   var configs: [GestureType: GestureConfig] = [:]
   var states: [GestureType: GestureState] = [:]
   
-  var previousTouchDistance: CGFloat?
-  var previousTouchAngle: CGFloat?
-  
-  var initialTouchDistance: CGFloat?
-  var initialTouchAngle: CGFloat?
-  var gestureStartTime: TimeInterval?
-//  
-//  var recentRotationDeltas: [CGFloat] = []
-//  var recentZoomDeltas: [CGFloat] = []
-//  let smoothingWindowSize = 3
-  
-  
+  var currentGestureState: CurrentGestureState?
 
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
-    
     setupView()
   }
   
@@ -41,6 +29,36 @@ public class GestureView: NSView {
   private func setupView() {
     self.wantsRestingTouches = true
     self.allowedTouchTypes = [.indirect]
+  }
+  
+  
+  private func setupGestureRecognisers() {
+    
+    let rotationGesture = NSRotationGestureRecognizer(target: self, action: #selector(handleRotation))
+    let magnifyGesture = NSMagnificationGestureRecognizer(target: self, action: #selector(handleZoom))
+    
+    self.addGestureRecognizer(rotationGesture)
+    self.addGestureRecognizer(magnifyGesture)
+    
+  }
+  @objc private func handleRotation(_ gesture: NSRotationGestureRecognizer) {
+    
+    updateGesture(.rotation, delta: gesture.rotation)
+    
+    if gesture.state == .ended {
+      gesture.rotation = 0
+    }
+    
+  }
+  
+  @objc private func handleZoom(_ gesture: NSMagnificationGestureRecognizer) {
+    
+//    updateGesture(.rotation, delta: gesture.rotation)
+//    
+//    if gesture.state == .ended {
+//      gesture.rotation = 0
+//    }
+    
   }
   
 //  func smoothValue(_ value: CGFloat, deltas: inout [CGFloat]) -> CGFloat {
@@ -68,11 +86,7 @@ public class GestureView: NSView {
   
   
   func resetGestureState() {
-    initialTouchDistance = nil
-    initialTouchAngle = nil
-    gestureStartTime = nil
-    previousTouchDistance = nil
-    previousTouchAngle = nil
+    currentGestureState = nil
 //    recentRotationDeltas.removeAll()
 //    recentZoomDeltas.removeAll()
   }
