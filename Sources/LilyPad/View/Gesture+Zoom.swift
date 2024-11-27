@@ -7,7 +7,7 @@
 
 import AppKit
 
-extension GestureDetectingView {
+extension GestureView {
   
   func handleZoom(_ currentDistance: CGFloat) {
     if let previousDistance = previousTouchDistance {

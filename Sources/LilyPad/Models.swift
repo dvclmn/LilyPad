@@ -7,15 +7,10 @@
 
 import SwiftUI
 
-/// https://developer.apple.com/documentation/appkit/nsevent/eventtype/pressure
-/// https://developer.apple.com/documentation/appkit/nsevent/phase-swift.property
-
-
 public struct GestureConfig {
   var range: ClosedRange<CGFloat>
   var sensitivity: CGFloat
 }
-
 
 public struct TrackpadGestureState {
   public var delta: CGFloat
@@ -44,11 +39,11 @@ public struct TrackPadTouch: Identifiable, Hashable {
   public let normalizedY: CGFloat
   
   public init(_ nsTouch: NSTouch) {
+    self.id = nsTouch.hash
     self.normalizedX = nsTouch.normalizedPosition.x
     /// `NSTouch.normalizedPosition.y` is flipped -> 0.0 means bottom. But the
     /// `Touch` structure is meants to be used with the SwiftUI -> flip it.
     self.normalizedY = 1.0 - nsTouch.normalizedPosition.y
-    self.id = nsTouch.hash
   }
   
   public init(x: CGFloat, y: CGFloat) {
@@ -92,14 +87,13 @@ public enum GestureType: CaseIterable {
         newState.total = (currentState.total * (1.0 + newState.delta)).clamped(to: config.range)
         
       case .rotation:
-        // Add the delta to the total rotation
-        var newTotal = currentState.total + newState.delta
+        /// Add the delta to the total rotation
+        let newTotal = currentState.total + newState.delta
         
-        // Normalize the total rotation to stay within the range
+        /// Normalize the total rotation to stay within the range
         if config.range.contains(newTotal) {
           newState.total = newTotal
         } else {
-          // Optional: wrap around or clamp based on your needs
           newState.total = newTotal.clamped(to: config.range)
         }
         

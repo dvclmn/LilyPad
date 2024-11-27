@@ -1,5 +1,5 @@
 //
-//  GestureDetectingView.swift
+//  GestureView.swift
 //  LilyPad
 //
 //  Created by Dave Coleman on 26/11/2024.
@@ -8,7 +8,7 @@
 import AppKit
 
 @MainActor
-public class GestureDetectingView: NSView {
+public class GestureView: NSView {
   
   weak var delegate: TrackpadGestureDelegate?
 
@@ -52,6 +52,7 @@ public class GestureDetectingView: NSView {
   
  
   func updateGesture(_ type: GestureType, delta: CGFloat) {
+    
     guard let config = configs[type] else { return }
     
     let currentState = states[type] ?? TrackpadGestureState()
@@ -63,18 +64,7 @@ public class GestureDetectingView: NSView {
     }
   }
   
-  public override func scrollWheel(with event: NSEvent) {
-    
-    guard !event.scrollingDeltaX.isNaN && !event.scrollingDeltaY.isNaN else { return }
-    
-    updateGesture(.panX, delta: event.scrollingDeltaX)
-    updateGesture(.panY, delta: event.scrollingDeltaY)
-    
-    /// Update phase for both pan gestures
-    states[.panX]?.phase = event.phase
-    states[.panY]?.phase = event.phase
-
-  }
+  
   
   func resetGestureState() {
     initialTouchDistance = nil

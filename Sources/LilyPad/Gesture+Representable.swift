@@ -30,16 +30,16 @@ public struct TrackpadGestureView: NSViewRepresentable {
     self.onTouchesUpdate = onTouchesUpdate
   }
   
-  public func makeNSView(context: Context) -> GestureDetectingView {
+  public func makeNSView(context: Context) -> GestureView {
     
-    let view = GestureDetectingView()
+    let view = GestureView()
     view.delegate = context.coordinator
     view.configs = configs
     return view
     
   }
   
-  public func updateNSView(_ nsView: GestureDetectingView, context: Context) {
+  public func updateNSView(_ nsView: GestureView, context: Context) {
   }
   
   public func makeCoordinator() -> Coordinator {
