@@ -10,47 +10,36 @@ import AppKit
 extension GestureDetectingView {
   
   func handleRotationFromTouches(_ touches: [NSTouch]) {
-    
-    guard touches.count == 2 else { return }
+    guard touches.count == 2 else {
+      previousTouchAngle = nil
+      return
+    }
     
     let touch1 = touches[0].normalizedPosition
     let touch2 = touches[1].normalizedPosition
     
-    /// Calculate angle between touches
-    let angle = atan2(touch2.y - touch1.y, touch2.x - touch1.x)
+    // Calculate the current angle between the two touches
+    let currentAngle = atan2(touch2.y - touch1.y, touch2.x - touch1.x)
     
-    if let previousTouchAngle {
+    if let previousAngle = previousTouchAngle {
+      // Calculate the shortest angular distance between the previous and current angles
+      var deltaAngle = currentAngle - previousAngle
       
-      var delta = angle - previousTouchAngle
-      
-      /// Normalize delta to -π...π range
-      if delta > .pi {
-        delta -= .pi * 2
-      } else if delta < -.pi {
-        delta += .pi * 2
+      // Normalize the delta to be between -π and π
+      while deltaAngle > .pi {
+        deltaAngle -= .pi * 2
+      }
+      while deltaAngle < -.pi {
+        deltaAngle += .pi * 2
       }
       
-      /// Get current state
-      let currentState = states[.rotation] ?? TrackpadGestureState()
+      // Convert to degrees for easier handling (optional)
+      let deltaDegrees = deltaAngle * (180.0 / .pi)
       
-      /// Calculate new total rotation
-      let newTotal = currentState.total + delta
-      
-      /// Update gesture state
-      updateGesture(.rotation, delta: newTotal - currentState.total)
+      // Update the gesture with the delta
+      updateGesture(.rotation, delta: deltaDegrees)
     }
     
-    previousTouchAngle = angle
+    previousTouchAngle = currentAngle
   }
-  
-//  func applyRotationSnapping(_ rotation: CGFloat) -> CGFloat {
-//    for snapPoint in rotationSnapPoints {
-//      let distance = abs(rotation - snapPoint.angle)
-//      if distance < snapPoint.threshold {
-//        // Apply snapping with strength factor
-//        return rotation + (snapPoint.angle - rotation) * snapPoint.strength
-//      }
-//    }
-//    return rotation
-//  }
 }

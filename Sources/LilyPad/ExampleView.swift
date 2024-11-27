@@ -7,38 +7,26 @@
 
 import SwiftUI
 
-struct ExampleView: View {
+
+struct GestureExampleView: View {
   
-  @State private var displayText = "No gesture detected"
+  @State private var gestureValues: GestureValues = .init()
   
   public init() {
   }
   
   var body: some View {
     
-    Text("Hello")
-      .padding(40)
-//      .trackpadGestures { state in
+      Text("Hello")
+      .trackpadGestures()
+      .background(.black.opacity(0.8))
+      .background(.purple.opacity(0.3))
 
-//        self.displayText = """
-//        Magnification: \(state.accumulatedMagnification)
-//        Rotation: \(state.rotation)
-//        Gesture phase: \(state.phase.name)
-//        Scroll X: \(state.scrollDeltaX)
-//        Scroll Y: \(state.scrollDeltaY)
-//        """
-//      }
-    VStack {
-      Text(displayText)
-        .padding()
-    }
-    
   }
 }
 #if DEBUG
-
-#Preview {
-  ExampleView()
+#Preview(traits: .fixedLayout(width: 500, height: 700)) {
+  GestureExampleView()
 }
 #endif
 

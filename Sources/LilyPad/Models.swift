@@ -70,27 +70,47 @@ public enum GestureType: CaseIterable {
       case .zoom:
         return GestureConfig(range: 0.1...6.0, sensitivity: 1.0)
       case .rotation:
-        return GestureConfig(range: -(.pi*2)...(.pi*2), sensitivity: 1.0)
+        return GestureConfig(range: -360...360, sensitivity: 1.0)
       case .panX, .panY:
         return GestureConfig(range: -CGFloat.infinity...CGFloat.infinity, sensitivity: 0.8)
     }
   }
+
   
-  func updateState(_ currentState: TrackpadGestureState, delta: CGFloat, config: GestureConfig) -> TrackpadGestureState {
+  
+  func updateState(
+    _ currentState: TrackpadGestureState,
+    delta: CGFloat,
+    config: GestureConfig
+  ) -> TrackpadGestureState {
     var newState = currentState
     newState.delta = delta * config.sensitivity
     
     switch self {
+        
       case .zoom:
         newState.total = (currentState.total * (1.0 + newState.delta)).clamped(to: config.range)
+        
       case .rotation:
-        newState.total = (currentState.total + newState.delta).clamped(to: config.range)
+        // Add the delta to the total rotation
+        var newTotal = currentState.total + newState.delta
+        
+        // Normalize the total rotation to stay within the range
+        if config.range.contains(newTotal) {
+          newState.total = newTotal
+        } else {
+          // Optional: wrap around or clamp based on your needs
+          newState.total = newTotal.clamped(to: config.range)
+        }
+        
       case .panX, .panY:
         newState.total = currentState.total + newState.delta
     }
 
     return newState
   }
+  
+  
 
 }
 
