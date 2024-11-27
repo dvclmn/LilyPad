@@ -13,9 +13,12 @@ public class GestureDetectingView: NSView {
   weak var delegate: TrackpadGestureDelegate?
 
   var configs: [GestureType: GestureConfig] = [:]
-  private var states: [GestureType: TrackpadGestureState] = [:]
-  private var previousTouchDistance: CGFloat?
+  var states: [GestureType: TrackpadGestureState] = [:]
+  var previousTouchDistance: CGFloat?
+  var previousTouchAngle: CGFloat?
   
+  
+
   override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
     
@@ -31,65 +34,8 @@ public class GestureDetectingView: NSView {
     self.allowedTouchTypes = [.indirect]
   }
   
-  // Touch handling
-  private func handleTouches(with event: NSEvent) {
-    let touches = event.touches(matching: .touching, in: self)
-    let trackpadTouches = Set(touches.map(TrackPadTouch.init))
-    
-    delegate?.didUpdateTouches(trackpadTouches)
-    
-    // Handle zoom gesture when there are exactly two touches
-    if touches.count == 2 {
-      handleZoomFromTouches(Array(touches))
-    } else {
-      previousTouchDistance = nil
-    }
-  }
-  
-  private func handleZoomFromTouches(_ touches: [NSTouch]) {
-    guard touches.count == 2 else { return }
-    
-    let touch1 = touches[0].normalizedPosition
-    let touch2 = touches[1].normalizedPosition
-    
-    // Calculate current distance between touches
-    let currentDistance = hypot(
-      touch2.x - touch1.x,
-      touch2.y - touch1.y
-    )
-    
-    if let previousDistance = previousTouchDistance {
-      // Calculate zoom delta
-      let delta = (currentDistance - previousDistance) / previousDistance
-      updateGesture(.zoom, delta: delta)
-    }
-    
-    previousTouchDistance = currentDistance
-  }
-  
-  // Touch event handlers
-  public override func touchesBegan(with event: NSEvent) {
-    handleTouches(with: event)
-  }
-  
-  public override func touchesMoved(with event: NSEvent) {
-    handleTouches(with: event)
-  }
-  
-  public override func touchesEnded(with event: NSEvent) {
-    handleTouches(with: event)
-    previousTouchDistance = nil
-  }
-  
-  public override func touchesCancelled(with event: NSEvent) {
-    handleTouches(with: event)
-    previousTouchDistance = nil
-  }
-  
-  
-
-
-  private func updateGesture(_ type: GestureType, delta: CGFloat) {
+ 
+  func updateGesture(_ type: GestureType, delta: CGFloat) {
     guard let config = configs[type] else { return }
     
     let currentState = states[type] ?? TrackpadGestureState()
@@ -114,14 +60,5 @@ public class GestureDetectingView: NSView {
 
   }
 
-  @objc private func handleRotation(_ gesture: NSRotationGestureRecognizer) {
-
-    updateGesture(.rotation, delta: gesture.rotation)
-    
-    if gesture.state == .ended {
-      gesture.rotation = 0
-    }
-    
-  }
 }
 

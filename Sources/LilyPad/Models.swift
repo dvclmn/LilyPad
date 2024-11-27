@@ -14,19 +14,6 @@ import SwiftUI
 public struct GestureConfig {
   var range: ClosedRange<CGFloat>
   var sensitivity: CGFloat
-  
-  func normalize(_ value: CGFloat) -> CGFloat {
-    /// Handle infinite ranges differently for pan gestures
-    guard range.upperBound.isFinite && range.lowerBound.isFinite else {
-      /// Some appropriate default for infinite ranges
-      return 0.5
-    }
-    
-    let result: CGFloat = (value - range.lowerBound) / (range.upperBound - range.lowerBound)
-    
-    return result.clamped(to: 0...1)
-      
-  }
 }
 
 
@@ -127,3 +114,32 @@ public extension Comparable {
     return min(max(self, validRange.lowerBound), validRange.upperBound)
   }
 }
+
+
+//extension TrackpadGestureState: @preconcurrency CustomStringConvertible {
+//
+//  public var description: String {
+//    return """
+//
+//    -----
+//    `scaleEffect`: \(scaleEffect)
+//    `rotationAngle`: \(rotationAngle)
+//
+//    `magnificationDelta`: \(magnificationDelta)
+//    `totalMagnification`: \(totalMagnification)
+//
+//    `rotationDelta`: \(rotationDelta)
+//    `totalRotation`: \(totalRotation)
+//
+//    `scrollDeltaX`: \(scrollDeltaX)
+//    `scrollDeltaY`: \(scrollDeltaY)
+//    `totalTranslationX`: \(totalTranslationX)
+//    `totalTranslationY`: \(totalTranslationY)
+//
+//    Phase: \(phase.name)
+//
+//    -----
+//
+//    """
+//  }
+//}

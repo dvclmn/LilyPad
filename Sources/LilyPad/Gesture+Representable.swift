@@ -14,7 +14,6 @@ public struct TrackpadGestureView: NSViewRepresentable {
   
   private var configs: [GestureType: GestureConfig]
   
-//  var config: TrackpadGestureConfig
   var onGestureUpdate: GestureCallback
   var onTouchesUpdate: TouchCallback
   
@@ -41,8 +40,6 @@ public struct TrackpadGestureView: NSViewRepresentable {
   }
   
   public func updateNSView(_ nsView: GestureDetectingView, context: Context) {
-    // Update configs if needed
-//    nsView.configs = configs
   }
   
   public func makeCoordinator() -> Coordinator {
@@ -70,7 +67,6 @@ public class Coordinator: NSObject, TrackpadGestureDelegate {
     }
   }
   
-
   func didUpdateTouches(_ touches: Set<TrackPadTouch>) {
     DispatchQueue.main.async {
       self.parent.onTouchesUpdate(touches)
