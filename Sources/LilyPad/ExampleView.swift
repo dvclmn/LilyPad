@@ -17,11 +17,12 @@ struct GestureExampleView: View {
   
   var body: some View {
     
-      Text("Hello")
+    Text("Hello")
+      .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
       .trackpadGestures()
       .background(.black.opacity(0.8))
       .background(.purple.opacity(0.3))
-
+    
   }
 }
 #if DEBUG

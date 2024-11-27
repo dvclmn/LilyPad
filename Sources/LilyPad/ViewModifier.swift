@@ -45,7 +45,7 @@ public struct GestureModifier: ViewModifier {
     } // END zstack
     .overlay {
       RotationDebugGauge()
-        .frame(width: 200)
+        .frame(width: 300)
     }
   }
 }
@@ -68,7 +68,7 @@ struct RotationDebugGauge: View {
       Canvas { context, size in
         
         let center = CGPoint(x: size.width/2, y: size.height/2)
-        let radius = min(size.width, size.height)/2 * 0.9
+        let radius = min(size.width, size.height)/2 * 0.7
         
         /// Draw outer circle
         let circlePath = Path { path in
@@ -94,8 +94,8 @@ struct RotationDebugGauge: View {
             y: center.y + sin(Angle(degrees: angleAsDouble).radians - .pi/2) * radius
           )
           
-          let markColor = angleAsDouble.truncatingRemainder(dividingBy: 90) == 0 ? Color.red : Color.black
-          let lineWidth = angleAsDouble.truncatingRemainder(dividingBy: 90) == 0 ? 3.0 : 1.0
+          let markColor = angleAsDouble.truncatingRemainder(dividingBy: 90) == 0 ? Color.red : Color.gray
+          let lineWidth = angleAsDouble.truncatingRemainder(dividingBy: 90) == 0 ? 3.0 : 2.0
           
           context.stroke(
             Path { path in
@@ -108,11 +108,11 @@ struct RotationDebugGauge: View {
           
           /// Label each mark
           context.draw(
-            Text("\(angle)°/\(String(format: "%.2f", angleAsDouble * .pi / 180))r")
+            Text("\(angle)°/\(String(format: "%.2f", angleAsDouble * .pi / 90))r")
               .font(.system(size: 10)),
             at: CGPoint(
-              x: center.x + cos(Angle(degrees: angleAsDouble).radians - .pi/2) * radius * 1.1,
-              y: center.y + sin(Angle(degrees: angleAsDouble).radians - .pi/2) * radius * 1.1
+              x: center.x + cos(Angle(degrees: angleAsDouble).radians - .pi * 2) * radius * 1.1,
+              y: center.y + sin(Angle(degrees: angleAsDouble).radians - .pi * 2) * radius * 1.1
             ),
             anchor: .center
           )
@@ -120,8 +120,8 @@ struct RotationDebugGauge: View {
         
         /// Current angle indicator
         let indicatorEnd = CGPoint(
-          x: center.x + cos(Angle(degrees: currentAngle).radians - .pi/2) * radius * 0.8,
-          y: center.y + sin(Angle(degrees: currentAngle).radians - .pi/2) * radius * 0.8
+          x: center.x + cos(Angle(degrees: currentAngle).radians - .pi) * radius * 0.8,
+          y: center.y + sin(Angle(degrees: currentAngle).radians - .pi) * radius * 0.8
         )
         
         context.stroke(
@@ -130,10 +130,10 @@ struct RotationDebugGauge: View {
             path.addLine(to: indicatorEnd)
           },
           with: .color(.blue),
-          lineWidth: 4
+          lineWidth: 2
         )
       } // END canvas
-      
+      .border(Color.green.opacity(0.3))
       
 //      Slider(value: $currentAngle, in: 0...360)
 //        .padding()
