@@ -17,6 +17,14 @@ public class GestureDetectingView: NSView {
   var previousTouchDistance: CGFloat?
   var previousTouchAngle: CGFloat?
   
+  var initialTouchDistance: CGFloat?
+  var initialTouchAngle: CGFloat?
+  var gestureStartTime: TimeInterval?
+  
+  var recentRotationDeltas: [CGFloat] = []
+  var recentZoomDeltas: [CGFloat] = []
+  let smoothingWindowSize = 3
+  
   
 
   override init(frame frameRect: NSRect) {
@@ -32,6 +40,14 @@ public class GestureDetectingView: NSView {
   private func setupView() {
     self.wantsRestingTouches = true
     self.allowedTouchTypes = [.indirect]
+  }
+  
+  func smoothValue(_ value: CGFloat, deltas: inout [CGFloat]) -> CGFloat {
+    deltas.append(value)
+    if deltas.count > smoothingWindowSize {
+      deltas.removeFirst()
+    }
+    return deltas.reduce(0, +) / CGFloat(deltas.count)
   }
   
  
@@ -59,6 +75,18 @@ public class GestureDetectingView: NSView {
     states[.panY]?.phase = event.phase
 
   }
+  
+  func resetGestureState() {
+    initialTouchDistance = nil
+    initialTouchAngle = nil
+    gestureStartTime = nil
+    previousTouchDistance = nil
+    previousTouchAngle = nil
+    recentRotationDeltas.removeAll()
+    recentZoomDeltas.removeAll()
+  }
+  
+  
 
 }
 

@@ -9,30 +9,38 @@ import AppKit
 
 extension GestureDetectingView {
   
-  func handleZoomFromTouches(_ touches: [NSTouch]) {
-    guard touches.count == 2 else { return }
-    
-    let touch1 = touches[0].normalizedPosition
-    let touch2 = touches[1].normalizedPosition
-    
-    /// Calculate current distance between touches
-    let currentDistance = hypot(
-      touch2.x - touch1.x,
-      touch2.y - touch1.y
-    )
-    
-    if let previousTouchDistance {
-      var delta = (currentDistance - previousTouchDistance) / previousTouchDistance
-      
-      /// Apply dampening for small changes
-      //      let dampThreshold: CGFloat = 0.01
-      //      if abs(delta) < dampThreshold {
-      //        delta = 0
-      //      }
-      
-      updateGesture(.zoom, delta: delta)
+  func handleZoom(_ currentDistance: CGFloat) {
+    if let previousDistance = previousTouchDistance {
+      let delta = (currentDistance - previousDistance) / previousDistance
+      let smoothedDelta = smoothValue(delta, deltas: &recentZoomDeltas)
+      updateGesture(.zoom, delta: smoothedDelta)
     }
-    
-    previousTouchDistance = currentDistance
   }
+  
+//  func handleZoomFromTouches(_ touches: [NSTouch]) {
+//    guard touches.count == 2 else { return }
+//    
+//    let touch1 = touches[0].normalizedPosition
+//    let touch2 = touches[1].normalizedPosition
+//    
+//    /// Calculate current distance between touches
+//    let currentDistance = hypot(
+//      touch2.x - touch1.x,
+//      touch2.y - touch1.y
+//    )
+//    
+//    if let previousTouchDistance {
+//      var delta = (currentDistance - previousTouchDistance) / previousTouchDistance
+//      
+//      /// Apply dampening for small changes
+//      //      let dampThreshold: CGFloat = 0.01
+//      //      if abs(delta) < dampThreshold {
+//      //        delta = 0
+//      //      }
+//      
+//      updateGesture(.zoom, delta: delta)
+//    }
+//    
+//    previousTouchDistance = currentDistance
+//  }
 }

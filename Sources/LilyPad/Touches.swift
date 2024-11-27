@@ -16,15 +16,74 @@ extension GestureDetectingView {
     delegate?.didUpdateTouches(trackpadTouches)
     
     if touches.count == 2 {
+      
       let touchesArray = Array(touches)
-      handleZoomFromTouches(touchesArray)
-      handleRotationFromTouches(touchesArray)
+      
+      if initialTouchDistance == nil {
+        let touch1 = touchesArray[0].normalizedPosition
+        let touch2 = touchesArray[1].normalizedPosition
+        
+        initialTouchDistance = hypot(touch2.x - touch1.x, touch2.y - touch1.y)
+        initialTouchAngle = atan2(touch2.y - touch1.y, touch2.x - touch1.x)
+        gestureStartTime = event.timestamp
+      }
+      
+      handleCombinedGesture(touchesArray)
+      
+      
+//      let touchesArray = Array(touches)
+//      handleZoomFromTouches(touchesArray)
+//      handleRotationFromTouches(touchesArray)
     } else {
-      previousTouchDistance = nil
-      previousTouchAngle = nil
+//      previousTouchDistance = nil
+//      previousTouchAngle = nil
+      
+      resetGestureState()
     }
   }
   
+  
+  private func handleCombinedGesture(_ touches: [NSTouch]) {
+    let touch1 = touches[0].normalizedPosition
+    let touch2 = touches[1].normalizedPosition
+    
+    // Current state
+    let currentDistance = hypot(touch2.x - touch1.x, touch2.y - touch1.y)
+    let currentAngle = atan2(touch2.y - touch1.y, touch2.x - touch1.x)
+    
+    guard let initialDistance = initialTouchDistance,
+          let initialAngle = initialTouchAngle else { return }
+    
+    // Calculate relative changes
+    let distanceChange = abs(currentDistance - initialDistance) / initialDistance
+    let angleChange = abs(angleDifference(currentAngle, initialAngle))
+    
+    // Determine gesture dominance
+    let rotationThreshold: CGFloat = 0.1  // in radians
+    let zoomThreshold: CGFloat = 0.1      // 10% change
+    
+    let isSignificantRotation = angleChange > rotationThreshold
+    let isSignificantZoom = distanceChange > zoomThreshold
+    
+    // Apply gestures based on dominance
+    if isSignificantRotation && (!isSignificantZoom || angleChange > distanceChange) {
+      handleRotation(currentAngle)
+    }
+    
+    if isSignificantZoom && (!isSignificantRotation || distanceChange > angleChange) {
+      handleZoom(currentDistance)
+    }
+    
+    previousTouchDistance = currentDistance
+    previousTouchAngle = currentAngle
+  }
+  
+  func angleDifference(_ angle1: CGFloat, _ angle2: CGFloat) -> CGFloat {
+    var diff = angle1 - angle2
+    while diff > .pi { diff -= .pi * 2 }
+    while diff < -.pi { diff += .pi * 2 }
+    return diff
+  }
   
   public override func touchesBegan(with event: NSEvent) {
     handleTouches(with: event)
