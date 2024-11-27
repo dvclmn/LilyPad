@@ -9,13 +9,13 @@ import AppKit
 
 extension GestureView {
   
-  func handleZoom(_ currentDistance: CGFloat) {
-    if let previousDistance = previousTouchDistance {
-      let delta = (currentDistance - previousDistance) / previousDistance
-      let smoothedDelta = smoothValue(delta, deltas: &recentZoomDeltas)
-      updateGesture(.zoom, delta: smoothedDelta)
-    }
-  }
+//  func handleZoom(_ currentDistance: CGFloat) {
+//    if let previousDistance = previousTouchDistance {
+//      let delta = (currentDistance - previousDistance) / previousDistance
+//      let smoothedDelta = smoothValue(delta, deltas: &recentZoomDeltas)
+//      updateGesture(.zoom, delta: smoothedDelta)
+//    }
+//  }
   
 //  func handleZoomFromTouches(_ touches: [NSTouch]) {
 //    guard touches.count == 2 else { return }

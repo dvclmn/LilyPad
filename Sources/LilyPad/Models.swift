@@ -12,7 +12,7 @@ public struct GestureConfig {
   var sensitivity: CGFloat
 }
 
-public struct TrackpadGestureState {
+public struct GestureState {
   public var delta: CGFloat
   public var total: CGFloat
   public var phase: NSEvent.Phase
@@ -74,10 +74,10 @@ public enum GestureType: CaseIterable {
   
   
   func updateState(
-    _ currentState: TrackpadGestureState,
+    _ currentState: GestureState,
     delta: CGFloat,
     config: GestureConfig
-  ) -> TrackpadGestureState {
+  ) -> GestureState {
     var newState = currentState
     newState.delta = delta * config.sensitivity
     
@@ -130,7 +130,7 @@ public extension Comparable {
 }
 
 
-//extension TrackpadGestureState: @preconcurrency CustomStringConvertible {
+//extension GestureState: @preconcurrency CustomStringConvertible {
 //
 //  public var description: String {
 //    return """

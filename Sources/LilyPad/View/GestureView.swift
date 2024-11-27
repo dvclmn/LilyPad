@@ -13,17 +13,18 @@ public class GestureView: NSView {
   weak var delegate: TrackpadGestureDelegate?
 
   var configs: [GestureType: GestureConfig] = [:]
-  var states: [GestureType: TrackpadGestureState] = [:]
+  var states: [GestureType: GestureState] = [:]
+  
   var previousTouchDistance: CGFloat?
   var previousTouchAngle: CGFloat?
   
   var initialTouchDistance: CGFloat?
   var initialTouchAngle: CGFloat?
   var gestureStartTime: TimeInterval?
-  
-  var recentRotationDeltas: [CGFloat] = []
-  var recentZoomDeltas: [CGFloat] = []
-  let smoothingWindowSize = 3
+//  
+//  var recentRotationDeltas: [CGFloat] = []
+//  var recentZoomDeltas: [CGFloat] = []
+//  let smoothingWindowSize = 3
   
   
 
@@ -42,20 +43,20 @@ public class GestureView: NSView {
     self.allowedTouchTypes = [.indirect]
   }
   
-  func smoothValue(_ value: CGFloat, deltas: inout [CGFloat]) -> CGFloat {
-    deltas.append(value)
-    if deltas.count > smoothingWindowSize {
-      deltas.removeFirst()
-    }
-    return deltas.reduce(0, +) / CGFloat(deltas.count)
-  }
+//  func smoothValue(_ value: CGFloat, deltas: inout [CGFloat]) -> CGFloat {
+//    deltas.append(value)
+//    if deltas.count > smoothingWindowSize {
+//      deltas.removeFirst()
+//    }
+//    return deltas.reduce(0, +) / CGFloat(deltas.count)
+//  }
   
  
   func updateGesture(_ type: GestureType, delta: CGFloat) {
     
     guard let config = configs[type] else { return }
     
-    let currentState = states[type] ?? TrackpadGestureState()
+    let currentState = states[type] ?? GestureState()
     let newState = type.updateState(currentState, delta: delta, config: config)
     states[type] = newState
     
@@ -72,8 +73,8 @@ public class GestureView: NSView {
     gestureStartTime = nil
     previousTouchDistance = nil
     previousTouchAngle = nil
-    recentRotationDeltas.removeAll()
-    recentZoomDeltas.removeAll()
+//    recentRotationDeltas.removeAll()
+//    recentZoomDeltas.removeAll()
   }
   
   

@@ -9,7 +9,7 @@ import SwiftUI
 
 public struct TrackpadGestureView: NSViewRepresentable {
   
-  public typealias GestureCallback = (GestureType, TrackpadGestureState) -> Void
+  public typealias GestureCallback = (GestureType, GestureState) -> Void
   public typealias TouchCallback = (Set<TrackPadTouch>) -> Void
   
   private var configs: [GestureType: GestureConfig]
@@ -49,7 +49,7 @@ public struct TrackpadGestureView: NSViewRepresentable {
 
 @MainActor
 protocol TrackpadGestureDelegate: AnyObject {
-  func didUpdateGesture(_ type: GestureType, with state: TrackpadGestureState)
+  func didUpdateGesture(_ type: GestureType, with state: GestureState)
   func didUpdateTouches(_ touches: Set<TrackPadTouch>)
 }
 
@@ -61,7 +61,7 @@ public class Coordinator: NSObject, TrackpadGestureDelegate {
     self.parent = parent
   }
   
-  func didUpdateGesture(_ type: GestureType, with state: TrackpadGestureState) {
+  func didUpdateGesture(_ type: GestureType, with state: GestureState) {
     DispatchQueue.main.async {
       self.parent.onGestureUpdate(type, state)
     }
