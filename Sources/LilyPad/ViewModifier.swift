@@ -17,31 +17,31 @@ public struct GestureModifier: ViewModifier {
   
   @State private var gestures: GestureValues = .init()
   
-  private let isDebugMode: Bool = true
+  private let isDebugMode: Bool = false
   
   public func body(content: Content) -> some View {
     ZStack {
       content
-        .scaleEffect(gestures.zoom)
+//        .scaleEffect(gestures.zoom)
         .offset(x: gestures.pan.x, y: gestures.pan.y)
-        .rotationEffect(.degrees(gestures.rotation))
+//        .rotationEffect(.degrees(gestures.rotation))
         .drawingGroup()
       
-      TrackpadGestureView { gestures in
-        switch gestureType {
-          case .zoom:
-            print("Zoom: \(state.total)")
-            self.gestures.zoom = state.total
-          case .rotation:
-            print("Rotation: \(state.total)")
-            self.gestures.rotation = state.total
+      TrackpadGestureView { type, value in
+        
+        switch type {
           case .panX:
-            print("Pan X: \(state.total)")
-            self.gestures.pan.x = state.total
+            print("Pan X: \(value)")
+            self.gestures.pan.x = value
+
           case .panY:
-            print("Pan Y: \(state.total)")
-            self.gestures.pan.y = state.total
+            print("Pan Y: \(value)")
+            self.gestures.pan.y = value
+            
+          default: break
         }
+
+//        }
       } // END gesture view
     } // END zstack
     .frame(maxWidth: .infinity, maxHeight: .infinity)

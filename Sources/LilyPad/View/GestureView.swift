@@ -10,7 +10,7 @@ import AppKit
 @MainActor
 public class GestureView: NSView {
   
-  weak var delegate: TrackpadGestureDelegate?
+  weak var delegate: Coordinator?
 
   var configs: [GestureType: GestureConfig] = [:]
   var states: [GestureType: GestureState] = [:]
@@ -84,7 +84,17 @@ public class GestureView: NSView {
     states[type] = newState
     
     Task { @MainActor in
-      delegate?.didUpdateGesture(type, with: newState)
+      
+      switch type {
+        case .zoom, .rotation:
+          break
+        case .panX:
+          delegate?.didUpdateGesture(.panX, newState.total)
+          
+        case .panY:
+          delegate?.didUpdateGesture(.panY, newState.total)
+          
+      }
     }
   }
   

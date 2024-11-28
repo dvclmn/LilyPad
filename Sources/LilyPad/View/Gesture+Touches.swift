@@ -27,6 +27,8 @@ extension GestureView {
       }
       
 //      handleRotationFromTouches(touchesArray)
+      
+      
 
     } else {
       resetGestureState()

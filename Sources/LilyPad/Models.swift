@@ -20,12 +20,7 @@ public struct CurrentGestureState {
   public var previousAngle: CGFloat
 }
 
-//public protocol
-
 public struct GestureState {
-//  public var type: GestureType
-//  public var config: GestureConfig
-  
   public var delta: CGFloat = 0
   public var total: CGFloat = 0
   public var phase: NSEvent.Phase = []
