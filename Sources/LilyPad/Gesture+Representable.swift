@@ -9,7 +9,7 @@ import SwiftUI
 
 public struct TrackpadGestureView: NSViewRepresentable {
   
-  public typealias GestureCallback = (GestureType, GestureState) -> Void
+  public typealias GestureCallback = (TrackpadGestures) -> Void
   public typealias TouchCallback = (Set<TrackPadTouch>) -> Void
   
   private var configs: [GestureType: GestureConfig]
@@ -31,7 +31,6 @@ public struct TrackpadGestureView: NSViewRepresentable {
   }
   
   public func makeNSView(context: Context) -> GestureView {
-    
     let view = GestureView()
     view.delegate = context.coordinator
     view.configs = configs
@@ -63,7 +62,8 @@ public class Coordinator: NSObject, TrackpadGestureDelegate {
   
   func didUpdateGesture(_ type: GestureType, with state: GestureState) {
     DispatchQueue.main.async {
-      self.parent.onGestureUpdate(type, state)
+#warning("Implement this")
+//      self.parent.onGestureUpdate(type, state)
     }
   }
   

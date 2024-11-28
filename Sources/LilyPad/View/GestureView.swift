@@ -7,13 +7,20 @@
 
 import AppKit
 
+public typealias TrackpadGestures = [GestureType: GestureState]
+
 @MainActor
 public class GestureView: NSView {
   
   weak var delegate: TrackpadGestureDelegate?
 
   var configs: [GestureType: GestureConfig] = [:]
-  var states: [GestureType: GestureState] = [:]
+  var states: TrackpadGestures = [:]
+  
+//  var zoomGesture: GestureState?
+//  var rotateGesture: GestureState?
+//  var panXGesture: GestureState?
+//  var panXGesture: GestureState?
   
   var currentGestureState: CurrentGestureState?
 
@@ -84,11 +91,8 @@ public class GestureView: NSView {
   }
   
   
-  
   func resetGestureState() {
     currentGestureState = nil
-//    recentRotationDeltas.removeAll()
-//    recentZoomDeltas.removeAll()
   }
   
   

@@ -26,7 +26,7 @@ extension GestureView {
         currentGestureState?.initialAngle = atan2(touch2.y - touch1.y, touch2.x - touch1.x)
       }
       
-      handleRotationFromTouches(touchesArray)
+//      handleRotationFromTouches(touchesArray)
 
     } else {
       resetGestureState()

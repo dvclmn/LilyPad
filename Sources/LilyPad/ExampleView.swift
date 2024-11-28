@@ -10,7 +10,7 @@ import SwiftUI
 
 struct GestureExampleView: View {
   
-  @State private var gestureValues: GestureValues = .init()
+//  @State private var gestureValues: GestureValues = .init()
   
   public init() {
   }

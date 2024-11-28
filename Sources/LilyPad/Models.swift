@@ -20,21 +20,16 @@ public struct CurrentGestureState {
   public var previousAngle: CGFloat
 }
 
+//public protocol
 
 public struct GestureState {
-  public var delta: CGFloat
-  public var total: CGFloat
-  public var phase: NSEvent.Phase
+//  public var type: GestureType
+//  public var config: GestureConfig
+  
+  public var delta: CGFloat = 0
+  public var total: CGFloat = 0
+  public var phase: NSEvent.Phase = []
 
-  public init(
-    delta: CGFloat = 0,
-    total: CGFloat = 0,
-    phase: NSEvent.Phase = []
-  ) {
-    self.delta = delta
-    self.total = total
-    self.phase = phase
-  }
 }
 
 public struct TrackPadTouch: Identifiable, Hashable {
@@ -78,6 +73,7 @@ public enum GestureType: CaseIterable {
     delta: CGFloat,
     config: GestureConfig
   ) -> GestureState {
+    
     var newState = currentState
     newState.delta = delta * config.sensitivity
     

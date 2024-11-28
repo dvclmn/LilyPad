@@ -21,5 +21,4 @@ extension GestureView {
     states[.panY]?.phase = event.phase
     
   }
-  
 }

@@ -27,27 +27,38 @@ public struct GestureModifier: ViewModifier {
         .rotationEffect(.degrees(gestures.rotation))
         .drawingGroup()
       
-      TrackpadGestureView { gestureType, state in
-        switch gestureType {
-          case .zoom:
-            print("Zoom: \(state.total)")
-            self.gestures.zoom = state.total
-          case .rotation:
-            print("Rotation: \(state.total)")
-            self.gestures.rotation = state.total
-          case .panX:
-            print("Pan X: \(state.total)")
-            self.gestures.pan.x = state.total
-          case .panY:
-            print("Pan Y: \(state.total)")
-            self.gestures.pan.y = state.total
-        }
+      TrackpadGestureView { gestures in
+        
+//        gestures.
+        
+//        switch gestureType {
+//          case .zoom:
+//            print("Zoom: \(state.total)")
+//            self.gestures.zoom = state.total
+//          case .rotation:
+//            print("Rotation: \(state.total)")
+//            self.gestures.rotation = state.total
+//          case .panX:
+//            print("Pan X: \(state.total)")
+//            self.gestures.pan.x = state.total
+//          case .panY:
+//            print("Pan Y: \(state.total)")
+//            self.gestures.pan.y = state.total
+//        }
       } // END gesture view
     } // END zstack
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
     .overlay(alignment: .topLeading) {
-      RotationDebugGauge(currentAngle: gestures.rotation)
-        .frame(width: 200)
+      if isDebugMode {
+        HStack {
+          RotationDebugGauge(currentAngle: gestures.rotation)
+            .frame(width: 200)
+            .aspectRatio(1, contentMode: .fit)
+          
+//          Text(gestures)
+        } // END hstack
         .padding()
+      }
     }
   }
 }
@@ -58,7 +69,6 @@ public extension View {
     )
   }
 }
-
 
 
 struct RotationDebugGauge: View {
@@ -89,7 +99,7 @@ struct RotationDebugGauge: View {
         let piOver2 = Double.pi/2
         let markRadius = radius * 0.9
         let fullRadius = radius
-        let labelRadius = radius * 1.1
+//        let labelRadius = radius * 1.1
         
         // Draw angle marks
         for angle in stride(from: 0, to: 360, by: 30) {
