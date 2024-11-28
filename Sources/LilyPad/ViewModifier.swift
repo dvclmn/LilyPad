@@ -28,23 +28,20 @@ public struct GestureModifier: ViewModifier {
         .drawingGroup()
       
       TrackpadGestureView { gestures in
-        
-//        gestures.
-        
-//        switch gestureType {
-//          case .zoom:
-//            print("Zoom: \(state.total)")
-//            self.gestures.zoom = state.total
-//          case .rotation:
-//            print("Rotation: \(state.total)")
-//            self.gestures.rotation = state.total
-//          case .panX:
-//            print("Pan X: \(state.total)")
-//            self.gestures.pan.x = state.total
-//          case .panY:
-//            print("Pan Y: \(state.total)")
-//            self.gestures.pan.y = state.total
-//        }
+        switch gestureType {
+          case .zoom:
+            print("Zoom: \(state.total)")
+            self.gestures.zoom = state.total
+          case .rotation:
+            print("Rotation: \(state.total)")
+            self.gestures.rotation = state.total
+          case .panX:
+            print("Pan X: \(state.total)")
+            self.gestures.pan.x = state.total
+          case .panY:
+            print("Pan Y: \(state.total)")
+            self.gestures.pan.y = state.total
+        }
       } // END gesture view
     } // END zstack
     .frame(maxWidth: .infinity, maxHeight: .infinity)

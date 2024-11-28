@@ -9,7 +9,7 @@ import SwiftUI
 
 public struct TrackpadGestureView: NSViewRepresentable {
   
-  public typealias GestureCallback = (TrackpadGestures) -> Void
+  public typealias GestureCallback = ([GestureType: GestureState]) -> Void
   public typealias TouchCallback = (Set<TrackPadTouch>) -> Void
   
   private var configs: [GestureType: GestureConfig]

@@ -9,13 +9,13 @@ import AppKit
 
 extension GestureView {
   
-  func angleDifference(_ angle1: CGFloat, _ angle2: CGFloat) -> CGFloat {
-    /// Flipping the rotation here, as this seems to yield the most appropriate behaviour in the UI
-    var diff = -(angle1 - angle2)
-    while diff > .pi { diff -= .pi * 2 }
-    while diff < -.pi { diff += .pi * 2 }
-    return diff
-  }
+//  func angleDifference(_ angle1: CGFloat, _ angle2: CGFloat) -> CGFloat {
+//    /// Flipping the rotation here, as this seems to yield the most appropriate behaviour in the UI
+//    var diff = -(angle1 - angle2)
+//    while diff > .pi { diff -= .pi * 2 }
+//    while diff < -.pi { diff += .pi * 2 }
+//    return diff
+//  }
   
   
 //  func handleRotation(_ currentAngle: CGFloat) {

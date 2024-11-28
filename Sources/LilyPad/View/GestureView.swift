@@ -7,15 +7,13 @@
 
 import AppKit
 
-public typealias TrackpadGestures = [GestureType: GestureState]
-
 @MainActor
 public class GestureView: NSView {
   
   weak var delegate: TrackpadGestureDelegate?
 
   var configs: [GestureType: GestureConfig] = [:]
-  var states: TrackpadGestures = [:]
+  var states: [GestureType: GestureState] = [:]
   
 //  var zoomGesture: GestureState?
 //  var rotateGesture: GestureState?
@@ -42,10 +40,10 @@ public class GestureView: NSView {
   private func setupGestureRecognisers() {
     
     let rotationGesture = NSRotationGestureRecognizer(target: self, action: #selector(handleRotation))
-    let magnifyGesture = NSMagnificationGestureRecognizer(target: self, action: #selector(handleZoom))
+//    let magnifyGesture = NSMagnificationGestureRecognizer(target: self, action: #selector(handleZoom))
     
     self.addGestureRecognizer(rotationGesture)
-    self.addGestureRecognizer(magnifyGesture)
+//    self.addGestureRecognizer(magnifyGesture)
     
   }
   @objc private func handleRotation(_ gesture: NSRotationGestureRecognizer) {
@@ -58,15 +56,15 @@ public class GestureView: NSView {
     
   }
   
-  @objc private func handleZoom(_ gesture: NSMagnificationGestureRecognizer) {
-    
+//  @objc private func handleZoom(_ gesture: NSMagnificationGestureRecognizer) {
+//    
 //    updateGesture(.rotation, delta: gesture.rotation)
 //    
 //    if gesture.state == .ended {
 //      gesture.rotation = 0
 //    }
-    
-  }
+//    
+//  }
   
 //  func smoothValue(_ value: CGFloat, deltas: inout [CGFloat]) -> CGFloat {
 //    deltas.append(value)
