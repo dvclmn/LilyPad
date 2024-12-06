@@ -13,23 +13,18 @@ struct GestureValues {
   var pan: CGPoint = .zero
 }
 
-public typealias PanOutput = (CGPoint) -> Void
-
 public struct GestureModifier: ViewModifier {
 
   @State private var gestures: GestureValues = .init()
 
   private let isDebugMode: Bool = false
   let isModifying: Bool
-  let panOutput: PanOutput
 
   public init(
     //    gestures: GestureValues,
-    isModifying: Bool = true,
-    panOutput: @escaping PanOutput = { _ in }
+    isModifying: Bool = true
   ) {
     self.isModifying = isModifying
-    self.panOutput = panOutput
   }
 
   public func body(content: Content) -> some View {
@@ -56,9 +51,9 @@ public struct GestureModifier: ViewModifier {
 
         //        }
       }  // END gesture view
-      .task(id: gestures.pan) {
-        self.panOutput(gestures.pan)
-      }
+//      .task(id: gestures.pan) {
+//        self.panOutput(gestures.pan)
+//      }
     }  // END zstack
     //    .frame(maxWidth: .infinity, maxHeight: .infinity)
     //    .overlay(alignment: .topLeading) {
@@ -79,11 +74,6 @@ extension View {
   public func trackpadGestures() -> some View {
     self.modifier(
       GestureModifier()
-    )
-  }
-  public func panGesture(_ output: @escaping PanOutput) -> some View {
-    self.modifier(
-      GestureModifier(isModifying: false, panOutput: output)
     )
   }
 }
