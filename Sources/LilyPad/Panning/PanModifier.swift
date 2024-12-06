@@ -9,17 +9,9 @@
 import SwiftUI
 import BaseHelpers
 
-public typealias PanOutput = (CGPoint) -> Void
-
-//public struct PanState {
-//  public var delta: CGPoint = .zero
-//  public var total: CGPoint = .zero
-//}
-
 public struct PanGestureModifier: ViewModifier {
   
   @Binding var panAmount: CGPoint
-  
   @State private var panDelta: CGPoint = .zero
   @State private var monitor: Any?
   
@@ -41,14 +33,17 @@ public struct PanGestureModifier: ViewModifier {
             return event
           }
           
-          let newState = updatePanState(
-            current: panState,
-            deltaX: event.scrollingDeltaX,
-            deltaY: event.scrollingDeltaY
+          /// Update delta
+          panDelta = CGPoint(
+            x: event.scrollingDeltaX * sensitivity,
+            y: event.scrollingDeltaY * sensitivity
           )
           
-          panState = newState
-          panAmount = newState.total
+          /// Update total
+          panAmount = CGPoint(
+            x: panAmount.x + panDelta.x,
+            y: panAmount.y + panDelta.y
+          )
           
           return event
         }
@@ -58,71 +53,9 @@ public struct PanGestureModifier: ViewModifier {
           NSEvent.removeMonitor(monitor)
         }
       }
-//      .onAppear {
-//        NSEvent
-//          .addLocalMonitorForEvents(matching: .scrollWheel) { event in
-//          
-//            panAmount.x = self.updatePanGesture(
-//              axis: .horizontal,
-//              delta: event.scrollingDeltaX
-//            ).x
-//            
-//            panAmount.y = self.updatePanGesture(
-//              axis: .vertical,
-//              delta: event.scrollingDeltaY
-//            ).y
-//            
-//            print("`scrollingDeltaX` vs `deltaX`: | \(event.scrollingDeltaX) vs \(event.deltaX) |")
-//            
-//            return event
-//
-//        }
-//      }
   }
 }
 
-extension PanGestureModifier {
-  
-  private func updatePanState(
-    current: CGPoint,
-    deltaX: CGFloat,
-    deltaY: CGFloat
-  ) -> CGPoint {
-    
-    var newPanState: CGPoint = panAmount
-    var newDelta: CGPoint = current
-    
-    /// Update deltas
-    newDelta = CGPoint(
-      x: deltaX * sensitivity,
-      y: deltaY * sensitivity
-    )
-    
-    /// Update totals
-    newPanState = CGPoint(
-      x: panAmount.x + newDelta.x,
-      y: panAmount.y + newDelta.y
-    )
-    
-    return newState
-  }
-//  func updatePanGesture(axis: Axis, delta: CGFloat) -> CGPoint {
-//    
-//    var newPanState = panState
-//    
-//    switch axis {
-//        case .horizontal:
-//        newPanState.delta.x = delta * sensitivity
-//        newPanState.total.x = panState.total.x + newPanState.delta.x
-//        
-//      case .vertical:
-//        newPanState.delta.y = delta * sensitivity
-//        newPanState.total.y = panState.total.y + newPanState.delta.y
-//    }
-//    
-//    return newPanState.total
-//  }
-}
 
 extension View {
   public func panGesture(
@@ -136,9 +69,4 @@ extension View {
       )
     )
   }
-//  public func panGesture(_ output: @escaping PanOutput) -> some View {
-//    self.modifier(
-//      PanGestureModifier(panOutput: output)
-//    )
-//  }
 }
