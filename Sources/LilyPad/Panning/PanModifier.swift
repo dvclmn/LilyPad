@@ -7,16 +7,28 @@
 
 
 import SwiftUI
+import BaseHelpers
 
 public typealias PanOutput = (CGPoint) -> Void
 
+public struct PanState {
+  public var delta: CGPoint = .zero
+  public var total: CGPoint = .zero
+}
+
 public struct PanGestureModifier: ViewModifier {
   
-  @Binding private var panAmount: CGPoint
-  @State private var previousPanAmount: CGPoint = .zero
+  @Binding var panAmount: CGPoint
+  
+  @State private var panState: PanState = .init()
+  let sensitivity: CGFloat
 
-  public init(panAmount: Binding<CGPoint>) {
+  public init(
+    panAmount: Binding<CGPoint>,
+    sensitivity: CGFloat = 0.8
+  ) {
     self._panAmount = panAmount
+    self.sensitivity = sensitivity
   }
   
   public func body(content: Content) -> some View {
@@ -25,42 +37,55 @@ public struct PanGestureModifier: ViewModifier {
         NSEvent
           .addLocalMonitorForEvents(matching: .scrollWheel) { event in
           
-//            print("Locally monitoring Scroll events: \(event)")
+            panAmount.x = self.updatePanGesture(
+              axis: .horizontal,
+              delta: event.scrollingDeltaX
+            ).x
             
-            panAmount.x = event.scrollingDeltaX
-            panAmount.y = event.scrollingDeltaY
+            panAmount.y = self.updatePanGesture(
+              axis: .vertical,
+              delta: event.scrollingDeltaY
+            ).y
             
             print("`scrollingDeltaX` vs `deltaX`: | \(event.scrollingDeltaX) vs \(event.deltaX) |")
             
             return event
-//          if insideCircle {
-//            circleZoom += event.scrollingDeltaY/100
-//            if circleZoom < 0.1 {circleZoom = 0.1}
-//          }
-//          return event
+
         }
       }
-//    ZStack {
-//      content
-//      TrackpadGestureView { type, value in
-//        switch type {
-//          case .panX:
-//            self.panAmount.x = value
-//            
-//          case .panY:
-//            self.panAmount.y = value
-//            
-//          default: break
-//        }
-//      }  // END gesture view
-//    } // END zstack
+  }
+}
+
+extension PanGestureModifier {
+  
+  func updatePanGesture(axis: Axis, delta: CGFloat) -> CGPoint {
+    
+    var newPanState = panState
+    
+    switch axis {
+        case .horizontal:
+        newPanState.delta.x = delta * sensitivity
+        newPanState.total.x = panState.total.x + newPanState.delta.x
+        
+      case .vertical:
+        newPanState.delta.y = delta * sensitivity
+        newPanState.total.y = panState.total.y + newPanState.delta.y
+    }
+    
+    return newPanState.total
   }
 }
 
 extension View {
-  public func panGesture(_ panAmount: Binding<CGPoint>) -> some View {
+  public func panGesture(
+    _ panAmount: Binding<CGPoint>,
+    sensitivity: CGFloat = 0.8
+  ) -> some View {
     self.modifier(
-      PanGestureModifier(panAmount: panAmount)
+      PanGestureModifier(
+        panAmount: panAmount,
+        sensitivity: sensitivity
+      )
     )
   }
 //  public func panGesture(_ output: @escaping PanOutput) -> some View {
