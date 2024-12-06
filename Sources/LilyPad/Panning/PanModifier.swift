@@ -21,6 +21,8 @@ public struct PanGestureModifier: ViewModifier {
   @Binding var panAmount: CGPoint
   
   @State private var panState: PanState = .init()
+  @State private var monitor: Any?
+  
   let sensitivity: CGFloat
 
   public init(
@@ -34,46 +36,90 @@ public struct PanGestureModifier: ViewModifier {
   public func body(content: Content) -> some View {
     content
       .onAppear {
-        NSEvent
-          .addLocalMonitorForEvents(matching: .scrollWheel) { event in
-          
-            panAmount.x = self.updatePanGesture(
-              axis: .horizontal,
-              delta: event.scrollingDeltaX
-            ).x
-            
-            panAmount.y = self.updatePanGesture(
-              axis: .vertical,
-              delta: event.scrollingDeltaY
-            ).y
-            
-            print("`scrollingDeltaX` vs `deltaX`: | \(event.scrollingDeltaX) vs \(event.deltaX) |")
-            
+        monitor = NSEvent.addLocalMonitorForEvents(matching: .scrollWheel) { event in
+          guard !event.scrollingDeltaX.isNaN && !event.scrollingDeltaY.isNaN else {
             return event
-
+          }
+          
+          let newState = updatePanState(
+            current: panState,
+            deltaX: event.scrollingDeltaX,
+            deltaY: event.scrollingDeltaY
+          )
+          
+          panState = newState
+          panAmount = newState.total
+          
+          return event
         }
       }
+      .onDisappear {
+        if let monitor = monitor {
+          NSEvent.removeMonitor(monitor)
+        }
+      }
+//      .onAppear {
+//        NSEvent
+//          .addLocalMonitorForEvents(matching: .scrollWheel) { event in
+//          
+//            panAmount.x = self.updatePanGesture(
+//              axis: .horizontal,
+//              delta: event.scrollingDeltaX
+//            ).x
+//            
+//            panAmount.y = self.updatePanGesture(
+//              axis: .vertical,
+//              delta: event.scrollingDeltaY
+//            ).y
+//            
+//            print("`scrollingDeltaX` vs `deltaX`: | \(event.scrollingDeltaX) vs \(event.deltaX) |")
+//            
+//            return event
+//
+//        }
+//      }
   }
 }
 
 extension PanGestureModifier {
   
-  func updatePanGesture(axis: Axis, delta: CGFloat) -> CGPoint {
+  private func updatePanState(
+    current: PanState,
+    deltaX: CGFloat,
+    deltaY: CGFloat
+  ) -> PanState {
+    var newState = current
     
-    var newPanState = panState
+    /// Update deltas
+    newState.delta = CGPoint(
+      x: deltaX * sensitivity,
+      y: deltaY * sensitivity
+    )
     
-    switch axis {
-        case .horizontal:
-        newPanState.delta.x = delta * sensitivity
-        newPanState.total.x = panState.total.x + newPanState.delta.x
-        
-      case .vertical:
-        newPanState.delta.y = delta * sensitivity
-        newPanState.total.y = panState.total.y + newPanState.delta.y
-    }
+    /// Update totals
+    newState.total = CGPoint(
+      x: current.total.x + newState.delta.x,
+      y: current.total.y + newState.delta.y
+    )
     
-    return newPanState.total
+    return newState
   }
+//  func updatePanGesture(axis: Axis, delta: CGFloat) -> CGPoint {
+//    
+//    var newPanState = panState
+//    
+//    switch axis {
+//        case .horizontal:
+//        newPanState.delta.x = delta * sensitivity
+//        newPanState.total.x = panState.total.x + newPanState.delta.x
+//        
+//      case .vertical:
+//        newPanState.delta.y = delta * sensitivity
+//        newPanState.total.y = panState.total.y + newPanState.delta.y
+//    }
+//    
+//    return newPanState.total
+//  }
 }
 
 extension View {
