@@ -11,16 +11,16 @@ import BaseHelpers
 
 public typealias PanOutput = (CGPoint) -> Void
 
-public struct PanState {
-  public var delta: CGPoint = .zero
-  public var total: CGPoint = .zero
-}
+//public struct PanState {
+//  public var delta: CGPoint = .zero
+//  public var total: CGPoint = .zero
+//}
 
 public struct PanGestureModifier: ViewModifier {
   
   @Binding var panAmount: CGPoint
   
-  @State private var panState: PanState = .init()
+  @State private var panDelta: CGPoint = .zero
   @State private var monitor: Any?
   
   let sensitivity: CGFloat
@@ -84,22 +84,24 @@ public struct PanGestureModifier: ViewModifier {
 extension PanGestureModifier {
   
   private func updatePanState(
-    current: PanState,
+    current: CGPoint,
     deltaX: CGFloat,
     deltaY: CGFloat
-  ) -> PanState {
-    var newState = current
+  ) -> CGPoint {
+    
+    var newPanState: CGPoint = panAmount
+    var newDelta: CGPoint = current
     
     /// Update deltas
-    newState.delta = CGPoint(
+    newDelta = CGPoint(
       x: deltaX * sensitivity,
       y: deltaY * sensitivity
     )
     
     /// Update totals
-    newState.total = CGPoint(
-      x: current.total.x + newState.delta.x,
-      y: current.total.y + newState.delta.y
+    newPanState = CGPoint(
+      x: panAmount.x + newDelta.x,
+      y: panAmount.y + newDelta.y
     )
     
     return newState
