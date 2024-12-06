@@ -8,49 +8,64 @@
 
 import SwiftUI
 
-
 public typealias PanOutput = (CGPoint) -> Void
-
 
 public struct PanGestureModifier: ViewModifier {
   
-  @State private var panAmount: CGPoint = .zero
-  
-  let panOutput: PanOutput
-  
-  public init (panOutput: @escaping PanOutput = { _ in }) {
-    self.panOutput = panOutput
+  @Binding private var panAmount: CGPoint
+  @State private var previousPanAmount: CGPoint = .zero
+
+  public init(panAmount: Binding<CGPoint>) {
+    self._panAmount = panAmount
   }
   
   public func body(content: Content) -> some View {
-    ZStack {
-      
-      content
-
-      TrackpadGestureView { type, value in
-        switch type {
-          case .panX:
-            self.panAmount.x = value
+    content
+      .onAppear {
+        NSEvent
+          .addLocalMonitorForEvents(matching: .scrollWheel) { event in
+          
+//            print("Locally monitoring Scroll events: \(event)")
             
-          case .panY:
-            self.panAmount.y = value
+            panAmount.x = event.scrollingDeltaX
+            panAmount.y = event.scrollingDeltaY
             
-          default: break
+            print("`scrollingDeltaX` vs `deltaX`: | \(event.scrollingDeltaX) vs \(event.deltaX) |")
+            
+            return event
+//          if insideCircle {
+//            circleZoom += event.scrollingDeltaY/100
+//            if circleZoom < 0.1 {circleZoom = 0.1}
+//          }
+//          return event
         }
-      }  // END gesture view
-      .task(id: panAmount) {
-        self.panOutput(panAmount)
       }
-    } // END zstack
+//    ZStack {
+//      content
+//      TrackpadGestureView { type, value in
+//        switch type {
+//          case .panX:
+//            self.panAmount.x = value
+//            
+//          case .panY:
+//            self.panAmount.y = value
+//            
+//          default: break
+//        }
+//      }  // END gesture view
+//    } // END zstack
   }
 }
 
-
-
 extension View {
-  public func panGesture(_ output: @escaping PanOutput) -> some View {
+  public func panGesture(_ panAmount: Binding<CGPoint>) -> some View {
     self.modifier(
-      PanGestureModifier(panOutput: output)
+      PanGestureModifier(panAmount: panAmount)
     )
   }
+//  public func panGesture(_ output: @escaping PanOutput) -> some View {
+//    self.modifier(
+//      PanGestureModifier(panOutput: output)
+//    )
+//  }
 }
