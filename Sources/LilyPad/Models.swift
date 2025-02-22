@@ -112,9 +112,10 @@ public extension NSEvent.Phase {
   }
 }
 
-public extension Comparable {
-  func clamped(to limits: ClosedRange<Self>) -> Self {
-    let validRange = min(limits.lowerBound, limits.upperBound)...max(limits.lowerBound, limits.upperBound)
-    return min(max(self, validRange.lowerBound), validRange.upperBound)
-  }
-}
+
+
+//extension CGFloat {
+//  func clamped(to range: ClosedRange<CGFloat>) -> CGFloat {
+//    max(range.lowerBound, min(range.upperBound, self))
+//  }
+//}
