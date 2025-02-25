@@ -1,4 +1,4 @@
-// swift-tools-version: 6.0
+// swift-tools-version: 5.10
 
 import PackageDescription
 
@@ -12,9 +12,14 @@ let package = Package(
       name: "LilyPad",
       targets: ["LilyPad"]),
   ],
+  dependencies: [
+    .package(url: "https://github.com/dvclmn/BaseHelpers", branch: "main"),
+  ],
   targets: [
     .target(
-      name: "LilyPad"),
+      name: "LilyPad",
+      dependencies: [.product(name: "BaseHelpers", package: "BaseHelpers"),]
+    ),
     .testTarget(
       name: "LilyPadTests",
       dependencies: ["LilyPad"]

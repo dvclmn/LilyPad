@@ -7,7 +7,7 @@
 
 import AppKit
 
-@MainActor
+//@MainActor
 public class GestureView: NSView {
   
   weak var delegate: Coordinator?

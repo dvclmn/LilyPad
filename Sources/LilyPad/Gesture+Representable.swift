@@ -56,7 +56,7 @@ public struct TrackpadGestureView: NSViewRepresentable {
 //  func didUpdateTouches(_ touches: Set<TrackPadTouch>)
 //}
 
-@MainActor
+//@MainActor
 public class Coordinator: NSObject {
   
   var parent: TrackpadGestureView
@@ -66,9 +66,9 @@ public class Coordinator: NSObject {
   }
   
   func didUpdateGesture(_ type: GestureType, _ newValue: CGFloat) {
-    DispatchQueue.main.async {
+//    DispatchQueue.main.async {
       self.parent.gestureOutput(type, newValue)
-    }
+//    }
   }
   
   func didUpdateTouches(_ touches: Set<TrackPadTouch>) {

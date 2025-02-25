@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import BaseHelpers
 
 public struct GestureConfig {
   var range: ClosedRange<CGFloat>
