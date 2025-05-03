@@ -30,9 +30,17 @@ public class TrackpadTouchesNSView: NSView {
   
   private func processTouches(with event: NSEvent) {
     /// Get all touching touches (includes .began, .moved, .stationary)
-    let touches = event.touches(matching: .touching, in: self)
+    let touches = event.touches(
+matching: [
+        .touching,
+        .began,
+//        .ended, // Using this broke behaviour
+        .moved
+      ],
+      in: self
+    )
     
-    /// Convert to our data model
+    /// Convert to data model
     let trackpadTouches = Set(touches.map(TrackpadTouch.init))
     
     /// Forward via delegate
@@ -44,19 +52,15 @@ public class TrackpadTouchesNSView: NSView {
   public override func touchesBegan(with event: NSEvent) {
     processTouches(with: event)
   }
-  
   public override func touchesMoved(with event: NSEvent) {
     processTouches(with: event)
   }
-  
   public override func touchesEnded(with event: NSEvent) {
     processTouches(with: event)
   }
-  
   public override func touchesCancelled(with event: NSEvent) {
     processTouches(with: event)
   }
-  
   public override func pressureChange(with event: NSEvent) {
     processTouches(with: event)
   }

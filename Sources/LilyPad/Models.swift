@@ -21,7 +21,8 @@ public struct TrackpadTouch: Identifiable, Hashable {
       /// Flip Y to match SwiftUI coordinate system
       y: 1.0 - nsTouch.normalizedPosition.y
     )
-    self.timestamp = ProcessInfo.processInfo.systemUptime
+    self.timestamp = Date().timeIntervalSince1970
+//    self.timestamp = ProcessInfo.processInfo.systemUptime
     self.pressure = 1.0
   }
 }
