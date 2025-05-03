@@ -12,13 +12,25 @@ import SwiftUI
 public struct TrackpadTouchesExample: View {
   @State private var touches: Set<TrackpadTouch> = []
   
+//  let realWidth: Measurement = .init(value: 16, unit: UnitLength.centimeters)
+//  let realHeight: Measurement = .init(value: 10, unit: UnitLength.centimeters)
+  
+  let touchPadWidth: CGFloat = 700
+  var touchPadHeight: CGFloat {
+    touchPadWidth * (16 / 10)
+  }
+  
   public init() {}
   
   public var body: some View {
-    ZStack {
+    
+    GeometryReader { proxy in
+      
       // Background
       Color.black.opacity(0.1)
         .edgesIgnoringSafeArea(.all)
+        .aspectRatio(16 / 10, contentMode: .fit)
+        .frame(width: touchPadWidth, height: touchPadHeight)
       
       // Touch visualization
       ForEach(Array(touches), id: \.id) { touch in
@@ -26,8 +38,8 @@ public struct TrackpadTouchesExample: View {
           .fill(Color.blue.opacity(0.7))
           .frame(width: 40, height: 40)
           .position(
-            x: touch.position.x * 500,
-            y: touch.position.y * 500
+            x: touch.position.x * touchPadWidth,
+            y: touch.position.y * touchPadHeight
           )
       }
       
@@ -40,8 +52,11 @@ public struct TrackpadTouchesExample: View {
       
       // The invisible touch capture view
       TrackpadTouchesView(touches: $touches)
-      //        .allowsHitTesting(false)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    
     }
+    
+    
   }
 }
 
