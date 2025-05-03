@@ -20,17 +20,9 @@ public final class TouchHandler {
   
   /// Minimum number of points required to create a smooth curve
   private let minPointsForCurve = 3
-  
-  
-//  var strokeBuilder = StrokePathBuilder()
-  
+
   public var allStrokes: [TouchStroke] {
     return Array(activeStrokes.values) + completedStrokes
-  }
-  
-  public func clearStrokes() {
-    activeStrokes.removeAll()
-    completedStrokes.removeAll()
   }
   
   public init() {}
@@ -54,6 +46,14 @@ public final class TouchHandler {
     )
   }
   
+  func transformPoint(_ point: CGPoint, in size: CGSize) -> CGPoint {
+    /// Assuming normalized points (0–1 range)
+    return CGPoint(
+      x: point.x * size.width,
+      y: point.y * size.height
+    )
+  }
+  
   func touchPosition(
     _ touch: TrackpadTouch
   ) -> CGPoint {
@@ -66,7 +66,6 @@ public final class TouchHandler {
     return CGPoint(x: x, y: y)
   }
   
-  
   var isInTouchMode: Bool {
     !isClicked && isPointerLocked
   }
@@ -75,9 +74,10 @@ public final class TouchHandler {
   public func processTouches() {
     
     print("Processing touches. Touch count: \(touches.count)")
-    // Process each touch to update strokes
+    /// Process each touch to update strokes
     for touch in touches {
       let touchId = touch.id
+      let touchPosition = touchPosition(touch)
 
       /// Update or create stroke for this touch
       if var stroke = activeStrokes[touchId] {
@@ -85,7 +85,9 @@ public final class TouchHandler {
         
         print("Point count for stroke BEFORE: \(stroke.points.count)")
         
-        stroke.points.append(touch.position)
+        
+        
+        stroke.points.append(touchPosition)
         activeStrokes[touchId] = stroke
         
         print("Point count for stroke AFTER: \(stroke.points.count)")
@@ -97,7 +99,7 @@ public final class TouchHandler {
         /// New touch, create a new stroke
         print("Creating a new stroke for touch \(touchId)")
         
-        let stroke = TouchStroke(points: [touch.position], color: .purple)
+        let stroke = TouchStroke(points: [touchPosition], color: .purple)
         activeStrokes[touchId] = stroke
       }
     }
@@ -118,6 +120,11 @@ public final class TouchHandler {
   }
   
   // MARK: - Strokes
+  
+  public func clearStrokes() {
+    activeStrokes.removeAll()
+    completedStrokes.removeAll()
+  }
   
   /// Generate a smooth path for a stroke using Catmull-Rom spline
   public func smoothPath(for stroke: TouchStroke) -> Path {

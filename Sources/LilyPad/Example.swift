@@ -33,23 +33,11 @@ public struct TrackpadTouchesExample: View {
         idealHeight: handler.trackPadSize.height * 1.5,
       )
       .gesture(clickDownDetection)
-      
-      .overlay {
-        
-        
-        
-      }
+
       .overlay {
         Interface()
       }
       .mouseLock($handler.isPointerLocked)
-
-      .frame(
-        minWidth: handler.trackPadSize.width,
-        idealWidth: handler.trackPadSize.width * 1.5,
-        minHeight: handler.trackPadSize.height,
-        idealHeight: handler.trackPadSize.height * 1.5,
-      )
 
       .onGeometryChange(for: CGSize.self) { proxy in
         return proxy.size
@@ -93,28 +81,40 @@ extension TrackpadTouchesExample {
 
     ZStack {
       // Debug items
-      Grid {
-        ForEach(TouchDebugItem.allCases) { item in
-          GridRow {
-            Text(item.name)
-              .gridCellAnchor(.leading)
-            Text(valueString(item))
-              .gridCellAnchor(.trailing)
-              .fontWeight(.medium)
-              .monospaced()
-              .foregroundStyle(booleanColour(valueString(item)))
-          }
-          Divider()
-            .gridCellUnsizedAxes(.horizontal)
-        }
-      }
-      .padding()
-      .background(.black.opacity(0.7))
-      .clipShape(.rect(cornerRadius: 6))
+//      Grid {
+//        ForEach(TouchDebugItem.allCases) { item in
+//          GridRow {
+//            Text(item.name)
+//              .gridCellAnchor(.leading)
+//            Text(valueString(item))
+//              .gridCellAnchor(.trailing)
+//              .fontWeight(.medium)
+//              .monospaced()
+//              .foregroundStyle(booleanColour(valueString(item)))
+//          }
+//          Divider()
+//            .gridCellUnsizedAxes(.horizontal)
+//        }
+//      }
+//      .padding()
+//      .background(.black.opacity(0.7))
+//      .clipShape(.rect(cornerRadius: 6))
 
 
       // Background representing the trackpad shape
-      Color.white.opacity(0.1)
+//      Color.white.opacity(0.1)
+      Canvas { context, size in
+        // Draw all strokes
+        for stroke in handler.allStrokes {
+          let path = handler.smoothPath(for: stroke)
+          //          let offSetPath = path.offsetBy(dx: 200, dy: 200)
+          context.stroke(
+            path,
+            with: .color(stroke.color),
+            style: StrokeStyle(lineWidth: 5, lineCap: .round, lineJoin: .round)
+          )
+        }
+      }
         .focused($isFocused)
         .focusEffectDisabled()
         .focusable(true)
@@ -130,23 +130,11 @@ extension TrackpadTouchesExample {
           handler.isPointerLocked.toggle()
           return .handled
         }
-      
-      Canvas { context, size in
-        // Draw all strokes
-        for stroke in handler.allStrokes {
-          let path = handler.smoothPath(for: stroke)
-//          let offSetPath = path.offsetBy(dx: 200, dy: 200)
-          context.stroke(
-            path,
-            with: .color(stroke.color),
-            style: StrokeStyle(lineWidth: 5, lineCap: .round, lineJoin: .round)
-          )
+        .onKeyPress("c") {
+          handler.clearStrokes()
+          return .handled
         }
-      }
-      .frame(
-        width: handler.trackPadSize.width,
-        height: handler.trackPadSize.height
-      )
+
       //        .border(Color.green.opacity(0.3))
 //      .background(.pink.opacity(0.2))
 
