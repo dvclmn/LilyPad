@@ -43,7 +43,6 @@ public struct TouchStroke: Identifiable {
         CGPoint(x: 200, y: 0),
         CGPoint(x: 300, y: 100),
       ],
-//      widths: <#T##[CGFloat]#>,
       color: .green
     )
     ]
@@ -89,6 +88,8 @@ public struct StrokePathBuilder {
   
   /// Process touch updates and update strokes
   public mutating func processTouches(_ touches: Set<TrackpadTouch>) {
+    
+    print("Processing touches. Touch count: \(touches.count)")
     // Process each touch to update strokes
     for touch in touches {
       let touchId = touch.id
@@ -96,48 +97,51 @@ public struct StrokePathBuilder {
       // Calculate width based on velocity
 //      let width = calculateStrokeWidth(for: touch)
       
-      // Update or create stroke for this touch
+      /// Update or create stroke for this touch
       if var stroke = activeStrokes[touchId] {
+        print("There are active strokes for touch \(touchId). Count: \(stroke.points.count)")
         stroke.addPoint(touch.position)
         activeStrokes[touchId] = stroke
       } else {
-        // New touch, create a new stroke
+        /// New touch, create a new stroke
+        print("Creating a new stroke for touch \(touchId)")
         var stroke = TouchStroke(color: randomColor())
         stroke.addPoint(touch.position)
         activeStrokes[touchId] = stroke
       }
     }
     
-    // Check for ended touches
+    /// Check for ended touches
     let currentIds = Set(touches.map { $0.id })
     let activeIds = Set(activeStrokes.keys)
     let endedIds = activeIds.subtracting(currentIds)
     
-    // Finalize ended strokes
+    /// Finalize ended strokes
     for touchId in endedIds {
       if let stroke = activeStrokes[touchId], stroke.points.count >= minPointsForCurve {
+        print("Adding a stroke to completed strokes. Completed Count: \(completedStrokes.count)")
         completedStrokes.append(stroke)
       }
       activeStrokes.removeValue(forKey: touchId)
     }
   }
   
-  /// Calculate stroke width based on touch velocity
-  private func calculateStrokeWidth(for touch: TrackpadTouch) -> CGFloat {
-    let speed = touch.speed
-    
-    // Inverse relationship: faster movement = thinner line
-    // Clamp within min and max stroke width
-    if speed <= 0.001 {
-      return maxStrokeWidth
-    } else if speed >= maxSpeedForMinWidth {
-      return minStrokeWidth
-    } else {
-      // Linear interpolation between max and min width based on speed
-      let speedFactor = speed / maxSpeedForMinWidth
-      return maxStrokeWidth - (maxStrokeWidth - minStrokeWidth) * speedFactor
-    }
-  }
+//  /// Calculate stroke width based on touch velocity
+//  private func calculateStrokeWidth(for touch: TrackpadTouch) -> CGFloat {
+//    let speed = touch.speed
+//    
+//    // Inverse relationship: faster movement = thinner line
+//    // Clamp within min and max stroke width
+//    if speed <= 0.001 {
+//      return maxStrokeWidth
+//    } else if speed >= maxSpeedForMinWidth {
+//      return minStrokeWidth
+//    } else {
+//      // Linear interpolation between max and min width based on speed
+//      let speedFactor = speed / maxSpeedForMinWidth
+//      return maxStrokeWidth - (maxStrokeWidth - minStrokeWidth) * speedFactor
+//    }
+//  }
   
   /// Generate a random color for new strokes
   private func randomColor() -> Color {

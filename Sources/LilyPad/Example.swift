@@ -31,26 +31,7 @@ public struct TrackpadTouchesExample: View {
       .gesture(clickDownDetection)
       
       .overlay {
-        Canvas { context, size in
-          // Draw all strokes
-          for stroke in handler.strokeBuilder.allStrokes {
-            let path = handler.strokeBuilder.smoothPath(for: stroke)
-            
-            // Use average width, or derive however you like
-//            let averageWidth = stroke.widths.reduce(0, +) / CGFloat(stroke.widths.count)
-            
-            context.stroke(
-              path,
-              with: .color(stroke.color),
-              style: StrokeStyle(lineWidth: 5, lineCap: .round, lineJoin: .round)
-            )
-          }
-        }
-        .frame(
-          width: handler.trackPadSize.width,
-          height: handler.trackPadSize.height
-        )
-        .border(Color.green.opacity(0.3))
+        
 //        // Canvas to draw strokes
 //        Canvas { context, size in
 //          
@@ -77,8 +58,7 @@ public struct TrackpadTouchesExample: View {
 //            }
 //          }
 //        }
-        .background(.pink.opacity(0.2))
-        .allowsHitTesting(false)
+        
         
       }
       .overlay {
@@ -154,9 +134,7 @@ extension TrackpadTouchesExample {
 
 
       // Background representing the trackpad shape
-      RoundedRectangle(cornerRadius: 20)
-        .fill(.gray.opacity(0.1))
-        .strokeBorder(.gray, lineWidth: 2)
+      Color.white.opacity(0.1)
         .focused($isFocused)
         .focusEffectDisabled()
         .focusable(true)
@@ -172,6 +150,28 @@ extension TrackpadTouchesExample {
           handler.isPointerLocked.toggle()
           return .handled
         }
+      
+      Canvas { context, size in
+        // Draw all strokes
+        for stroke in handler.strokeBuilder.allStrokes {
+          let path = handler.strokeBuilder.smoothPath(for: stroke)
+          
+          // Use average width, or derive however you like
+          //            let averageWidth = stroke.widths.reduce(0, +) / CGFloat(stroke.widths.count)
+          
+          context.stroke(
+            path,
+            with: .color(stroke.color),
+            style: StrokeStyle(lineWidth: 5, lineCap: .round, lineJoin: .round)
+          )
+        }
+      }
+      .frame(
+        width: handler.trackPadSize.width,
+        height: handler.trackPadSize.height
+      )
+      //        .border(Color.green.opacity(0.3))
+//      .background(.pink.opacity(0.2))
 
       if handler.isInTouchMode {
         // Visualise Touches
@@ -186,6 +186,7 @@ extension TrackpadTouchesExample {
         }
       }
     }
+    .clipShape(.rect(cornerRadius: 20))
     .allowsHitTesting(false)
   }
 
