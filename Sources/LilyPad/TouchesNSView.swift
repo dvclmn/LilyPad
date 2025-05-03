@@ -11,44 +11,44 @@ import AppKit
 public class TrackpadTouchesNSView: NSView {
   /// Delegate to forward touch events to
   weak var delegate: TrackpadTouchesDelegate?
-  
+
   public override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
     setupView()
   }
-  
+
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-  
+
   private func setupView() {
     /// Only interested in trackpad touches, not direct touches
     allowedTouchTypes = [.indirect]
     /// Include stationary touches in the updates
     wantsRestingTouches = true
   }
-  
+
   private func processTouches(with event: NSEvent) {
-    /// Get all touching touches (includes .began, .moved, .stationary)
+    /// Get all touching touches.
+    /// Note: Using `end` sems to break things, so don't use that
     let touches = event.touches(
-matching: [
+      matching: [
         .touching,
         .began,
-//        .ended, // Using this broke behaviour
-        .moved
+        .moved,
       ],
       in: self
     )
-    
+
     /// Convert to data model
     let trackpadTouches = Set(touches.map(TrackpadTouch.init))
-    
+
     /// Forward via delegate
     delegate?.touchesView(self, didUpdateTouches: trackpadTouches)
   }
-  
+
   // MARK: - Touch Event Handlers
-  
+
   public override func touchesBegan(with event: NSEvent) {
     processTouches(with: event)
   }

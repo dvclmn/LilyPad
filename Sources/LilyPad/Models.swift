@@ -22,14 +22,9 @@ public struct TrackpadTouch: Identifiable, Hashable {
       y: 1.0 - nsTouch.normalizedPosition.y
     )
     self.timestamp = Date().timeIntervalSince1970
-//    self.timestamp = ProcessInfo.processInfo.systemUptime
     self.pressure = 1.0
   }
 }
-
-//public struct TouchDebugItem: Identifiable {
-//  var id
-//}
 
 enum TouchDebugItem: String, Identifiable, CaseIterable {
   case touchCount
@@ -47,7 +42,4 @@ enum TouchDebugItem: String, Identifiable, CaseIterable {
       case .clickedDown: "Clicked Down"
     }
   }
-//  func valueString(_ value: String) -> String {
-//    return self.name + ": \(value)"
-//  }
 }
