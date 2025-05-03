@@ -8,18 +8,9 @@
 import BaseHelpers
 import SwiftUI
 
-// MARK: - Example Usage
-
 public struct TrackpadTouchesExample: View {
   @State private var handler = TouchHandler()
-//  @State private var touches: Set<TrackpadTouch> = []
-
-//  @State private var windowSize: CGSize = .zero
-
   @FocusState private var isFocused: Bool
-
-//  @State private var isPointerLocked: Bool = false
-//  @State private var pointerLocation: CGPoint?
 
   public init() {}
 
@@ -37,8 +28,8 @@ public struct TrackpadTouchesExample: View {
               .fill(Color.blue.opacity(0.7))
               .frame(width: 40, height: 40)
               .position(
-                x: touchPosition(in: windowSize, touch: touch).x,
-                y: touchPosition(in: windowSize, touch: touch).y
+                x: handler.touchPosition(touch).x,
+                y: handler.touchPosition(touch).y
               )
           }
         }
@@ -47,7 +38,7 @@ public struct TrackpadTouchesExample: View {
         //
         //
         //      // Full-screen touch capture
-        TrackpadTouchesView(touches: $touches)
+        TrackpadTouchesView(touches: $handler.touches)
           //          .frame(width: windowSize.width, height: windowSize.height)
           .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
           .background(Color.cyan.opacity(0.3))
@@ -61,23 +52,23 @@ public struct TrackpadTouchesExample: View {
       Interface()
 
     }
-    .mouseLock($isPointerLocked)
+    .mouseLock($handler.isPointerLocked)
 
     .frame(
-      minWidth: touchPadWidth,
-      idealWidth: touchPadWidth * 1.5,
-      minHeight: touchPadHeight,
-      idealHeight: touchPadHeight * 1.5,
+      minWidth: handler.trackPadSize.width,
+      idealWidth: handler.trackPadSize.width * 1.5,
+      minHeight: handler.trackPadSize.height,
+      idealHeight: handler.trackPadSize.height * 1.5,
     )
 
     .onGeometryChange(for: CGSize.self) { proxy in
       return proxy.size
     } action: { newSize in
-      windowSize = newSize
+      handler.windowSize = newSize
     }
 
     .onAppear {
-      isPointerLocked = true
+      handler.isPointerLocked = true
     }
 
   }
@@ -107,7 +98,7 @@ extension TrackpadTouchesExample {
         .focusEffectDisabled()
         .focusable(true)
         .contentShape(RoundedRectangle(cornerRadius: 20))
-        .frame(width: handler.touchPadWidth, height: handler.touchPadHeight)
+        .frame(width: handler.trackPadSize.width, height: handler.trackPadSize.height)
         //        .position(x: windowSize.width / 2, y: windowSize.height / 2)
         .background(Color.black.opacity(0.05))
         .onAppear {
