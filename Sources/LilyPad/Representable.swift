@@ -5,117 +5,195 @@
 //  Created by Dave Coleman on 3/5/2025.
 //
 
-import AppKit
+#if canImport(AppKit)
 import SwiftUI
+import AppKit
 
-// Models
-public struct TrackpadTouch: Hashable, Identifiable {
+// MARK: - Data Models
+
+/// Represents a normalized touch on the trackpad
+public struct TrackpadTouch: Identifiable, Hashable {
   public let id: Int
-  public let location: CGPoint
+  public let position: CGPoint
+  public let timestamp: TimeInterval
   
-  public init(id: Int, location: CGPoint) {
-    self.id = id
-    self.location = location
+  public init(_ nsTouch: NSTouch) {
+    self.id = nsTouch.identity.hash
+//    return TrackpadTouch(id: ObjectIdentifier(touch.identity as AnyObject).hashValue,
+//                         location: location)
+    self.position = CGPoint(
+      x: nsTouch.normalizedPosition.x,
+      y: 1.0 - nsTouch.normalizedPosition.y  // Flip Y to match SwiftUI coordinate system
+    )
+    self.timestamp = ProcessInfo.processInfo.systemUptime
   }
 }
 
-// NSView
-public final class TrackpadTouchCaptureView: NSView {
+// MARK: - AppKit View
+
+/// The underlying AppKit NSView that captures raw trackpad touches
+public class TrackpadTouchesNSView: NSView {
+  /// Delegate to forward touch events to
+  weak var delegate: TrackpadTouchesDelegate?
   
-  var onTouchesChanged: ((Set<TrackpadTouch>) -> Void)?
+  public override init(frame frameRect: NSRect) {
+    super.init(frame: frameRect)
+    setupView()
+  }
   
-  public override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
-  public override var acceptsFirstResponder: Bool { true }
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+  
+  private func setupView() {
+    // Only interested in trackpad touches, not direct touches
+    allowedTouchTypes = [.indirect]
+    // Include stationary touches in the updates
+    wantsRestingTouches = true
+  }
+  
+  private func processTouches(with event: NSEvent) {
+    // Get all touching touches (includes .began, .moved, .stationary)
+    let touches = event.touches(matching: .touching, in: self)
+    
+    // Convert to our data model
+    let trackpadTouches = Set(touches.map(TrackpadTouch.init))
+    
+    // Forward via delegate
+    delegate?.touchesView(self, didUpdateTouches: trackpadTouches)
+  }
+  
+  // MARK: - Touch Event Handlers
   
   public override func touchesBegan(with event: NSEvent) {
-    handleTouches(from: event)
+    processTouches(with: event)
   }
   
   public override func touchesMoved(with event: NSEvent) {
-    handleTouches(from: event)
+    processTouches(with: event)
   }
   
   public override func touchesEnded(with event: NSEvent) {
-    handleTouches(from: event)
+    processTouches(with: event)
   }
   
   public override func touchesCancelled(with event: NSEvent) {
-    handleTouches(from: event)
-  }
-  
-  private func handleTouches(from event: NSEvent) {
-    print("Handling touches from ", event)
-    
-    let allTouches = event.allTouches().filter { $0.type == .indirect }
-    
-    let converted: Set<TrackpadTouch> = Set(allTouches.map { touch in
-      let location = convert(touch.normalizedPosition)
-      return TrackpadTouch(id: ObjectIdentifier(touch.identity as AnyObject).hashValue,
-                           location: location)
-    })
-    
-    onTouchesChanged?(converted)
-  }
-  
-  private func convert(_ point: NSPoint) -> CGPoint {
-    // Flip vertically to match SwiftUI coordinate space
-    CGPoint(x: point.x, y: 1.0 - point.y)
+    processTouches(with: event)
   }
 }
 
+// MARK: - Delegate Protocol
 
-// NSViewRepresentable
-public struct TrackpadTouchView: NSViewRepresentable {
+/// Protocol for receiving touch updates
+public protocol TrackpadTouchesDelegate: AnyObject {
+  /// Called when the set of touching touches changes
+  func touchesView(_ view: TrackpadTouchesNSView, didUpdateTouches touches: Set<TrackpadTouch>)
+}
+
+// MARK: - SwiftUI Representable
+
+/// SwiftUI wrapper for the trackpad touches view
+public struct TrackpadTouchesView: NSViewRepresentable {
+  /// Binding to the collection of current touches
+  @Binding public var touches: Set<TrackpadTouch>
   
-  @Binding var touches: Set<TrackpadTouch>
+  /// Optional callback for touch updates
+  private var onTouchesUpdate: ((Set<TrackpadTouch>) -> Void)?
   
-  public init(touches: Binding<Set<TrackpadTouch>>) {
+  /// Initialize with a binding to touches
+  public init(touches: Binding<Set<TrackpadTouch>>,
+              onTouchesUpdate: ((Set<TrackpadTouch>) -> Void)? = nil) {
     self._touches = touches
+    self.onTouchesUpdate = onTouchesUpdate
   }
   
-  public func makeNSView(context: Context) -> TrackpadTouchCaptureView {
-    let view = TrackpadTouchCaptureView()
-    view.wantsLayer = true
-    view.layer?.backgroundColor = NSColor.clear.cgColor
-    view.onTouchesChanged = { touches in
-      DispatchQueue.main.async {
-        self.touches = touches
-      }
-    }
+  public func makeNSView(context: Context) -> TrackpadTouchesNSView {
+    let view = TrackpadTouchesNSView()
+    view.delegate = context.coordinator
     return view
   }
   
-  public func updateNSView(_ nsView: TrackpadTouchCaptureView, context: Context) {
-    print("Ran updateNSView at \(Date().format(.timeDetailed))")
-    // No need to update anything here yet
+  public func updateNSView(_ nsView: TrackpadTouchesNSView, context: Context) {
+    // No updates needed when the view parameters change
+  }
+  
+  public func makeCoordinator() -> Coordinator {
+    Coordinator(self)
+  }
+  
+  public class Coordinator: NSObject, TrackpadTouchesDelegate {
+    let parent: TrackpadTouchesView
+    
+    init(_ parent: TrackpadTouchesView) {
+      self.parent = parent
+    }
+    
+    public func touchesView(_ view: TrackpadTouchesNSView, didUpdateTouches touches: Set<TrackpadTouch>) {
+      DispatchQueue.main.async {
+        self.parent.touches = touches
+        self.parent.onTouchesUpdate?(touches)
+      }
+    }
   }
 }
 
-public struct ExampleTouchesView: View {
+// MARK: - Helper Extensions
+
+/// Helper extension for visualization
+public extension TrackpadTouch {
+  /// Convert the normalized position to a point in the provided frame
+  func pointInFrame(_ frame: CGRect) -> CGPoint {
+    return CGPoint(
+      x: position.x * frame.width,
+      y: position.y * frame.height
+    )
+  }
+}
+
+// MARK: - Example Usage
+
+public struct TrackpadTouchesExample: View {
   @State private var touches: Set<TrackpadTouch> = []
   
-  public init() {
-  }
+  public init() {}
   
   public var body: some View {
     ZStack {
-      ForEach(Array(touches)) { touch in
+      // Background
+      Color.black.opacity(0.1)
+        .edgesIgnoringSafeArea(.all)
+      
+      // Touch visualization
+      ForEach(Array(touches), id: \.id) { touch in
         Circle()
-          .fill(Color.blue)
-          .frame(width: 20, height: 20)
-          .position(x: touch.location.x * 500, y: touch.location.y * 500)
+          .fill(Color.blue.opacity(0.7))
+          .frame(width: 40, height: 40)
+          .position(
+            x: touch.position.x * 500,
+            y: touch.position.y * 500
+          )
       }
       
-      TrackpadTouchView(touches: $touches)
-        .frame(width: 500, height: 500)
-        .background(Color.blue.opacity(0.1))
+      // Touch count indicator
+      Text("Touches: \(touches.count)")
+        .padding()
+        .background(Color.white.opacity(0.7))
+        .cornerRadius(8)
+        .position(x: 100, y: 40)
+      
+      // The invisible touch capture view
+      TrackpadTouchesView(touches: $touches)
+//        .allowsHitTesting(false)
     }
   }
 }
 
 #if DEBUG
+
 #Preview {
-  ExampleTouchesView()
+  TrackpadTouchesExample()
 }
 #endif
 
+
+#endif
