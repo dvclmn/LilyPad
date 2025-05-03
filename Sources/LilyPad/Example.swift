@@ -11,8 +11,10 @@ import SwiftUI
 public struct TrackpadTouchesExample: View {
   @Binding var handler: TouchHandler
   @FocusState private var isFocused: Bool
+  
+  @State private var debouncer = AsyncDebouncer()
 
-  @State private var strokeHandler = StrokePathBuilder()
+//  @State private var strokeHandler = StrokePathBuilder()
   
   public init(
     _ handler: Binding<TouchHandler>
@@ -59,7 +61,9 @@ public struct TrackpadTouchesExample: View {
         handler.isPointerLocked = true
       }
       .task(id: handler.touches) {
-        strokeHandler.processTouches(handler.touches)
+        handler.processTouches()
+//        await debouncer.execute { @MainActor in
+//        }
       }
 
   }
@@ -129,12 +133,9 @@ extension TrackpadTouchesExample {
       
       Canvas { context, size in
         // Draw all strokes
-        for stroke in strokeHandler.allStrokes {
-          let path = strokeHandler.smoothPath(for: stroke)
-          
-          // Use average width, or derive however you like
-          //            let averageWidth = stroke.widths.reduce(0, +) / CGFloat(stroke.widths.count)
-          
+        for stroke in handler.allStrokes {
+          let path = handler.smoothPath(for: stroke)
+//          let offSetPath = path.offsetBy(dx: 200, dy: 200)
           context.stroke(
             path,
             with: .color(stroke.color),

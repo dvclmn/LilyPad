@@ -87,3 +87,43 @@ enum TouchDebugItem: String, Identifiable, CaseIterable {
     }
   }
 }
+
+
+/// Represents a touch stroke with a series of points and widths
+public struct TouchStroke: Identifiable {
+  public let id: UUID
+  public var points: [CGPoint]
+  public var color: Color
+  
+  public init(
+    id: UUID = UUID(),
+    points: [CGPoint],
+    color: Color = .black
+  ) {
+    self.id = id
+    self.points = points
+    self.color = color
+  }
+  
+//  /// Add a point to the stroke with a specified width
+//  public mutating func addPoint(
+//    _ point: CGPoint,
+//  ) {
+//    points.append(point)
+//  }
+//  
+  public static let exampleStrokes: [TouchStroke] = [
+    .init(
+      points: [
+        CGPoint.zero,
+        CGPoint(x: 100, y: 100),
+        CGPoint(x: 200, y: 0),
+        CGPoint(x: 300, y: 100),
+        CGPoint(x: 400, y: 200),
+        CGPoint(x: 500, y: 100),
+        CGPoint(x: 600, y: 200),
+      ],
+      color: .green
+    )
+  ]
+}
