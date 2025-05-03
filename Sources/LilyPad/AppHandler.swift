@@ -13,6 +13,8 @@ final class TouchHandler {
   var windowSize: CGSize = .zero
   var isPointerLocked: Bool = false
   
+  var isClicked: Bool = false
+  
   let trackPadAspectRatio: CGFloat = 10.0 / 16.0
   
   var trackPadSize: CGSize {
@@ -24,6 +26,11 @@ final class TouchHandler {
       height: trackPadHeight
     )
   }
+  
+  var isInTouchMode: Bool {
+    !isClicked && isPointerLocked
+  }
+  
   func touchPosition(
     _ touch: TrackpadTouch
   ) -> CGPoint {
@@ -36,3 +43,4 @@ final class TouchHandler {
     return CGPoint(x: x, y: y)
   }
 }
+

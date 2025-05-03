@@ -11,116 +11,153 @@ import SwiftUI
 public struct TrackpadTouchesExample: View {
   @State private var handler = TouchHandler()
   @FocusState private var isFocused: Bool
+  
+//  @State private var debugItem: [TouchDebugItem] = []
 
   public init() {}
 
   public var body: some View {
 
-    VStack {
+    // Tracking view
+    TrackpadTouchesView(touches: $handler.touches)
+      .frame(
+        minWidth: handler.trackPadSize.width,
+        idealWidth: handler.trackPadSize.width * 1.5,
+        minHeight: handler.trackPadSize.height,
+        idealHeight: handler.trackPadSize.height * 1.5,
+      )
+      .gesture(clickDownDetection)
+      .overlay {
+        /// Visualize touches
 
-      if handler.isPointerLocked {
+      }
+      .overlay {
+        Interface()
+      }
+      .mouseLock($handler.isPointerLocked)
 
-        ZStack {
+      .frame(
+        minWidth: handler.trackPadSize.width,
+        idealWidth: handler.trackPadSize.width * 1.5,
+        minHeight: handler.trackPadSize.height,
+        idealHeight: handler.trackPadSize.height * 1.5,
+      )
 
-          // Visualize touches
-          ForEach(Array(handler.touches), id: \.id) { touch in
-            Circle()
-              .fill(Color.blue.opacity(0.7))
-              .frame(width: 40, height: 40)
-              .position(
-                x: handler.touchPosition(touch).x,
-                y: handler.touchPosition(touch).y
-              )
-          }
-        }
-        .allowsHitTesting(false)
-
-        //
-        //
-        //      // Full-screen touch capture
-        TrackpadTouchesView(touches: $handler.touches)
-          //          .frame(width: windowSize.width, height: windowSize.height)
-          .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-          .background(Color.cyan.opacity(0.3))
-      } else {
-        Text("Turn on thingy to do the thing!")
+      .onGeometryChange(for: CGSize.self) { proxy in
+        return proxy.size
+      } action: { newSize in
+        handler.windowSize = newSize
       }
 
-
-    }
-    .overlay {
-      Interface()
-
-    }
-    .mouseLock($handler.isPointerLocked)
-
-    .frame(
-      minWidth: handler.trackPadSize.width,
-      idealWidth: handler.trackPadSize.width * 1.5,
-      minHeight: handler.trackPadSize.height,
-      idealHeight: handler.trackPadSize.height * 1.5,
-    )
-
-    .onGeometryChange(for: CGSize.self) { proxy in
-      return proxy.size
-    } action: { newSize in
-      handler.windowSize = newSize
-    }
-
-    .onAppear {
-      handler.isPointerLocked = true
-    }
+      .onAppear {
+        handler.isPointerLocked = true
+      }
 
   }
 }
 
 extension TrackpadTouchesExample {
+  
+  func booleanColour(_ value: String) -> Color {
+    switch value {
+      case "true": Color.orange
+      case "false": Color.red
+      default: Color.gray
+    }
+  }
+  
+  func valueString(_ item: TouchDebugItem) -> String {
+    switch item {
+      case .pointerLocked: handler.isPointerLocked.description
+      case .touchModeActive: handler.isInTouchMode.description
+      case .clickedDown: handler.isClicked.description
+      case .touchCount: handler.touches.count.string
+    }
+  }
 
   @ViewBuilder
   func Interface() -> some View {
 
     ZStack {
+
+      ForEach(Array(handler.touches), id: \.id) { touch in
+        Circle()
+          .fill(Color.blue.opacity(0.7))
+          .frame(width: 40, height: 40)
+          .position(
+            x: handler.touchPosition(touch).x,
+            y: handler.touchPosition(touch).y
+          )
+      }
+
       VStack {
 
-        // Touch count indicator
-        Text("Touches: \(handler.touches.count)")
-          .padding()
-
-        Toggle("Is Active", isOn: $handler.isPointerLocked)
+        Grid {
+          ForEach(TouchDebugItem.allCases) { item in
+            GridRow {
+              Text(item.name)
+                .gridCellAnchor(.leading)
+              Text(valueString(item))
+                .gridCellAnchor(.trailing)
+                .fontWeight(.medium)
+                .monospaced()
+                .foregroundStyle(booleanColour(valueString(item)))
+            }
+            Divider()
+              .gridCellUnsizedAxes(.horizontal)
+          }
+        }
+        .padding()
+        .background(.black.opacity(0.6))
+        .clipShape(.rect(cornerRadius: 6))
+//
+//
+//        // Touch count indicator
+//        Text("Touch count: \(handler.touches.count)")
+//        Text("Is Pointer locked: \(handler.isPointerLocked ? "True" : "False")")
+//        Text("Has clicked down: \(handler.isClicked ? "True" : "False")")
+//        Text("Is Touch mode Active: \(handler.isInTouchMode ? "True" : "False")")
 
       }
 
       // Background representing the trackpad shape
       RoundedRectangle(cornerRadius: 20)
-        .fill(.blue.opacity(isFocused ? 0.2 : 0.0))
-        .strokeBorder(Color.gray, lineWidth: 2)
+        .strokeBorder(.gray, lineWidth: 2)
         .focused($isFocused)
         .focusEffectDisabled()
         .focusable(true)
-        .contentShape(RoundedRectangle(cornerRadius: 20))
-        .frame(width: handler.trackPadSize.width, height: handler.trackPadSize.height)
-        //        .position(x: windowSize.width / 2, y: windowSize.height / 2)
-        .background(Color.black.opacity(0.05))
+        //        .contentShape(RoundedRectangle(cornerRadius: 20))
+        .frame(
+          width: handler.trackPadSize.width,
+          height: handler.trackPadSize.height
+        )
         .onAppear {
           isFocused = true
         }
         .onKeyPress("a") {
-          print("Pressed `a`")
           handler.isPointerLocked.toggle()
           return .handled
         }
     }
-
     .allowsHitTesting(false)
   }
 
-  
+  var clickDownDetection: some Gesture {
+    DragGesture(minimumDistance: 0)
+      .onChanged { value in
+        handler.isClicked = value.translation > .zero
+      }
+      .onEnded { _ in
+        print("Ended drag")
+      }
+  }
 }
 
 #if DEBUG
 
 #Preview(traits: .fixedLayout(width: 800, height: 800)) {
   TrackpadTouchesExample()
+    .offset(x: -200, y: 0)
 }
 #endif
 

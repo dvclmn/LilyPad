@@ -26,3 +26,28 @@ public struct TrackpadTouch: Identifiable, Hashable {
     self.pressure = 1.0
   }
 }
+
+//public struct TouchDebugItem: Identifiable {
+//  var id
+//}
+
+enum TouchDebugItem: String, Identifiable, CaseIterable {
+  case touchCount
+  case touchModeActive
+  case pointerLocked
+  case clickedDown
+  
+  var id: String { self.rawValue }
+  
+  var name: String {
+    switch self {
+      case .touchCount: "Touch Count"
+      case .touchModeActive: "Touch Mode Active"
+      case .pointerLocked: "Pointer Locked"
+      case .clickedDown: "Clicked Down"
+    }
+  }
+//  func valueString(_ value: String) -> String {
+//    return self.name + ": \(value)"
+//  }
+}
