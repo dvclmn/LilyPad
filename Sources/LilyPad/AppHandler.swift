@@ -7,9 +7,26 @@
 
 import SwiftUI
 
+
 @Observable
-final class TouchHandler {
+public final class TouchHandler {
   var touches: Set<TrackpadTouch> = []
+  
+  var strokeBuilder = StrokePathBuilder()
+  
+  /// Process touch updates
+//  func processTouches(_ touches: Set<TrackpadTouch>) {
+//    strokeBuilder.processTouches(touches)
+//    // Force UI update
+////    objectWillChange.send()
+//  }
+  
+  /// Clear all strokes
+  func clearStrokes() {
+    strokeBuilder.clearStrokes()
+//    objectWillChange.send()
+  }
+  
   var windowSize: CGSize = .zero
   var isPointerLocked: Bool = false
   

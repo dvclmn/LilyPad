@@ -29,7 +29,7 @@ public struct TouchStroke: Identifiable {
 }
 
 /// Builds and manages stroke paths based on trackpad touches
-public class StrokePathBuilder {
+public struct StrokePathBuilder {
   /// Active strokes being drawn, keyed by touch ID
   private var activeStrokes: [Int: TouchStroke] = [:]
   
@@ -40,19 +40,34 @@ public class StrokePathBuilder {
   private let minPointsForCurve = 3
   
   /// Base width for strokes
-  private let baseStrokeWidth: CGFloat = 10.0
+  private var baseStrokeWidth: CGFloat = 10.0
   
   /// Maximum width for strokes
-  private let maxStrokeWidth: CGFloat = 30.0
+  private var maxStrokeWidth: CGFloat = 30.0
   
   /// Minimum width for strokes
-  private let minStrokeWidth: CGFloat = 5.0
+  private var minStrokeWidth: CGFloat = 5.0
   
   /// Speed at which stroke width is at its minimum
-  private let maxSpeedForMinWidth: CGFloat = 2.0
+  private var maxSpeedForMinWidth: CGFloat = 2.0
+  
+  /// Current stroke color
+  private var currentColor: Color = .blue
+  
+  /// Update the base stroke width
+  public mutating func setBaseStrokeWidth(_ width: CGFloat) {
+    baseStrokeWidth = width
+    maxStrokeWidth = width * 3
+    minStrokeWidth = width * 0.5
+  }
+  
+  /// Set the current stroke color
+  public mutating func setCurrentColor(_ color: Color) {
+    currentColor = color
+  }
   
   /// Process touch updates and update strokes
-  public func processTouches(_ touches: Set<TrackpadTouch>) {
+  public mutating func processTouches(_ touches: Set<TrackpadTouch>) {
     // Process each touch to update strokes
     for touch in touches {
       let touchId = touch.id
@@ -105,8 +120,8 @@ public class StrokePathBuilder {
   
   /// Generate a random color for new strokes
   private func randomColor() -> Color {
-    let colors: [Color] = [.blue, .red, .green, .orange, .purple, .pink]
-    return colors.randomElement() ?? .black
+    // Use the current color instead of random
+    return currentColor
   }
   
   /// Get all current strokes (active and completed)
@@ -115,7 +130,7 @@ public class StrokePathBuilder {
   }
   
   /// Clear all strokes
-  public func clearStrokes() {
+  public mutating func clearStrokes() {
     activeStrokes.removeAll()
     completedStrokes.removeAll()
   }
