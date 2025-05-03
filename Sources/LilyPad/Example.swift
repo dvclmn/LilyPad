@@ -5,7 +5,6 @@
 //  Created by Dave Coleman on 3/5/2025.
 //
 
-import BaseComponents
 import BaseHelpers
 import SwiftUI
 
@@ -14,17 +13,13 @@ import SwiftUI
 public struct TrackpadTouchesExample: View {
   @State private var touches: Set<TrackpadTouch> = []
 
-  //  @State private var pointerX: CGFloat = 0
-  //  @State private var pointerY: CGFloat = 0
+  @State private var windowSize: CGSize = .zero
 
   @FocusState private var isFocused: Bool
 
   @State private var isPointerLocked: Bool = false
 
   @State private var pointerLocation: CGPoint?
-
-  //  let realWidth: Measurement = .init(value: 16, unit: UnitLength.centimeters)
-  //  let realHeight: Measurement = .init(value: 10, unit: UnitLength.centimeters)
 
   let touchPadWidth: CGFloat = 700
   var touchPadHeight: CGFloat {
@@ -34,38 +29,10 @@ public struct TrackpadTouchesExample: View {
   public init() {}
 
   public var body: some View {
-      
-      VStack {
-        
-        // Touch count indicator
-        Text("Touches: \(touches.count)")
-          .padding()
-        
-        Toggle("Is Active", isOn: $isPointerLocked)
-        
-      }
-      // Background representing the trackpad shape
-      RoundedRectangle(cornerRadius: 20)
-        .fill(.blue.opacity(isPointerLocked ? 0.2 : 0.0))
-        .strokeBorder(Color.gray, lineWidth: 2)
-        .focused($isFocused)
-        .focusEffectDisabled()
-        .focusable(true)
-        .contentShape(RoundedRectangle(cornerRadius: 20))
-        .frame(width: touchPadWidth, height: touchPadHeight)
-        .position(x: size.width / 2, y: size.height / 2)
-        .background(Color.black.opacity(0.05))
-        .onAppear {
-          isFocused = true
-        }
-        .onKeyPress("a") {
-          print("Pressed `a`")
-          isPointerLocked.toggle()
-          return .handled
-        }
-      
+
+    VStack {
+
       if isPointerLocked {
-        let size = proxy.size
 
         ZStack {
 
@@ -75,8 +42,8 @@ public struct TrackpadTouchesExample: View {
               .fill(Color.blue.opacity(0.7))
               .frame(width: 40, height: 40)
               .position(
-                x: touchPosition(in: size, touch: touch).x,
-                y: touchPosition(in: size, touch: touch).y
+                x: touchPosition(in: windowSize, touch: touch).x,
+                y: touchPosition(in: windowSize, touch: touch).y
               )
           }
         }
@@ -86,40 +53,100 @@ public struct TrackpadTouchesExample: View {
         //
         //      // Full-screen touch capture
         TrackpadTouchesView(touches: $touches)
-          .frame(width: size.width, height: size.height)
-          .background(Color.clear)
+          //          .frame(width: windowSize.width, height: windowSize.height)
+          .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+          .background(Color.cyan.opacity(0.3))
       } else {
         Text("Turn on thingy to do the thing!")
       }
-      
 
 
+    }
+    .overlay {
+      Interface()
 
+    }
     .mouseLock($isPointerLocked)
-    
-//    .onContinuousHover { phase in
-//      switch phase {
-//        case .active(let cGPoint):
-//          pointerLocation = cGPoint
-//        case .ended:
-//          pointerLocation = nil
-//      }
-//    }
-//    .overlay {
-//      if let pointerLocation, !pointerIsLocked {
-//        Circle()
-//          .fill(.orange)
-//          .frame(width: 40, height: 40)
-//          .position(pointerLocation)
-//      }
-//    }
-//    .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+    .frame(
+      minWidth: touchPadWidth,
+      idealWidth: touchPadWidth * 1.5,
+      minHeight: touchPadHeight,
+      idealHeight: touchPadHeight * 1.5,
+    )
+
+    .onGeometryChange(for: CGSize.self) { proxy in
+      return proxy.size
+    } action: { newSize in
+      windowSize = newSize
+    }
+
+    .onAppear {
+      isPointerLocked = true
+    }
+
+
+    //    .onContinuousHover { phase in
+    //      switch phase {
+    //        case .active(let cGPoint):
+    //          pointerLocation = cGPoint
+    //        case .ended:
+    //          pointerLocation = nil
+    //      }
+    //    }
+    //    .overlay {
+    //      if let pointerLocation, !pointerIsLocked {
+    //        Circle()
+    //          .fill(.orange)
+    //          .frame(width: 40, height: 40)
+    //          .position(pointerLocation)
+    //      }
+    //    }
+    //    .frame(maxWidth: .infinity, maxHeight: .infinity)
 
 
   }
 }
 
 extension TrackpadTouchesExample {
+
+  @ViewBuilder
+  func Interface() -> some View {
+
+    ZStack {
+      VStack {
+
+        // Touch count indicator
+        Text("Touches: \(touches.count)")
+          .padding()
+
+        Toggle("Is Active", isOn: $isPointerLocked)
+
+      }
+
+      // Background representing the trackpad shape
+      RoundedRectangle(cornerRadius: 20)
+        .fill(.blue.opacity(isFocused ? 0.2 : 0.0))
+        .strokeBorder(Color.gray, lineWidth: 2)
+        .focused($isFocused)
+        .focusEffectDisabled()
+        .focusable(true)
+        .contentShape(RoundedRectangle(cornerRadius: 20))
+        .frame(width: touchPadWidth, height: touchPadHeight)
+        //        .position(x: windowSize.width / 2, y: windowSize.height / 2)
+        .background(Color.black.opacity(0.05))
+        .onAppear {
+          isFocused = true
+        }
+        .onKeyPress("a") {
+          print("Pressed `a`")
+          isPointerLocked.toggle()
+          return .handled
+        }
+    }
+
+    .allowsHitTesting(false)
+  }
 
   func touchPosition(in size: CGSize, touch: TrackpadTouch) -> CGPoint {
     let originX = (size.width - touchPadWidth) / 2
@@ -138,7 +165,6 @@ extension TrackpadTouchesExample {
   TrackpadTouchesExample()
 }
 #endif
-
 
 
 //
