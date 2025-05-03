@@ -17,7 +17,7 @@ public struct TrackpadTouchesExample: View {
   
   let touchPadWidth: CGFloat = 700
   var touchPadHeight: CGFloat {
-    touchPadWidth * (16 / 10)
+    touchPadWidth * (10.0 / 16.0)
   }
   
   public init() {}
@@ -25,44 +25,49 @@ public struct TrackpadTouchesExample: View {
   public var body: some View {
     
     GeometryReader { proxy in
+      let size = proxy.size
       
-      // Background
-      Color.black.opacity(0.1)
-        .edgesIgnoringSafeArea(.all)
-        .aspectRatio(16 / 10, contentMode: .fit)
-        .frame(width: touchPadWidth, height: touchPadHeight)
       
-      // Touch visualization
-      ForEach(Array(touches), id: \.id) { touch in
-        Circle()
-          .fill(Color.blue.opacity(0.7))
-          .frame(width: 40, height: 40)
-          .position(
-            x: touch.position.x * touchPadWidth,
-            y: touch.position.y * touchPadHeight
-          )
-      }
+        // Background representing the trackpad shape
+        RoundedRectangle(cornerRadius: 20)
+          .strokeBorder(Color.gray, lineWidth: 2)
+          .frame(width: touchPadWidth, height: touchPadHeight)
+          .background(Color.black.opacity(0.05))
+          
+        
+        // Visualize touches
+        ForEach(Array(touches), id: \.id) { touch in
+          Circle()
+            .fill(Color.blue.opacity(0.7))
+            .frame(width: 40, height: 40)
+            .position(
+              x: touch.position.x * size.width,
+              y: touch.position.y * size.height
+            )
+        }
+        
+        // Touch count indicator
+        Text("Touches: \(touches.count)")
+          .padding()
+          .background(Color.white.opacity(0.7))
+          .cornerRadius(8)
+          .position(x: 100, y: 40)
+        
+        // Full-screen touch capture
+        TrackpadTouchesView(touches: $touches)
+          .frame(width: size.width, height: size.height)
+          .background(Color.clear)
       
-      // Touch count indicator
-      Text("Touches: \(touches.count)")
-        .padding()
-        .background(Color.white.opacity(0.7))
-        .cornerRadius(8)
-        .position(x: 100, y: 40)
-      
-      // The invisible touch capture view
-      TrackpadTouchesView(touches: $touches)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    
     }
-    
+//    .frame(maxWidth: .infinity, maxHeight: .infinity)
+//    .position(x: size.width / 2, y: size.height / 2)
     
   }
 }
 
 #if DEBUG
 
-#Preview {
+#Preview(traits: .fixedLayout(width: 800, height: 800)) {
   TrackpadTouchesExample()
 }
 #endif
