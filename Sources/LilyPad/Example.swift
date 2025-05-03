@@ -5,63 +5,121 @@
 //  Created by Dave Coleman on 3/5/2025.
 //
 
+import BaseComponents
+import BaseHelpers
 import SwiftUI
 
 // MARK: - Example Usage
 
 public struct TrackpadTouchesExample: View {
   @State private var touches: Set<TrackpadTouch> = []
-  
-//  let realWidth: Measurement = .init(value: 16, unit: UnitLength.centimeters)
-//  let realHeight: Measurement = .init(value: 10, unit: UnitLength.centimeters)
-  
+
+  //  @State private var pointerX: CGFloat = 0
+  //  @State private var pointerY: CGFloat = 0
+
+  @FocusState private var isFocused: Bool
+
+  @State private var pointerIsLocked: Bool = false
+
+  @State private var pointerLocation: CGPoint?
+
+  //  let realWidth: Measurement = .init(value: 16, unit: UnitLength.centimeters)
+  //  let realHeight: Measurement = .init(value: 10, unit: UnitLength.centimeters)
+
   let touchPadWidth: CGFloat = 700
   var touchPadHeight: CGFloat {
     touchPadWidth * (10.0 / 16.0)
   }
-  
+
   public init() {}
-  
+
   public var body: some View {
-    
+
     GeometryReader { proxy in
       let size = proxy.size
-      
-      
+
+      ZStack {
         // Background representing the trackpad shape
         RoundedRectangle(cornerRadius: 20)
           .strokeBorder(Color.gray, lineWidth: 2)
+          .focused($isFocused)
+          .focusable(true)
+          .contentShape(RoundedRectangle(cornerRadius: 20))
           .frame(width: touchPadWidth, height: touchPadHeight)
+          .position(x: size.width / 2, y: size.height / 2)
           .background(Color.black.opacity(0.05))
-          
-        
+          .onAppear {
+            isFocused = true
+          }
+          .onKeyPress("a") {
+            print("Pressed `a`")
+            pointerIsLocked.toggle()
+            return .handled
+          }
+
         // Visualize touches
         ForEach(Array(touches), id: \.id) { touch in
           Circle()
             .fill(Color.blue.opacity(0.7))
             .frame(width: 40, height: 40)
             .position(
-              x: touch.position.x * size.width,
-              y: touch.position.y * size.height
+              x: touchPosition(in: size, touch: touch).x,
+              y: touchPosition(in: size, touch: touch).y
             )
         }
-        
-        // Touch count indicator
-        Text("Touches: \(touches.count)")
-          .padding()
-          .background(Color.white.opacity(0.7))
-          .cornerRadius(8)
-          .position(x: 100, y: 40)
-        
-        // Full-screen touch capture
-        TrackpadTouchesView(touches: $touches)
-          .frame(width: size.width, height: size.height)
-          .background(Color.clear)
-      
+      }
+      .allowsHitTesting(false)
+
+      // Touch count indicator
+      Text("Touches: \(touches.count)")
+        .padding()
+
+      Toggle("Is Active", isOn: $pointerIsLocked)
+      //
+      //
+      //      // Full-screen touch capture
+      TrackpadTouchesView(touches: $touches)
+        .frame(width: size.width, height: size.height)
+        .background(Color.clear)
+
     }
-//    .frame(maxWidth: .infinity, maxHeight: .infinity)
-//    .position(x: size.width / 2, y: size.height / 2)
-    
+
+    .mouseLock($pointerIsLocked) { dx, dy in
+      pointerLocation?.x += dx
+      pointerLocation?.y += dy
+    }
+    .onContinuousHover { phase in
+      switch phase {
+        case .active(let cGPoint):
+          pointerLocation = cGPoint
+        case .ended:
+          pointerLocation = nil
+      }
+    }
+    .overlay {
+      if let pointerLocation, !pointerIsLocked {
+        Circle()
+          .fill(.orange)
+          .frame(width: 40, height: 40)
+          .position(pointerLocation)
+      }
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+
+  }
+}
+
+extension TrackpadTouchesExample {
+
+  func touchPosition(in size: CGSize, touch: TrackpadTouch) -> CGPoint {
+    let originX = (size.width - touchPadWidth) / 2
+    let originY = (size.height - touchPadHeight) / 2
+
+    let x = originX + (touch.position.x * touchPadWidth)
+    let y = originY + (touch.position.y * touchPadHeight)
+
+    return CGPoint(x: x, y: y)
   }
 }
 
@@ -85,22 +143,22 @@ public struct TrackpadTouchesExample: View {
 //  public var currentPosition: CGPoint
 //  public var trail: [CGPoint]
 //  public var color: Color
-//  
+//
 //  public init(from touch: TrackpadTouch) {
 //    self.id = touch.id
 //    self.currentPosition = touch.position
 //    self.trail = [touch.position]
-//    
+//
 //    // Generate a stable color based on the touch ID
 //    let hue = CGFloat(abs(touch.id.hashValue % 20)) / 20.0
 //    self.color = Color(hue: Double(hue), saturation: 0.8, brightness: 0.9)
 //  }
-//  
+//
 //  /// Update with a new position, maintaining trail history
 //  mutating func update(with newTouch: TrackpadTouch, maxTrailLength: Int = 20) {
 //    currentPosition = newTouch.position
 //    trail.append(newTouch.position)
-//    
+//
 //    // Limit trail length
 //    if trail.count > maxTrailLength {
 //      trail.removeFirst(trail.count - maxTrailLength)
@@ -112,19 +170,19 @@ public struct TrackpadTouchesExample: View {
 //public struct TouchTrailView: View {
 //  @State private var touches: Set<TrackpadTouch> = []
 //  @State private var touchTrails: [Int: TouchWithTrail] = [:]
-//  
+//
 //  // Configuration
 //  private let maxTrailLength = 20
 //  private let fadeTrail = true
-//  
+//
 //  public init() {}
-//  
+//
 //  public var body: some View {
 //    ZStack {
 //      // Background
 //      Color.black
 //        .edgesIgnoringSafeArea(.all)
-//      
+//
 //      // Draw trails for each touch
 //      ForEach(touchTrails.keys, id: \.self) { touchTrail in
 ////      ForEach(touchTrails, id: \.self) { touchTrail in
@@ -132,7 +190,7 @@ public struct TrackpadTouchesExample: View {
 //        if touchTrail.trail.count > 1 {
 //          Path { path in
 //            path.move(to: touchTrail.trail.first!)
-//            
+//
 //            for point in touchTrail.trail.dropFirst() {
 //              path.addLine(to: point)
 //            }
@@ -148,7 +206,7 @@ public struct TrackpadTouchesExample: View {
 //          .opacity(fadeTrail ? 0.7 : 1.0)
 //          .animation(.easeOut(duration: 0.2), value: touchTrail.trail)
 //        }
-//        
+//
 //        // Draw the current touch point
 //        Circle()
 //          .fill(touchTrail.color)
@@ -157,7 +215,7 @@ public struct TrackpadTouchesExample: View {
 //            touchTrail.currentPosition.scaled(to: CGSize(width: 500, height: 500))
 //          )
 //      }
-//      
+//
 //      // The invisible touch capture view
 //      GeometryReader { geometry in
 //        TrackpadTouchesView(touches: $touches) { updatedTouches in
@@ -165,11 +223,11 @@ public struct TrackpadTouchesExample: View {
 //        }
 //        .allowsHitTesting(false)
 //      }
-//      
+//
 //      // Info overlay
 //      VStack {
 //        Spacer()
-//        
+//
 //        Text("Active touches: \(touchTrails.count)")
 //          .font(.headline)
 //          .padding()
@@ -179,11 +237,11 @@ public struct TrackpadTouchesExample: View {
 //      }
 //    }
 //  }
-//  
+//
 //  private func processTouches(_ updatedTouches: Set<TrackpadTouch>, in size: CGSize) {
 //    // Create a mutable copy of the current trails
 //    var updatedTrails = touchTrails
-//    
+//
 //    // Process each new touch
 //    for touch in updatedTouches {
 //      if let existingTrail = updatedTrails[touch.id] {
@@ -196,13 +254,13 @@ public struct TrackpadTouchesExample: View {
 //        updatedTrails[touch.id] = TouchWithTrail(from: touch)
 //      }
 //    }
-//    
+//
 //    // Remove trails for touches that are no longer present
 //    let currentIds = Set(updatedTouches.map { $0.id })
 //    for id in updatedTrails.keys where !currentIds.contains(id) {
 //      updatedTrails.removeValue(forKey: id)
 //    }
-//    
+//
 //    // Update the state
 //    touchTrails = updatedTrails
 //  }
