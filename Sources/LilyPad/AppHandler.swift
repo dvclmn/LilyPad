@@ -14,6 +14,8 @@ public final class TouchHandler {
   
   var strokeBuilder = StrokePathBuilder()
   
+  public init() {}
+  
   /// Process touch updates
 //  func processTouches(_ touches: Set<TrackpadTouch>) {
 //    strokeBuilder.processTouches(touches)

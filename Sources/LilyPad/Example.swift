@@ -8,36 +8,10 @@
 import BaseHelpers
 import SwiftUI
 
-public struct ExampleView: View {
-
-  @State private var handler = TouchHandler()
-
-  public init() {
-
-  }
-
-  public var body: some View {
-
-//    HSplitView {
-            TrackpadTouchesExample($handler)
-//      FingerPaintCanvasView($handler)
-//    }
-
-  }
-}
-#if DEBUG
-@available(macOS 15, iOS 18, *)
-#Preview {
-  ExampleView()
-}
-#endif
-
-
 public struct TrackpadTouchesExample: View {
   @Binding var handler: TouchHandler
+//  @Binding var handler: TouchHandler
   @FocusState private var isFocused: Bool
-
-  //  @State private var debugItem: [TouchDebugItem] = []
 
   public init(
     _ handler: Binding<TouchHandler>
@@ -57,20 +31,16 @@ public struct TrackpadTouchesExample: View {
       )
       .gesture(clickDownDetection)
       .overlay {
-        /// Visualize touches
+        Interface()
+      }
+      .overlay {
         // Canvas to draw strokes
         Canvas { context, size in
-          //          // Store the canvas size
-          //          if canvasSize != size {
-          //            DispatchQueue.main.async {
-          //              canvasSize = size
-          //            }
-          //          }
-
+          
           // Draw all strokes
           for stroke in handler.strokeBuilder.allStrokes {
             let path = handler.strokeBuilder.smoothPath(for: stroke)
-
+            
             // Draw the stroke with variable width
             for i in 0..<stroke.points.count {
               if i < stroke.points.count - 1 {
@@ -78,10 +48,10 @@ public struct TrackpadTouchesExample: View {
                 var segmentPath = Path()
                 segmentPath.move(to: stroke.points[i])
                 segmentPath.addLine(to: stroke.points[i + 1])
-
+                
                 // Average width between adjacent points
                 let width = (stroke.widths[i] + stroke.widths[min(i + 1, stroke.widths.count - 1)]) / 2.0
-
+                
                 // Draw the segment with the calculated width
                 context.stroke(
                   segmentPath, with: .color(stroke.color),
@@ -91,15 +61,8 @@ public struct TrackpadTouchesExample: View {
           }
         }
         .background(Color(white: 0.2))
-//        .gesture(
-//          DragGesture(minimumDistance: 0)
-//            .onChanged { _ in }  // For debugging only, actual drawing uses TrackpadTouchesView
-//        )
         .allowsHitTesting(false)
-
-      }
-      .overlay {
-        Interface()
+        
       }
       .mouseLock($handler.isPointerLocked)
 
