@@ -12,13 +12,20 @@ public class TrackpadTouchesNSView: NSView {
   /// Delegate to forward touch events to
   weak var delegate: TrackpadTouchesDelegate?
 
+  /// Touch manager to handle touch tracking and velocity calculation
+  private let touchManager = TrackpadTouchManager()
+  
+  /// Minimum velocity threshold to consider when drawing (can be adjusted)
+  private let minVelocityThreshold: CGFloat = 0.05
+  
   public override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
     setupView()
   }
-
+  
   required init?(coder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
+    super.init(coder: coder)
+    setupView()
   }
 
   private func setupView() {
@@ -41,7 +48,8 @@ public class TrackpadTouchesNSView: NSView {
     )
 
     /// Convert to data model
-    let trackpadTouches = Set(touches.map(TrackpadTouch.init))
+    /// Process touches through the manager to get velocity information
+    let trackpadTouches = touchManager.processTouches(touches, in: self)
 
     /// Forward via delegate
     delegate?.touchesView(self, didUpdateTouches: trackpadTouches)
@@ -59,9 +67,6 @@ public class TrackpadTouchesNSView: NSView {
     processTouches(with: event)
   }
   public override func touchesCancelled(with event: NSEvent) {
-    processTouches(with: event)
-  }
-  public override func pressureChange(with event: NSEvent) {
     processTouches(with: event)
   }
 }
