@@ -15,7 +15,10 @@ import AppKit
 /// Protocol for receiving touch updates
 public protocol TrackpadTouchesDelegate: AnyObject {
   /// Called when the set of touching touches changes
-  func touchesView(_ view: TrackpadTouchesNSView, didUpdateTouches touches: Set<TrackpadTouch>)
+  func touchesView(
+    _ view: TrackpadTouchesNSView,
+    didUpdateTouches touches: Set<TrackpadTouch>
+  )
 }
 
 // MARK: - SwiftUI Representable
