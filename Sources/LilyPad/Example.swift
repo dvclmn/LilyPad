@@ -11,8 +11,8 @@ import SwiftUI
 public struct TrackpadTouchesExample: View {
   @State private var handler = TouchHandler()
   @FocusState private var isFocused: Bool
-  
-//  @State private var debugItem: [TouchDebugItem] = []
+
+  //  @State private var debugItem: [TouchDebugItem] = []
 
   public init() {}
 
@@ -57,7 +57,7 @@ public struct TrackpadTouchesExample: View {
 }
 
 extension TrackpadTouchesExample {
-  
+
   func booleanColour(_ value: String) -> Color {
     switch value {
       case "true": Color.orange
@@ -65,7 +65,7 @@ extension TrackpadTouchesExample {
       default: Color.gray
     }
   }
-  
+
   func valueString(_ item: TouchDebugItem) -> String {
     switch item {
       case .pointerLocked: handler.isPointerLocked.description
@@ -80,48 +80,30 @@ extension TrackpadTouchesExample {
 
     ZStack {
 
-      ForEach(Array(handler.touches), id: \.id) { touch in
-        Circle()
-          .fill(Color.blue.opacity(0.7))
-          .frame(width: 40, height: 40)
-          .position(
-            x: handler.touchPosition(touch).x,
-            y: handler.touchPosition(touch).y
-          )
-      }
-
-      VStack {
-
-        Grid {
-          ForEach(TouchDebugItem.allCases) { item in
-            GridRow {
-              Text(item.name)
-                .gridCellAnchor(.leading)
-              Text(valueString(item))
-                .gridCellAnchor(.trailing)
-                .fontWeight(.medium)
-                .monospaced()
-                .foregroundStyle(booleanColour(valueString(item)))
-            }
-            Divider()
-              .gridCellUnsizedAxes(.horizontal)
+      // Debug items
+      Grid {
+        ForEach(TouchDebugItem.allCases) { item in
+          GridRow {
+            Text(item.name)
+              .gridCellAnchor(.leading)
+            Text(valueString(item))
+              .gridCellAnchor(.trailing)
+              .fontWeight(.medium)
+              .monospaced()
+              .foregroundStyle(booleanColour(valueString(item)))
           }
+          Divider()
+            .gridCellUnsizedAxes(.horizontal)
         }
-        .padding()
-        .background(.black.opacity(0.6))
-        .clipShape(.rect(cornerRadius: 6))
-//
-//
-//        // Touch count indicator
-//        Text("Touch count: \(handler.touches.count)")
-//        Text("Is Pointer locked: \(handler.isPointerLocked ? "True" : "False")")
-//        Text("Has clicked down: \(handler.isClicked ? "True" : "False")")
-//        Text("Is Touch mode Active: \(handler.isInTouchMode ? "True" : "False")")
-
       }
+      .padding()
+      .background(.black.opacity(0.7))
+      .clipShape(.rect(cornerRadius: 6))
+
 
       // Background representing the trackpad shape
       RoundedRectangle(cornerRadius: 20)
+        .fill(.gray.opacity(0.1))
         .strokeBorder(.gray, lineWidth: 2)
         .focused($isFocused)
         .focusEffectDisabled()
@@ -138,17 +120,35 @@ extension TrackpadTouchesExample {
           handler.isPointerLocked.toggle()
           return .handled
         }
+      
+      if handler.isInTouchMode {
+        // Visualise Touches
+        ForEach(Array(handler.touches), id: \.id) { touch in
+          Circle()
+            .fill(Color.blue.opacity(0.7))
+            .frame(width: 40, height: 40)
+            .position(
+              x: handler.touchPosition(touch).x,
+              y: handler.touchPosition(touch).y
+            )
+        }
+      }
     }
+    
     .allowsHitTesting(false)
   }
 
   var clickDownDetection: some Gesture {
     DragGesture(minimumDistance: 0)
       .onChanged { value in
-        handler.isClicked = value.translation > .zero
+        print("Began click/drag")
+        print("Drag distance: \(value.translation.displayString())")
+        print("Drag velocity: \(value.velocity.displayString())")
+        handler.isClicked = true
       }
       .onEnded { _ in
         print("Ended drag")
+        handler.isClicked = false
       }
   }
 }
