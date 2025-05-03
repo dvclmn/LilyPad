@@ -11,28 +11,23 @@ import SwiftUI
 public struct TouchStroke: Identifiable {
   public let id: UUID
   public var points: [CGPoint]
-//  public var widths: [CGFloat]
   public var color: Color
   
   public init(
     id: UUID = UUID(),
     points: [CGPoint] = [],
-//    widths: [CGFloat] = [],
     color: Color = .black
   ) {
     self.id = id
     self.points = points
-//    self.widths = widths
     self.color = color
   }
   
   /// Add a point to the stroke with a specified width
   public mutating func addPoint(
     _ point: CGPoint,
-//    width: CGFloat
   ) {
     points.append(point)
-//    widths.append(width)
   }
   
   public static let exampleStrokes: [TouchStroke] = [
@@ -48,8 +43,9 @@ public struct TouchStroke: Identifiable {
     ]
 }
 
+@Observable
 /// Builds and manages stroke paths based on trackpad touches
-public struct StrokePathBuilder {
+final public class StrokePathBuilder {
   /// Active strokes being drawn, keyed by touch ID
   private var activeStrokes: [Int: TouchStroke] = [:]
   
@@ -75,19 +71,19 @@ public struct StrokePathBuilder {
   private var currentColor: Color = .blue
   
   /// Update the base stroke width
-  public mutating func setBaseStrokeWidth(_ width: CGFloat) {
+  public func setBaseStrokeWidth(_ width: CGFloat) {
     baseStrokeWidth = width
     maxStrokeWidth = width * 3
     minStrokeWidth = width * 0.5
   }
   
   /// Set the current stroke color
-  public mutating func setCurrentColor(_ color: Color) {
+  public func setCurrentColor(_ color: Color) {
     currentColor = color
   }
   
   /// Process touch updates and update strokes
-  public mutating func processTouches(_ touches: Set<TrackpadTouch>) {
+  public func processTouches(_ touches: Set<TrackpadTouch>) {
     
     print("Processing touches. Touch count: \(touches.count)")
     // Process each touch to update strokes
@@ -155,7 +151,7 @@ public struct StrokePathBuilder {
   }
   
   /// Clear all strokes
-  public mutating func clearStrokes() {
+  public func clearStrokes() {
     activeStrokes.removeAll()
     completedStrokes.removeAll()
   }

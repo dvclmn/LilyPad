@@ -12,22 +12,14 @@ import SwiftUI
 public final class TouchHandler {
   var touches: Set<TrackpadTouch> = []
   
-  var strokeBuilder = StrokePathBuilder()
+//  var strokeBuilder = StrokePathBuilder()
   
   public init() {}
-  
-  /// Process touch updates
-//  func processTouches(_ touches: Set<TrackpadTouch>) {
-//    strokeBuilder.processTouches(touches)
-//    // Force UI update
-////    objectWillChange.send()
-//  }
-  
+
   /// Clear all strokes
-  func clearStrokes() {
-    strokeBuilder.clearStrokes()
-//    objectWillChange.send()
-  }
+//  func clearStrokes() {
+//    strokeBuilder.clearStrokes()
+//  }
   
   var windowSize: CGSize = .zero
   var isPointerLocked: Bool = false

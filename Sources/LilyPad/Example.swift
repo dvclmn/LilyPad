@@ -12,6 +12,8 @@ public struct TrackpadTouchesExample: View {
   @Binding var handler: TouchHandler
   @FocusState private var isFocused: Bool
 
+  @State private var strokeHandler = StrokePathBuilder()
+  
   public init(
     _ handler: Binding<TouchHandler>
   ) {
@@ -32,32 +34,6 @@ public struct TrackpadTouchesExample: View {
       
       .overlay {
         
-//        // Canvas to draw strokes
-//        Canvas { context, size in
-//          
-//          // Draw all strokes
-//          for stroke in handler.strokeBuilder.allStrokes {
-//            let path = handler.strokeBuilder.smoothPath(for: stroke)
-//            
-//            // Draw the stroke with variable width
-//            for i in 0..<stroke.points.count {
-//              if i < stroke.points.count - 1 {
-//                // Create segment path between points
-//                var segmentPath = Path()
-//                segmentPath.move(to: stroke.points[i])
-//                segmentPath.addLine(to: stroke.points[i + 1])
-//                
-//                // Average width between adjacent points
-//                let width = (stroke.widths[i] + stroke.widths[min(i + 1, stroke.widths.count - 1)]) / 2.0
-//                
-//                // Draw the segment with the calculated width
-//                context.stroke(
-//                  segmentPath, with: .color(stroke.color),
-//                  style: StrokeStyle(lineWidth: width, lineCap: .round, lineJoin: .round))
-//              }
-//            }
-//          }
-//        }
         
         
       }
@@ -83,7 +59,7 @@ public struct TrackpadTouchesExample: View {
         handler.isPointerLocked = true
       }
       .task(id: handler.touches) {
-        handler.strokeBuilder.processTouches(handler.touches)
+        strokeHandler.processTouches(handler.touches)
       }
 
   }
@@ -153,8 +129,8 @@ extension TrackpadTouchesExample {
       
       Canvas { context, size in
         // Draw all strokes
-        for stroke in handler.strokeBuilder.allStrokes {
-          let path = handler.strokeBuilder.smoothPath(for: stroke)
+        for stroke in strokeHandler.allStrokes {
+          let path = strokeHandler.smoothPath(for: stroke)
           
           // Use average width, or derive however you like
           //            let averageWidth = stroke.widths.reduce(0, +) / CGFloat(stroke.widths.count)
