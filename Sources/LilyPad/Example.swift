@@ -1,9 +1,57 @@
-////
-////  Example.swift
-////  LilyPad
-////
-////  Created by Dave Coleman on 3/5/2025.
-////
+//
+//  Example.swift
+//  LilyPad
+//
+//  Created by Dave Coleman on 3/5/2025.
+//
+
+import SwiftUI
+
+// MARK: - Example Usage
+
+public struct TrackpadTouchesExample: View {
+  @State private var touches: Set<TrackpadTouch> = []
+  
+  public init() {}
+  
+  public var body: some View {
+    ZStack {
+      // Background
+      Color.black.opacity(0.1)
+        .edgesIgnoringSafeArea(.all)
+      
+      // Touch visualization
+      ForEach(Array(touches), id: \.id) { touch in
+        Circle()
+          .fill(Color.blue.opacity(0.7))
+          .frame(width: 40, height: 40)
+          .position(
+            x: touch.position.x * 500,
+            y: touch.position.y * 500
+          )
+      }
+      
+      // Touch count indicator
+      Text("Touches: \(touches.count)")
+        .padding()
+        .background(Color.white.opacity(0.7))
+        .cornerRadius(8)
+        .position(x: 100, y: 40)
+      
+      // The invisible touch capture view
+      TrackpadTouchesView(touches: $touches)
+      //        .allowsHitTesting(false)
+    }
+  }
+}
+
+#if DEBUG
+
+#Preview {
+  TrackpadTouchesExample()
+}
+#endif
+
 //
 //#if canImport(AppKit)
 //import SwiftUI
