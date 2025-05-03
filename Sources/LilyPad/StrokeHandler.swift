@@ -11,21 +11,42 @@ import SwiftUI
 public struct TouchStroke: Identifiable {
   public let id: UUID
   public var points: [CGPoint]
-  public var widths: [CGFloat]
+//  public var widths: [CGFloat]
   public var color: Color
   
-  public init(id: UUID = UUID(), points: [CGPoint] = [], widths: [CGFloat] = [], color: Color = .black) {
+  public init(
+    id: UUID = UUID(),
+    points: [CGPoint] = [],
+//    widths: [CGFloat] = [],
+    color: Color = .black
+  ) {
     self.id = id
     self.points = points
-    self.widths = widths
+//    self.widths = widths
     self.color = color
   }
   
   /// Add a point to the stroke with a specified width
-  public mutating func addPoint(_ point: CGPoint, width: CGFloat) {
+  public mutating func addPoint(
+    _ point: CGPoint,
+//    width: CGFloat
+  ) {
     points.append(point)
-    widths.append(width)
+//    widths.append(width)
   }
+  
+  public static let exampleStrokes: [TouchStroke] = [
+    .init(
+      points: [
+        CGPoint.zero,
+        CGPoint(x: 100, y: 100),
+        CGPoint(x: 200, y: 0),
+        CGPoint(x: 300, y: 100),
+      ],
+//      widths: <#T##[CGFloat]#>,
+      color: .green
+    )
+    ]
 }
 
 /// Builds and manages stroke paths based on trackpad touches
@@ -34,7 +55,7 @@ public struct StrokePathBuilder {
   private var activeStrokes: [Int: TouchStroke] = [:]
   
   /// Completed strokes
-  private var completedStrokes: [TouchStroke] = []
+  private var completedStrokes: [TouchStroke] = TouchStroke.exampleStrokes
   
   /// Minimum number of points required to create a smooth curve
   private let minPointsForCurve = 3
@@ -73,16 +94,16 @@ public struct StrokePathBuilder {
       let touchId = touch.id
       
       // Calculate width based on velocity
-      let width = calculateStrokeWidth(for: touch)
+//      let width = calculateStrokeWidth(for: touch)
       
       // Update or create stroke for this touch
       if var stroke = activeStrokes[touchId] {
-        stroke.addPoint(touch.position, width: width)
+        stroke.addPoint(touch.position)
         activeStrokes[touchId] = stroke
       } else {
         // New touch, create a new stroke
         var stroke = TouchStroke(color: randomColor())
-        stroke.addPoint(touch.position, width: width)
+        stroke.addPoint(touch.position)
         activeStrokes[touchId] = stroke
       }
     }

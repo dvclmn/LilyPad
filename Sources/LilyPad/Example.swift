@@ -10,7 +10,6 @@ import SwiftUI
 
 public struct TrackpadTouchesExample: View {
   @Binding var handler: TouchHandler
-//  @Binding var handler: TouchHandler
   @FocusState private var isFocused: Bool
 
   public init(
@@ -30,39 +29,60 @@ public struct TrackpadTouchesExample: View {
         idealHeight: handler.trackPadSize.height * 1.5,
       )
       .gesture(clickDownDetection)
+      
       .overlay {
-        Interface()
-      }
-      .overlay {
-        // Canvas to draw strokes
         Canvas { context, size in
-          
           // Draw all strokes
           for stroke in handler.strokeBuilder.allStrokes {
             let path = handler.strokeBuilder.smoothPath(for: stroke)
             
-            // Draw the stroke with variable width
-            for i in 0..<stroke.points.count {
-              if i < stroke.points.count - 1 {
-                // Create segment path between points
-                var segmentPath = Path()
-                segmentPath.move(to: stroke.points[i])
-                segmentPath.addLine(to: stroke.points[i + 1])
-                
-                // Average width between adjacent points
-                let width = (stroke.widths[i] + stroke.widths[min(i + 1, stroke.widths.count - 1)]) / 2.0
-                
-                // Draw the segment with the calculated width
-                context.stroke(
-                  segmentPath, with: .color(stroke.color),
-                  style: StrokeStyle(lineWidth: width, lineCap: .round, lineJoin: .round))
-              }
-            }
+            // Use average width, or derive however you like
+//            let averageWidth = stroke.widths.reduce(0, +) / CGFloat(stroke.widths.count)
+            
+            context.stroke(
+              path,
+              with: .color(stroke.color),
+              style: StrokeStyle(lineWidth: 5, lineCap: .round, lineJoin: .round)
+            )
           }
         }
-        .background(Color(white: 0.2))
+        .frame(
+          width: handler.trackPadSize.width,
+          height: handler.trackPadSize.height
+        )
+        .border(Color.green.opacity(0.3))
+//        // Canvas to draw strokes
+//        Canvas { context, size in
+//          
+//          // Draw all strokes
+//          for stroke in handler.strokeBuilder.allStrokes {
+//            let path = handler.strokeBuilder.smoothPath(for: stroke)
+//            
+//            // Draw the stroke with variable width
+//            for i in 0..<stroke.points.count {
+//              if i < stroke.points.count - 1 {
+//                // Create segment path between points
+//                var segmentPath = Path()
+//                segmentPath.move(to: stroke.points[i])
+//                segmentPath.addLine(to: stroke.points[i + 1])
+//                
+//                // Average width between adjacent points
+//                let width = (stroke.widths[i] + stroke.widths[min(i + 1, stroke.widths.count - 1)]) / 2.0
+//                
+//                // Draw the segment with the calculated width
+//                context.stroke(
+//                  segmentPath, with: .color(stroke.color),
+//                  style: StrokeStyle(lineWidth: width, lineCap: .round, lineJoin: .round))
+//              }
+//            }
+//          }
+//        }
+        .background(.pink.opacity(0.2))
         .allowsHitTesting(false)
         
+      }
+      .overlay {
+        Interface()
       }
       .mouseLock($handler.isPointerLocked)
 
@@ -112,7 +132,6 @@ extension TrackpadTouchesExample {
   func Interface() -> some View {
 
     ZStack {
-
       // Debug items
       Grid {
         ForEach(TouchDebugItem.allCases) { item in
@@ -167,7 +186,6 @@ extension TrackpadTouchesExample {
         }
       }
     }
-
     .allowsHitTesting(false)
   }
 
@@ -186,13 +204,14 @@ extension TrackpadTouchesExample {
   }
 }
 
-//#if DEBUG
-//
-//#Preview(traits: .fixedLayout(width: 800, height: 800)) {
-//  TrackpadTouchesExample()
+#if DEBUG
+
+#Preview(traits: .fixedLayout(width: 800, height: 800)) {
+  @Previewable @State var handler = TouchHandler()
+  TrackpadTouchesExample($handler)
 //    .offset(x: -200, y: 0)
-//}
-//#endif
+}
+#endif
 
 
 //
