@@ -16,7 +16,7 @@ public struct StrokeHandler {
   var completedStrokes: [TouchStroke] = TouchStroke.exampleStrokes
   
   /// Stroke Width handler
-  var strokeWidth = StrokeWidth()
+  var strokeWidth = StrokeWidth(baseWidth: 6, sensitivity: 1.0)
   private var currentColor: Color = .blue
   
   /// Minimum number of points required to create a smooth curve
