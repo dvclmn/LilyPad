@@ -37,6 +37,12 @@ public struct CanvasView: View {
       }
     }
     .background(.gray.opacity(0.2))
+//    .frame(
+//      width: handler.trackPadSize.width,
+//      height: handler.trackPadSize.height
+//    )
+    .clipShape(.rect(cornerRadius: 20))
+    
 
   }
 }

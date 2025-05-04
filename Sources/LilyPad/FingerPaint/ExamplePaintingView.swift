@@ -22,105 +22,75 @@ public struct TrackpadTouchesExample: View {
 
   public var body: some View {
 
-    // Tracking view
-    TrackpadTouchesView(touches: $handler.touches)
-      .frame(
-        minWidth: handler.trackPadSize.width,
-        idealWidth: handler.trackPadSize.width * 1.5,
-        minHeight: handler.trackPadSize.height,
-        idealHeight: handler.trackPadSize.height * 1.5,
-      )
-      .gesture(clickDownDetection)
+    // MARK: - Touch Tracking View
 
-      .overlay {
-        Interface()
-      }
-      .mouseLock($handler.isPointerLocked)
+    VStack(alignment: .leading) {
+      TouchDebugView(handler: handler)
+      TrackpadTouchesView(touches: $handler.touches)
+        .overlay {
+          ZStack {
+            TouchIndicatorsView(handler: handler)
+            CanvasView(handler: handler)
+          }
+          .allowsHitTesting(false)
+        }
+        .mouseLock($handler.isPointerLocked)
+    }  // END main vstack
+    .focusable(true)
+    .focused($isFocused)
+    .focusEffectDisabled(true)
+    .padding()
+    
+    /// Overall App window sizing (nothing too technical, just indicative of logical sizing)
+    .frame(
+      minWidth: handler.trackPadSize.width,
+      idealWidth: handler.trackPadSize.width * 1.5,
+      minHeight: handler.trackPadSize.height,
+      idealHeight: handler.trackPadSize.height * 1.5,
+    )
+    .gesture(clickDownDetection)
 
-      .onGeometryChange(for: CGSize.self) { proxy in
-        return proxy.size
-      } action: { newSize in
-        handler.windowSize = newSize
-      }
 
-      .onAppear {
-        handler.isPointerLocked = true
-      }
-      .task(id: handler.touches) {
-        handler.processTouches()
-        //        await debouncer.execute { @MainActor in
-        //        }
-      }
+    .onGeometryChange(for: CGSize.self) { proxy in
+      return proxy.size
+    } action: { newSize in
+      handler.windowSize = newSize
+    }
+
+    .onAppear {
+      isFocused = true
+    }
+
+    .onKeyPress { keyPress in
+      return handleKeyPress(keyPress.key)
+    }
+
+    .onAppear {
+      handler.isPointerLocked = true
+    }
+    .task(id: handler.touches) {
+      handler.processTouches()
+      //        await debouncer.execute { @MainActor in
+      //        }
+    }
 
   }
 }
 
 extension TrackpadTouchesExample {
 
-  @ViewBuilder
-  func Interface() -> some View {
+  func handleKeyPress(_ key: KeyEquivalent) -> KeyPress.Result {
+    switch key {
+      case "a":
+        handler.isPointerLocked.toggle()
+        return .handled
 
-    ZStack {
-      // Debug items
-      Grid {
-        ForEach(TouchDebugItem.allCases) { item in
-          GridRow {
-            Text(item.name)
-              .gridCellAnchor(.leading)
-            Text(valueString(item))
-              .gridCellAnchor(.trailing)
-              .fontWeight(.medium)
-              .monospaced()
-              .foregroundStyle(booleanColour(valueString(item)))
-          }
-          Divider()
-            .gridCellUnsizedAxes(.horizontal)
-        }
-      }
-      .padding()
-      .background(.black.opacity(0.7))
-      .clipShape(.rect(cornerRadius: 6))
+      case "c":
+        handler.clearStrokes()
+        return .handled
 
-
-      CanvasView(handler: handler)
-
-
-      if handler.isInTouchMode {
-        // Visualise Touches
-        ForEach(Array(handler.touches), id: \.id) { touch in
-          Circle()
-            .fill(Color.blue.opacity(0.7))
-            .frame(width: 40, height: 40)
-            .position(
-              x: handler.touchPosition(touch).x,
-              y: handler.touchPosition(touch).y
-            )
-        }
-      }
+      default: return .ignored
     }
-    .focused($isFocused)
-    .focusEffectDisabled()
-    .focusable(true)
-    
-    .onAppear {
-      isFocused = true
-    }
-    .onKeyPress("a") {
-      handler.isPointerLocked.toggle()
-      return .handled
-    }
-    .onKeyPress("c") {
-      handler.clearStrokes()
-      return .handled
-    }
-    
-    .frame(
-      width: handler.trackPadSize.width,
-      height: handler.trackPadSize.height
-    )
-    
-    .clipShape(.rect(cornerRadius: 20))
-    .allowsHitTesting(false)
   }
 
   var clickDownDetection: some Gesture {
@@ -135,24 +105,6 @@ extension TrackpadTouchesExample {
         print("Ended drag")
         handler.isClicked = false
       }
-  }
-  
-  
-  func booleanColour(_ value: String) -> Color {
-    switch value {
-      case "true": Color.orange
-      case "false": Color.red
-      default: Color.gray
-    }
-  }
-  
-  func valueString(_ item: TouchDebugItem) -> String {
-    switch item {
-      case .pointerLocked: handler.isPointerLocked.description
-      case .touchModeActive: handler.isInTouchMode.description
-      case .clickedDown: handler.isClicked.description
-      case .touchCount: handler.touches.count.string
-    }
   }
 
 }
