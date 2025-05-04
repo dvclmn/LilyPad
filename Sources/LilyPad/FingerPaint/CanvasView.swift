@@ -25,57 +25,103 @@ public struct CanvasView: View {
         
         /// Draw all strokes
         for stroke in handler.strokeHandler.allStrokes {
-          let path = StrokePath.smoothPath(for: stroke)
           
+          let basePoints = StrokePath.smoothPoints(for: stroke)
           
-          /// Draw the stroke with variable width
-          for i in 0..<stroke.points.count {
-            if i < stroke.points.count - 1 {
-              /// Create segment path between points
-              var segmentPath = Path()
-              segmentPath.move(to: stroke.points[i])
-              segmentPath.addLine(to: stroke.points[i+1])
-              
-              /// Average width between adjacent points
-              let width = (stroke.widths[i] + stroke.widths[min(i+1, stroke.widths.count-1)]) / 2.0
-              
-              /// Draw the segment with the calculated width
-//              context.stroke(
-//                segmentPath,
-//                with: .color(stroke.color),
-//                style: StrokeStyle(lineWidth: width, lineCap: .round, lineJoin: .round)
-//              )
-              
-              let p1 = stroke.points[i]
-              let p2 = stroke.points[i+1]
-              
-              let width1 = stroke.widths[i]
-              let width2 = stroke.widths[i+1]
-              
-              let dx = p2.x - p1.x
-              let dy = p2.y - p1.y
-              let angle = atan2(dy, dx)
-              let perp = CGVector(dx: -sin(angle), dy: cos(angle))
-              
-              let a = CGPoint(x: p1.x + perp.dx * width1 / 2, y: p1.y + perp.dy * width1 / 2)
-              let b = CGPoint(x: p1.x - perp.dx * width1 / 2, y: p1.y - perp.dy * width1 / 2)
-              let c = CGPoint(x: p2.x - perp.dx * width2 / 2, y: p2.y - perp.dy * width2 / 2)
-              let d = CGPoint(x: p2.x + perp.dx * width2 / 2, y: p2.y + perp.dy * width2 / 2)
-              
-              let path = Path { path in
-                path.move(to: a)
-                path.addLine(to: b)
-                path.addLine(to: c)
-                path.addLine(to: d)
-                path.closeSubpath()
-              }
-              
-              context.fill(path, with: .color(stroke.color))
-            }
+//          let basePoints = CatmullRom.interpolatedPoints(for: stroke.points)
+          
+          let widths = stroke.widths
+//          let widths = smoothedWidths(stroke.widths) // optional
+          
+          var leftEdge: [CGPoint] = []
+          var rightEdge: [CGPoint] = []
+          
+          for i in 0..<basePoints.count {
+            let p = basePoints[i]
+            let width = widths[i]
+            
+            // Compute direction (tangent)
+            let prev = basePoints[max(i - 1, 0)]
+            let next = basePoints[min(i + 1, basePoints.count - 1)]
+            let dx = next.x - prev.x
+            let dy = next.y - prev.y
+            let angle = atan2(dy, dx)
+            
+            let perp = CGVector(dx: -sin(angle), dy: cos(angle))
+            let offset = width / 2
+            
+            let left = CGPoint(x: p.x + perp.dx * offset, y: p.y + perp.dy * offset)
+            let right = CGPoint(x: p.x - perp.dx * offset, y: p.y - perp.dy * offset)
+            
+            leftEdge.append(left)
+            rightEdge.append(right)
           }
+          
+          // Reverse right edge for proper winding
+          rightEdge.reverse()
+          
+          // Combine and draw
+          let fullPath = Path { path in
+            path.move(to: leftEdge[0])
+            for point in leftEdge.dropFirst() { path.addLine(to: point) }
+            for point in rightEdge { path.addLine(to: point) }
+            path.closeSubpath()
+          }
+          
+          context.fill(fullPath, with: .color(stroke.color))
+          
+          
+//          let path = StrokePath.smoothPath(for: stroke)
+//          
+//          
+//          /// Draw the stroke with variable width
+//          for i in 0..<stroke.points.count {
+//            if i < stroke.points.count - 1 {
+//              /// Create segment path between points
+//              var segmentPath = Path()
+//              segmentPath.move(to: stroke.points[i])
+//              segmentPath.addLine(to: stroke.points[i+1])
+//              
+//              /// Average width between adjacent points
+//              let width = (stroke.widths[i] + stroke.widths[min(i+1, stroke.widths.count-1)]) / 2.0
+//              
+//              /// Draw the segment with the calculated width
+////              context.stroke(
+////                segmentPath,
+////                with: .color(stroke.color),
+////                style: StrokeStyle(lineWidth: width, lineCap: .round, lineJoin: .round)
+////              )
+//              
+//              let p1 = stroke.points[i]
+//              let p2 = stroke.points[i+1]
+//              
+//              let width1 = stroke.widths[i]
+//              let width2 = stroke.widths[i+1]
+//              
+//              let dx = p2.x - p1.x
+//              let dy = p2.y - p1.y
+//              let angle = atan2(dy, dx)
+//              let perp = CGVector(dx: -sin(angle), dy: cos(angle))
+//              
+//              let a = CGPoint(x: p1.x + perp.dx * width1 / 2, y: p1.y + perp.dy * width1 / 2)
+//              let b = CGPoint(x: p1.x - perp.dx * width1 / 2, y: p1.y - perp.dy * width1 / 2)
+//              let c = CGPoint(x: p2.x - perp.dx * width2 / 2, y: p2.y - perp.dy * width2 / 2)
+//              let d = CGPoint(x: p2.x + perp.dx * width2 / 2, y: p2.y + perp.dy * width2 / 2)
+//              
+//              let path = Path { path in
+//                path.move(to: a)
+//                path.addLine(to: b)
+//                path.addLine(to: c)
+//                path.addLine(to: d)
+//                path.closeSubpath()
+//              }
+//              
+//              context.fill(path, with: .color(stroke.color))
+//            }
+//          }
           /// Shows location of points and handles
-          context.debugPath(path: path)
-        }
+          context.debugPath(path: fullPath)
+        } // END stroke loop
       }
       .background(.gray.opacity(0.2))
 
