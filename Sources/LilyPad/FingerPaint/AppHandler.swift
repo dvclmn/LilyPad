@@ -12,6 +12,9 @@ import BaseHelpers
 public final class TouchHandler {
   
   var touches: Set<TrackpadTouch> = []
+  
+  var strokeHandler = StrokeHandler()
+  
   let isDebugMode: Bool = false
   var windowSize: CGSize = .zero
   var isPointerLocked: Bool = false
@@ -34,8 +37,6 @@ extension TouchHandler {
       height: trackPadHeight
     )
   }
-  
-  
   
   func transformPoint(_ point: CGPoint, in size: CGSize) -> CGPoint {
     /// Assuming normalized points (0–1 range)
@@ -75,52 +76,55 @@ extension TouchHandler {
     for touch in touches {
       let touchId = touch.id
       let touchPosition = touchPosition(touch)
+      
+      /// Calculate width based on velocity
+      let width = strokeHandler.strokeWidth.calculateStrokeWidth(for: touch)
 
       /// Update or create stroke for this touch
-      if var stroke = activeStrokes[touchId] {
+      if var stroke = strokeHandler.activeStrokes[touchId] {
         if isDebugMode {
           print("There are active strokes for touch \(touchId). Count: \(stroke.points.count)")
           print("Point count for stroke BEFORE: \(stroke.points.count)")
         }
 
-        stroke.addPoint(touchPosition)
-        activeStrokes[touchId] = stroke
+        stroke.addPoint(touchPosition, width: width)
+        strokeHandler.activeStrokes[touchId] = stroke
         
-        if isDebugMode {
-          print("Point count for stroke AFTER: \(stroke.points.count)")
-          print("`activeStrokes[touchId]`: \(String(describing: activeStrokes[touchId]?.points.count))")
-          print("`stroke.points.count`: \(String(describing: stroke.points.count))")
-        }
+//        if isDebugMode {
+//          print("Point count for stroke AFTER: \(stroke.points.count)")
+//          print("`activeStrokes[touchId]`: \(String(describing: activeStrokes[touchId]?.points.count))")
+//          print("`stroke.points.count`: \(String(describing: stroke.points.count))")
+//        }
         
       } else {
         /// New touch, create a new stroke
         if isDebugMode {  print("Creating a new stroke for touch \(touchId)") }
         
         let stroke = TouchStroke(points: [touchPosition], color: .purple)
-        activeStrokes[touchId] = stroke
+        strokeHandler.activeStrokes[touchId] = stroke
       }
     }
     
     /// Check for ended touches
     let currentIds = Set(touches.map { $0.id })
-    let activeIds = Set(activeStrokes.keys)
+    let activeIds = Set(strokeHandler.activeStrokes.keys)
     let endedIds = activeIds.subtracting(currentIds)
     
     /// Finalize ended strokes
     for touchId in endedIds {
-      if let stroke = activeStrokes[touchId], stroke.points.count >= minPointsForCurve {
-        if isDebugMode {  print("Adding a stroke to completed strokes. Completed Count: \(completedStrokes.count)") }
-        completedStrokes.append(stroke)
+      if let stroke = strokeHandler.activeStrokes[touchId], stroke.points.count >= strokeHandler.minPointsForCurve {
+//        if isDebugMode {  print("Adding a stroke to completed strokes. Completed Count: \(completedStrokes.count)") }
+        strokeHandler.completedStrokes.append(stroke)
       }
-      activeStrokes.removeValue(forKey: touchId)
+      strokeHandler.activeStrokes.removeValue(forKey: touchId)
     }
   }
   
   // MARK: - Strokes
   
   public func clearStrokes() {
-    activeStrokes.removeAll()
-    completedStrokes.removeAll()
+    strokeHandler.activeStrokes.removeAll()
+    strokeHandler.completedStrokes.removeAll()
   }
   
   

@@ -7,24 +7,45 @@
 
 import SwiftUI
 
-struct StrokeHandler {
+public struct StrokeHandler {
   
   /// Active strokes being drawn, keyed by touch ID
-  private var activeStrokes: [Int: TouchStroke] = [:]
+  var activeStrokes: [Int: TouchStroke] = [:]
   
   /// Completed strokes
-  private var completedStrokes: [TouchStroke] = TouchStroke.exampleStrokes
+  var completedStrokes: [TouchStroke] = TouchStroke.exampleStrokes
+  
+  /// Stroke Width handler
+  var strokeWidth = StrokeWidth()
+  private var currentColor: Color = .blue
   
   /// Minimum number of points required to create a smooth curve
-  private let minPointsForCurve = 3
+  let minPointsForCurve = 3
+  
+  /// Set the current stroke color
+  public mutating func setCurrentColor(_ color: Color) {
+    currentColor = color
+  }
+  
+  /// Clear all strokes
+  public mutating func clearStrokes() {
+    activeStrokes.removeAll()
+    completedStrokes.removeAll()
+  }
+  
+  public init() {
+  }
+  
+}
+
+extension StrokeHandler {
+  
+  /// Current stroke color
   
   public var allStrokes: [TouchStroke] {
     return Array(activeStrokes.values) + completedStrokes
   }
-  
-  
-  /// Stroke Width handler
-//  var strokeWidth = StrokeWidth()
+
 }
 
 struct StrokeWidth {
@@ -40,8 +61,6 @@ struct StrokeWidth {
   /// Speed at which stroke width is at its minimum
   private var maxSpeedForMinWidth: CGFloat = 2.0
 
-  /// Current stroke color
-  private var currentColor: Color = .blue
 
   /// Update the base stroke width
   public mutating func setBaseStrokeWidth(_ width: CGFloat) {
@@ -51,7 +70,7 @@ struct StrokeWidth {
   }
 
   /// Calculate stroke width based on touch velocity
-  private func calculateStrokeWidth(for touch: TrackpadTouch) -> CGFloat {
+  public func calculateStrokeWidth(for touch: TrackpadTouch) -> CGFloat {
     let speed = touch.speed
 
     /// Inverse relationship: faster movement = thinner line
@@ -66,5 +85,4 @@ struct StrokeWidth {
       return maxStrokeWidth - (maxStrokeWidth - minStrokeWidth) * speedFactor
     }
   }
-
 }
