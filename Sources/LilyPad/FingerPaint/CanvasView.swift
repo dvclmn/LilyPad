@@ -38,40 +38,39 @@ public struct CanvasView: View {
           //          }
 
 
-          /// Draw the stroke with variable width
+          // Ensure points and widths arrays have the same count
+          guard stroke.points.count == stroke.widths.count else {
+            print("Mismatch in number of points `\(stroke.points.count)` and widths `\(stroke.widths.count)")
+            continue
+          }
+          
           for i in 0..<stroke.points.count {
             if i < stroke.points.count - 1 {
               /// Create segment path between points
               var segmentPath = Path()
               segmentPath.move(to: stroke.points[i])
               segmentPath.addLine(to: stroke.points[i + 1])
-
+              
               /// Average width between adjacent points
               let width = (stroke.widths[i] + stroke.widths[min(i + 1, stroke.widths.count - 1)]) / 2.0
-
-              /// Draw the segment with the calculated width
-              //              context.stroke(
-              //                segmentPath,
-              //                with: .color(stroke.color),
-              //                style: StrokeStyle(lineWidth: width, lineCap: .round, lineJoin: .round)
-              //              )
-
+              
               let p1 = stroke.points[i]
               let p2 = stroke.points[i + 1]
-
+              
+              // Safe access to widths
               let width1 = stroke.widths[i]
-              let width2 = stroke.widths[i + 1]
-
+              let width2 = stroke.widths[i + 1] // This is now safe because of the guard and the i < count-1 check
+              
               let dx = p2.x - p1.x
               let dy = p2.y - p1.y
               let angle = atan2(dy, dx)
               let perp = CGVector(dx: -sin(angle), dy: cos(angle))
-
+              
               let a = CGPoint(x: p1.x + perp.dx * width1 / 2, y: p1.y + perp.dy * width1 / 2)
               let b = CGPoint(x: p1.x - perp.dx * width1 / 2, y: p1.y - perp.dy * width1 / 2)
               let c = CGPoint(x: p2.x - perp.dx * width2 / 2, y: p2.y - perp.dy * width2 / 2)
               let d = CGPoint(x: p2.x + perp.dx * width2 / 2, y: p2.y + perp.dy * width2 / 2)
-
+              
               let path = Path { path in
                 path.move(to: a)
                 path.addLine(to: b)
@@ -79,7 +78,7 @@ public struct CanvasView: View {
                 path.addLine(to: d)
                 path.closeSubpath()
               }
-
+              
               context.fill(path, with: .color(.purple))
             }
           }

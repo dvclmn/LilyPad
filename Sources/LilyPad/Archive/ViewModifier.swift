@@ -43,11 +43,11 @@ public struct GestureModifier: ViewModifier {
 
         switch type {
           case .panX:
-            print("Pan X: \(value)")
+//            print("Pan X: \(value)")
             self.gestures.pan.x = value
 
           case .panY:
-            print("Pan Y: \(value)")
+//            print("Pan Y: \(value)")
             self.gestures.pan.y = value
 
           default: break
