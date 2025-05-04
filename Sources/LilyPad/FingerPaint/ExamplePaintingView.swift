@@ -26,7 +26,10 @@ public struct TrackpadTouchesExample: View {
 
     VStack(alignment: .leading) {
       TouchDebugView(handler: handler)
-      TrackpadTouchesView(touches: $handler.touches)
+      TrackpadTouchesView { touches in
+        handler.touches = touches
+        handler.processTouches()
+      }
         .overlay { CanvasView(handler: handler) }
         .mouseLock($handler.isPointerLocked)
     }  // END main vstack
@@ -61,11 +64,6 @@ public struct TrackpadTouchesExample: View {
 
     .onAppear {
       handler.isPointerLocked = true
-    }
-    .task(id: handler.touches) {
-      handler.processTouches()
-      //        await debouncer.execute { @MainActor in
-      //        }
     }
 
   }
