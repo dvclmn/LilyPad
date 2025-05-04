@@ -23,7 +23,7 @@ public struct CanvasView: View {
 
         /// Draw all strokes
         for stroke in handler.allStrokes {
-          let path = handler.smoothPath(for: stroke)
+          let path = StrokePath.smoothPath(for: stroke)
 
           context.stroke(
             path,

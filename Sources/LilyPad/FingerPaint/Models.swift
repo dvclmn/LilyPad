@@ -37,18 +37,7 @@ public struct TrackpadTouch: Identifiable, Hashable {
   public var velocity: CGVector
   public var previousPosition: CGPoint?
   public var previousTimestamp: TimeInterval?
-  
-//  public init(_ nsTouch: NSTouch) {
-//    self.id = nsTouch.identity.hash
-//    self.position = CGPoint(
-//      x: nsTouch.normalizedPosition.x,
-//      /// Flip Y to match SwiftUI coordinate system
-//      y: 1.0 - nsTouch.normalizedPosition.y
-//    )
-//    self.timestamp = Date().timeIntervalSince1970
-//    self.pressure = 1.0
-//  }
-  
+
   /// Initializer from an NSTouch, capturing its state at a specific moment
   public init(_ nsTouch: NSTouch, previousTouch: TrackpadTouch? = nil) {
     self.id = nsTouch.identity.hash
@@ -129,25 +118,40 @@ enum TouchDebugItem: String, Identifiable, CaseIterable {
 public struct TouchStroke: Identifiable {
   public let id: UUID
   public var points: [CGPoint]
+  public var widths: [CGFloat]
   public var color: Color
+  
+//  public init(
+//    id: UUID = UUID(),
+//    points: [CGPoint],
+//    color: Color = .black
+//  ) {
+//    self.id = id
+//    self.points = points
+//    self.color = color
+//  }
   
   public init(
     id: UUID = UUID(),
-    points: [CGPoint],
+    points: [CGPoint] = [],
+    widths: [CGFloat] = [],
     color: Color = .black
   ) {
     self.id = id
     self.points = points
+    self.widths = widths
     self.color = color
   }
   
-//  /// Add a point to the stroke with a specified width
-//  public mutating func addPoint(
-//    _ point: CGPoint,
-//  ) {
-//    points.append(point)
-//  }
-//  
+  /// Add a point to the stroke with a specified width
+  public mutating func addPoint(
+    _ point: CGPoint,
+    width: CGFloat
+  ) {
+    points.append(point)
+    widths.append(width)
+  }
+  
   public static let exampleStrokes: [TouchStroke] = [
     .init(
       points: [
