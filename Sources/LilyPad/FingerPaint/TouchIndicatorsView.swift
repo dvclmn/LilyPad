@@ -9,7 +9,7 @@ import SwiftUI
 
 public struct TouchIndicatorsView: View {
   
-  let handler: TouchHandler
+  let handler: AppHandler
   
   public var body: some View {
     
@@ -28,7 +28,7 @@ public struct TouchIndicatorsView: View {
 #if DEBUG
 @available(macOS 15, iOS 18, *)
 #Preview(traits: .size(.normal)) {
-  TouchIndicatorsView(handler: TouchHandler())
+  TouchIndicatorsView(handler: AppHandler())
 }
 #endif
 

@@ -9,7 +9,7 @@ import SwiftUI
 import BaseHelpers
 
 @Observable
-public final class TouchHandler {
+public final class AppHandler {
   
   var touches: Set<TrackpadTouch> = []
   
@@ -24,7 +24,7 @@ public final class TouchHandler {
   
 }
 
-extension TouchHandler {
+extension AppHandler {
   
   var trackPadSize: CGSize {
     let trackPadWidth: CGFloat = 700

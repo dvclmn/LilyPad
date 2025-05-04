@@ -10,7 +10,7 @@ import BaseComponents
 
 public struct TouchDebugView: View {
   
-  let handler: TouchHandler
+  let handler: AppHandler
   
   public var body: some View {
     
@@ -60,7 +60,7 @@ extension TouchDebugView {
 #if DEBUG
 @available(macOS 15, iOS 18, *)
 #Preview(traits: .size(.normal)) {
-  TouchDebugView(handler: TouchHandler())
+  TouchDebugView(handler: AppHandler())
 }
 #endif
 

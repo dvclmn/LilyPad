@@ -12,10 +12,10 @@ public struct TrackpadTouchesExample: View {
 
   @State private var debouncer = AsyncDebouncer()
   @FocusState private var isFocused: Bool
-  @Binding var handler: TouchHandler
+  @Binding var handler: AppHandler
 
   public init(
-    _ handler: Binding<TouchHandler>
+    _ handler: Binding<AppHandler>
   ) {
     self._handler = handler
   }
@@ -106,7 +106,7 @@ extension TrackpadTouchesExample {
 #if DEBUG
 
 #Preview(traits: .fixedLayout(width: 800, height: 800)) {
-  @Previewable @State var handler = TouchHandler()
+  @Previewable @State var handler = AppHandler()
   TrackpadTouchesExample($handler)
   //    .offset(x: -200, y: 0)
 }

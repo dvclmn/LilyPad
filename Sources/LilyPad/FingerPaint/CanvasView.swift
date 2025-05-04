@@ -11,7 +11,7 @@ import SwiftUI
 
 public struct CanvasView: View {
 
-  let handler: TouchHandler
+  let handler: AppHandler
 
   public var body: some View {
 
@@ -55,7 +55,7 @@ public struct CanvasView: View {
 #if DEBUG
 @available(macOS 15, iOS 18, *)
 #Preview(traits: .size(.normal)) {
-  let handler = TouchHandler()
+  let handler = AppHandler()
   CanvasView(handler: handler)
 }
 #endif
