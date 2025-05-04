@@ -59,8 +59,11 @@ public final class TouchHandler {
   func touchPosition(
     _ touch: TrackpadTouch
   ) -> CGPoint {
-    let originX = (windowSize.width - trackPadSize.width) / 2
-    let originY = (windowSize.height - trackPadSize.height) / 2
+    
+    let originX: CGFloat = 0
+    let originY: CGFloat = 0
+//    let originX = (windowSize.width - trackPadSize.width) / 2
+//    let originY = (windowSize.height - trackPadSize.height) / 2
     
     let x = originX + (touch.position.x * trackPadSize.width)
     let y = originY + (touch.position.y * trackPadSize.height)
