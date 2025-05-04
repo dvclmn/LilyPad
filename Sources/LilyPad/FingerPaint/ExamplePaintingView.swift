@@ -27,20 +27,14 @@ public struct TrackpadTouchesExample: View {
     VStack(alignment: .leading) {
       TouchDebugView(handler: handler)
       TrackpadTouchesView(touches: $handler.touches)
-        .overlay {
-          ZStack {
-            TouchIndicatorsView(handler: handler)
-            CanvasView(handler: handler)
-          }
-          .allowsHitTesting(false)
-        }
+        .overlay { CanvasView(handler: handler) }
         .mouseLock($handler.isPointerLocked)
     }  // END main vstack
     .focusable(true)
     .focused($isFocused)
     .focusEffectDisabled(true)
     .padding()
-    
+
     /// Overall App window sizing (nothing too technical, just indicative of logical sizing)
     .frame(
       minWidth: handler.trackPadSize.width,

@@ -21,10 +21,6 @@ public struct TouchIndicatorsView: View {
           .frame(width: 40, height: 40)
           .position(handler.touchPosition(touch))
       }
-//      .frame(
-//        width: handler.trackPadSize.width,
-//        height: handler.trackPadSize.height
-//      )
     }
     
   }

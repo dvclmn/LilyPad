@@ -15,34 +15,40 @@ public struct CanvasView: View {
 
   public var body: some View {
 
+    ZStack {
 
-    Canvas { context, _ in
+      TouchIndicatorsView(handler: handler)
 
-      /// Draw all strokes
-      for stroke in handler.allStrokes {
-        let path = handler.smoothPath(for: stroke)
+      Canvas { context, _ in
 
-        context.stroke(
-          path,
-          with: .color(stroke.color),
-          style: StrokeStyle(
-            lineWidth: 5,
-            lineCap: .round,
-            lineJoin: .round
-          )
-        )  // END context stroke
-        
-        /// Shows location of points and handles
-        context.debugPath(path: path)
+        /// Draw all strokes
+        for stroke in handler.allStrokes {
+          let path = handler.smoothPath(for: stroke)
+
+          context.stroke(
+            path,
+            with: .color(stroke.color),
+            style: StrokeStyle(
+              lineWidth: 5,
+              lineCap: .round,
+              lineJoin: .round
+            )
+          )  // END context stroke
+
+          /// Shows location of points and handles
+          context.debugPath(path: path)
+        }
       }
+      .background(.gray.opacity(0.2))
+
+      .clipShape(.rect(cornerRadius: 20))
     }
-    .background(.gray.opacity(0.2))
-//    .frame(
-//      width: handler.trackPadSize.width,
-//      height: handler.trackPadSize.height
-//    )
-    .clipShape(.rect(cornerRadius: 20))
-    
+    .frame(
+      width: handler.trackPadSize.width,
+      height: handler.trackPadSize.height
+    )
+    .allowsHitTesting(false)
+
 
   }
 }

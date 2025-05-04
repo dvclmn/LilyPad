@@ -75,6 +75,11 @@ public final class TouchHandler {
   /// Process touch updates and update strokes
   public func processTouches() {
     
+    guard isInTouchMode else {
+      print("No need to process touches, not in touch mode.")
+      return
+    }
+    
     if isDebugMode { print("Processing touches. Touch count: \(touches.count)") }
     /// Process each touch to update strokes
     for touch in touches {
