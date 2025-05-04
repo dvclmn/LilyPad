@@ -100,7 +100,11 @@ extension AppHandler {
         /// New touch, create a new stroke
         if isDebugMode {  print("Creating a new stroke for touch \(touchId)") }
         
-        let stroke = TouchStroke(points: [touchPosition], color: .purple)
+        let stroke = TouchStroke(
+          points: [touchPosition],
+          widths: [],
+          color: .purple
+        )
         strokeHandler.activeStrokes[touchId] = stroke
       }
     }

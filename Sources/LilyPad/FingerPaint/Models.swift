@@ -27,17 +27,28 @@ public struct TrackpadTouch: Identifiable, Hashable {
     )
     self.timestamp = Date().timeIntervalSince1970
     
-    // Initialize with previous touch data if available
+    /// Initialize with previous touch data if available
     self.previousPosition = previousTouch?.position
     self.previousTimestamp = previousTouch?.timestamp
     
-    // Calculate velocity if we have previous data
+    if let previousTouch {
+      print("Previous touch `\(previousTouch)`")
+    }
+    if let previousPosition {
+      print("Previous position `\(previousPosition)`")
+    }
+    
+    if let previousTimestamp {
+      print("Previous Timestamp `\(previousTimestamp)`")
+    }
+    
+    /// Calculate velocity if we have previous data
     if let prevPos = previousTouch?.position, let prevTime = previousTouch?.timestamp {
       let dx = position.x - prevPos.x
       let dy = position.y - prevPos.y
       let dt = timestamp - prevTime
       
-      // Avoid division by zero or very small time deltas
+      /// Avoid division by zero or very small time deltas
       if dt > 0.001 {
         self.velocity = CGVector(dx: dx / CGFloat(dt), dy: dy / CGFloat(dt))
       } else {
@@ -47,7 +58,7 @@ public struct TrackpadTouch: Identifiable, Hashable {
       self.velocity = CGVector.zero
     }
   }
-  // For Debugging
+  /// For Debugging
   public init(
     id: Int,
     position: CGPoint,
@@ -99,21 +110,11 @@ public struct TouchStroke: Identifiable {
   public var points: [CGPoint]
   public var widths: [CGFloat]
   public var color: Color
-  
-//  public init(
-//    id: UUID = UUID(),
-//    points: [CGPoint],
-//    color: Color = .black
-//  ) {
-//    self.id = id
-//    self.points = points
-//    self.color = color
-//  }
-  
+
   public init(
     id: UUID = UUID(),
-    points: [CGPoint] = [],
-    widths: [CGFloat] = [],
+    points: [CGPoint],
+    widths: [CGFloat],
     color: Color = .black
   ) {
     self.id = id
@@ -142,7 +143,8 @@ public struct TouchStroke: Identifiable {
         CGPoint(x: 500, y: 100),
         CGPoint(x: 600, y: 200),
       ],
-      color: .green
+      widths: [2, 6, 10, 14, 18, 22, 26],
+      color: .green,
     )
   ]
 }
