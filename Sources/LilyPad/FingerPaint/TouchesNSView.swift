@@ -36,16 +36,10 @@ public class TrackpadTouchesNSView: NSView {
   }
 
   private func processTouches(with event: NSEvent) {
-    /// Get all touching touches.
+    /// Get all touching touches. `touching` matches the `began`, `moved`,
+    /// or `stationary` phases of a touch.
     /// Note: Using `end` sems to break things, so don't use that
-    let touches = event.touches(
-      matching: [
-        .touching,
-        .began,
-        .moved,
-      ],
-      in: self
-    )
+    let touches = event.touches(matching: [.touching], in: self)
 
     /// Convert to data model
     /// Process touches through the manager to get velocity information

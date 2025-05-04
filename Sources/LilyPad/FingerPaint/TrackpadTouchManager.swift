@@ -10,6 +10,7 @@ import AppKit
 
 /// Manages trackpad touches and maintains their history for velocity calculations
 public class TrackpadTouchManager {
+  
   /// Dictionary to store the last known touch for each touch ID
   private var lastTouches: [Int: TrackpadTouch] = [:]
   
@@ -21,30 +22,31 @@ public class TrackpadTouchManager {
   
   /// Process new touches and calculate velocity based on history
   public func processTouches(_ touches: Set<NSTouch>, in view: NSView) -> Set<TrackpadTouch> {
+    
     var updatedTouches = Set<TrackpadTouch>()
     
     for touch in touches {
       let touchId = touch.identity.hash
       let previousTouch = lastTouches[touchId]
       
-      // Create a new touch with velocity information based on the previous touch
+      /// Create a new touch with velocity information based on the previous touch
       let newTouch = TrackpadTouch(touch, previousTouch: previousTouch)
       updatedTouches.insert(newTouch)
       
-      // Update last touch
+      /// Update last touch
       lastTouches[touchId] = newTouch
       
-      // Update touch history
+      /// Update touch history
       updateHistory(for: touchId, with: newTouch)
     }
     
-    // Handle ended touches (those in lastTouches but not in the current set)
+    /// Handle ended touches (those in `lastTouches` but not in the current set)
     let currentIds = Set(touches.map { $0.identity.hash })
     let lastIds = Set(lastTouches.keys)
     let endedIds = lastIds.subtracting(currentIds)
     
     for endedId in endedIds {
-      // Clean up ended touches
+      /// Clean up ended touches
       lastTouches.removeValue(forKey: endedId)
       touchHistories.removeValue(forKey: endedId)
     }
@@ -57,7 +59,7 @@ public class TrackpadTouchManager {
     var history = touchHistories[touchId] ?? []
     history.append(touch)
     
-    // Limit history length
+    /// Limit history length
     if history.count > maxHistoryLength {
       history.removeFirst()
     }
