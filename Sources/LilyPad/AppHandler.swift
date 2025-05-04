@@ -25,6 +25,8 @@ public final class TouchHandler {
     return Array(activeStrokes.values) + completedStrokes
   }
   
+  let isDebugMode: Bool = false
+  
   public init() {}
 
   // MARK: - Touches
@@ -73,7 +75,7 @@ public final class TouchHandler {
   /// Process touch updates and update strokes
   public func processTouches() {
     
-    print("Processing touches. Touch count: \(touches.count)")
+    if isDebugMode { print("Processing touches. Touch count: \(touches.count)") }
     /// Process each touch to update strokes
     for touch in touches {
       let touchId = touch.id
@@ -81,23 +83,23 @@ public final class TouchHandler {
 
       /// Update or create stroke for this touch
       if var stroke = activeStrokes[touchId] {
-        print("There are active strokes for touch \(touchId). Count: \(stroke.points.count)")
-        
-        print("Point count for stroke BEFORE: \(stroke.points.count)")
-        
-        
-        
+        if isDebugMode {
+          print("There are active strokes for touch \(touchId). Count: \(stroke.points.count)")
+          print("Point count for stroke BEFORE: \(stroke.points.count)")
+        }
+
         stroke.points.append(touchPosition)
         activeStrokes[touchId] = stroke
         
-        print("Point count for stroke AFTER: \(stroke.points.count)")
-        
-        print("`activeStrokes[touchId]`: \(String(describing: activeStrokes[touchId]?.points.count))")
-        print("`stroke.points.count`: \(String(describing: stroke.points.count))")
+        if isDebugMode {
+          print("Point count for stroke AFTER: \(stroke.points.count)")
+          print("`activeStrokes[touchId]`: \(String(describing: activeStrokes[touchId]?.points.count))")
+          print("`stroke.points.count`: \(String(describing: stroke.points.count))")
+        }
         
       } else {
         /// New touch, create a new stroke
-        print("Creating a new stroke for touch \(touchId)")
+        if isDebugMode {  print("Creating a new stroke for touch \(touchId)") }
         
         let stroke = TouchStroke(points: [touchPosition], color: .purple)
         activeStrokes[touchId] = stroke
@@ -112,7 +114,7 @@ public final class TouchHandler {
     /// Finalize ended strokes
     for touchId in endedIds {
       if let stroke = activeStrokes[touchId], stroke.points.count >= minPointsForCurve {
-        print("Adding a stroke to completed strokes. Completed Count: \(completedStrokes.count)")
+        if isDebugMode {  print("Adding a stroke to completed strokes. Completed Count: \(completedStrokes.count)") }
         completedStrokes.append(stroke)
       }
       activeStrokes.removeValue(forKey: touchId)
@@ -130,11 +132,11 @@ public final class TouchHandler {
   public func smoothPath(for stroke: TouchStroke) -> Path {
     guard stroke.points.count >= 2 else {
       // Not enough points for a path
-      print("Not enough points. Point count: \(stroke.points.count)")
+      if isDebugMode { print("Not enough points. Point count: \(stroke.points.count)")}
       return Path()
     }
     
-    print("There are enough points. Point count: \(stroke.points.count)")
+    if isDebugMode { print("There are enough points. Point count: \(stroke.points.count)")}
     
     if stroke.points.count == 2 {
       
@@ -153,16 +155,16 @@ public final class TouchHandler {
   
   /// Create a Catmull-Rom spline path from points
   private func catmullRomPath(for points: [CGPoint]) -> Path {
-    print("Creating Catmull-Rom spline path...")
+//    print("Creating Catmull-Rom spline path...")
     var path = Path()
     
-    print("Starting at first point \(points[0])...")
+//    print("Starting at first point \(points[0])...")
     /// Start at first point
     path.move(to: points[0])
     
     /// Need at least 4 points for Catmull-Rom
     if points.count >= 4 {
-      print("We do have 4 or more points. Adding curves...")
+//      print("We do have 4 or more points. Adding curves...")
       for i in 1..<points.count - 2 {
         let p0 = i > 0 ? points[i-1] : points[i]
         let p1 = points[i]
@@ -183,13 +185,13 @@ public final class TouchHandler {
         path.addCurve(to: p2, control1: controlPoint1, control2: controlPoint2)
       }
     } else {
-      print("Only have 3 or fewer points. Adding lines...")
+//      print("Only have 3 or fewer points. Adding lines...")
       // Fallback for fewer points
       for i in 1..<points.count {
         path.addLine(to: points[i])
       }
     }
-    print("Catmull process complete.")
+//    print("Catmull process complete.")
     return path
   }
 }

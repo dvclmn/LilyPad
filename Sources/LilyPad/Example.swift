@@ -11,11 +11,11 @@ import SwiftUI
 public struct TrackpadTouchesExample: View {
   @Binding var handler: TouchHandler
   @FocusState private var isFocused: Bool
-  
+
   @State private var debouncer = AsyncDebouncer()
 
-//  @State private var strokeHandler = StrokePathBuilder()
-  
+  //  @State private var strokeHandler = StrokePathBuilder()
+
   public init(
     _ handler: Binding<TouchHandler>
   ) {
@@ -50,8 +50,8 @@ public struct TrackpadTouchesExample: View {
       }
       .task(id: handler.touches) {
         handler.processTouches()
-//        await debouncer.execute { @MainActor in
-//        }
+        //        await debouncer.execute { @MainActor in
+        //        }
       }
 
   }
@@ -81,28 +81,28 @@ extension TrackpadTouchesExample {
 
     ZStack {
       // Debug items
-//      Grid {
-//        ForEach(TouchDebugItem.allCases) { item in
-//          GridRow {
-//            Text(item.name)
-//              .gridCellAnchor(.leading)
-//            Text(valueString(item))
-//              .gridCellAnchor(.trailing)
-//              .fontWeight(.medium)
-//              .monospaced()
-//              .foregroundStyle(booleanColour(valueString(item)))
-//          }
-//          Divider()
-//            .gridCellUnsizedAxes(.horizontal)
-//        }
-//      }
-//      .padding()
-//      .background(.black.opacity(0.7))
-//      .clipShape(.rect(cornerRadius: 6))
+      Grid {
+        ForEach(TouchDebugItem.allCases) { item in
+          GridRow {
+            Text(item.name)
+              .gridCellAnchor(.leading)
+            Text(valueString(item))
+              .gridCellAnchor(.trailing)
+              .fontWeight(.medium)
+              .monospaced()
+              .foregroundStyle(booleanColour(valueString(item)))
+          }
+          Divider()
+            .gridCellUnsizedAxes(.horizontal)
+        }
+      }
+      .padding()
+      .background(.black.opacity(0.7))
+      .clipShape(.rect(cornerRadius: 6))
 
 
       // Background representing the trackpad shape
-//      Color.white.opacity(0.1)
+      //      Color.white.opacity(0.1)
       Canvas { context, size in
         // Draw all strokes
         for stroke in handler.allStrokes {
@@ -115,28 +115,14 @@ extension TrackpadTouchesExample {
           )
         }
       }
-        .focused($isFocused)
-        .focusEffectDisabled()
-        .focusable(true)
-        //        .contentShape(RoundedRectangle(cornerRadius: 20))
-        .frame(
-          width: handler.trackPadSize.width,
-          height: handler.trackPadSize.height
-        )
-        .onAppear {
-          isFocused = true
-        }
-        .onKeyPress("a") {
-          handler.isPointerLocked.toggle()
-          return .handled
-        }
-        .onKeyPress("c") {
-          handler.clearStrokes()
-          return .handled
-        }
+      .background(.gray.opacity(0.2))
+      
+      //        .contentShape(RoundedRectangle(cornerRadius: 20))
+      
+      
 
       //        .border(Color.green.opacity(0.3))
-//      .background(.pink.opacity(0.2))
+      //      .background(.pink.opacity(0.2))
 
       if handler.isInTouchMode {
         // Visualise Touches
@@ -151,6 +137,27 @@ extension TrackpadTouchesExample {
         }
       }
     }
+    .focused($isFocused)
+    .focusEffectDisabled()
+    .focusable(true)
+    
+    .onAppear {
+      isFocused = true
+    }
+    .onKeyPress("a") {
+      handler.isPointerLocked.toggle()
+      return .handled
+    }
+    .onKeyPress("c") {
+      handler.clearStrokes()
+      return .handled
+    }
+    
+    .frame(
+      width: handler.trackPadSize.width,
+      height: handler.trackPadSize.height
+    )
+    
     .clipShape(.rect(cornerRadius: 20))
     .allowsHitTesting(false)
   }
@@ -175,7 +182,7 @@ extension TrackpadTouchesExample {
 #Preview(traits: .fixedLayout(width: 800, height: 800)) {
   @Previewable @State var handler = TouchHandler()
   TrackpadTouchesExample($handler)
-//    .offset(x: -200, y: 0)
+  //    .offset(x: -200, y: 0)
 }
 #endif
 

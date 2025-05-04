@@ -7,6 +7,27 @@
 
 import SwiftUI
 
+//extension CGPoint {
+//  static let example01 = CGPoint(x: 82, y: 280)
+//  static let example02 = CGPoint(x: 95, y: 289)
+//}
+//
+//extension Set where Element == TrackpadTouch {
+//  
+//  public static let example: Set<TrackpadTouch> = [
+//    TrackpadTouch(
+//      id: 1,
+//      position: CGPoint.example01,
+//      time: 1
+//    ),
+//    TrackpadTouch(
+//      id: 2,
+//      position: CGPoint.example02,
+//      time: 2
+//    ),
+//  ]
+//}
+
 /// Represents a normalized touch on the trackpad
 public struct TrackpadTouch: Identifiable, Hashable {
   public let id: Int
@@ -58,6 +79,20 @@ public struct TrackpadTouch: Identifiable, Hashable {
       self.velocity = CGVector.zero
     }
   }
+  // For Debugging
+  public init(
+    id: Int,
+    position: CGPoint,
+    time: TimeInterval
+  ) {
+    self.id = id
+    self.position = position
+    self.timestamp = time
+    
+    self.velocity = .zero
+    self.previousPosition = nil
+    self.previousTimestamp = nil
+  }
   
   /// The magnitude of the velocity vector (speed)
   public var speed: CGFloat {
@@ -87,6 +122,7 @@ enum TouchDebugItem: String, Identifiable, CaseIterable {
     }
   }
 }
+
 
 
 /// Represents a touch stroke with a series of points and widths
