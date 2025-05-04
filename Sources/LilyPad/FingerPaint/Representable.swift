@@ -7,8 +7,6 @@
 
 #if canImport(AppKit)
 import SwiftUI
-import AppKit
-
 
 // MARK: - Delegate Protocol
 /// Protocol for receiving touch updates
@@ -39,9 +37,7 @@ public struct TrackpadTouchesView: NSViewRepresentable {
     return view
   }
 
-  public func updateNSView(_ nsView: TrackpadTouchesNSView, context: Context) {
-    // No updates needed right now
-  }
+  public func updateNSView(_ nsView: TrackpadTouchesNSView, context: Context) {}
 
   public func makeCoordinator() -> Coordinator {
     Coordinator(self)

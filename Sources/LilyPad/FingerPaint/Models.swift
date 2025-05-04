@@ -30,18 +30,7 @@ public struct TrackpadTouch: Identifiable, Hashable {
     /// Initialize with previous touch data if available
     self.previousPosition = previousTouch?.position
     self.previousTimestamp = previousTouch?.timestamp
-    
-//    if let previousTouch {
-//      print("Previous touch `\(previousTouch)`")
-//    }
-//    if let previousPosition {
-//      print("Previous position `\(previousPosition)`")
-//    }
-//    
-//    if let previousTimestamp {
-//      print("Previous Timestamp `\(previousTimestamp)`")
-//    }
-    
+
     /// Calculate velocity if we have previous data
     if let prevPos = previousTouch?.position, let prevTime = previousTouch?.timestamp {
       let dx = position.x - prevPos.x

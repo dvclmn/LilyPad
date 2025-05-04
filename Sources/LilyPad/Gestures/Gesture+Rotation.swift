@@ -5,10 +5,10 @@
 //  Created by Dave Coleman on 26/11/2024.
 //
 
-import AppKit
-
-extension GestureView {
-  
+//import AppKit
+//
+//extension GestureView {
+//  
 //  func angleDifference(_ angle1: CGFloat, _ angle2: CGFloat) -> CGFloat {
 //    /// Flipping the rotation here, as this seems to yield the most appropriate behaviour in the UI
 //    var diff = -(angle1 - angle2)
@@ -63,4 +63,4 @@ extension GestureView {
 //    
 //    previousTouchAngle = currentAngle
 //  }
-}
+//}

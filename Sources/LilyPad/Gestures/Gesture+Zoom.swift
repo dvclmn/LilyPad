@@ -7,8 +7,8 @@
 
 import AppKit
 
-extension GestureView {
-  
+//extension GestureView {
+//  
 //  func handleZoom(_ currentDistance: CGFloat) {
 //    if let previousDistance = previousTouchDistance {
 //      let delta = (currentDistance - previousDistance) / previousDistance
@@ -43,4 +43,4 @@ extension GestureView {
 //    
 //    previousTouchDistance = currentDistance
 //  }
-}
+//}
