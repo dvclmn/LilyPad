@@ -14,11 +14,14 @@ public final class AppHandler {
   var touches: Set<TrackpadTouch> = []
 
   var strokeHandler = StrokeHandler()
-
+  
   let isDebugMode: Bool = false
   var windowSize: CGSize = .zero
   var isPointerLocked: Bool = false
   var isClicked: Bool = false
+  
+  let minDistanceThreshold: CGFloat = 10
+  let minSpeedForSparseSampling: CGFloat = 0.1
 
   public init() {}
 
@@ -76,8 +79,17 @@ extension AppHandler {
           print("There are active strokes for touch \(touchId). Count: \(stroke.points.count)")
           print("Point count for stroke BEFORE: \(stroke.points.count)")
         }
+        
+        if let last = stroke.points.last {
+          let distance = hypot(touchPosition.x - last.x, touchPosition.y - last.y)
+          let shouldAddPoint = distance > minDistanceThreshold || touch.speed < minSpeedForSparseSampling
+          if shouldAddPoint {
+            stroke.addPoint(touchPosition, width: width)
+          }
+        }
+        
 
-        stroke.addPoint(touchPosition, width: width)
+//        stroke.addPoint(touchPosition, width: width)
         strokeHandler.activeStrokes[touchId] = stroke
 
       } else {

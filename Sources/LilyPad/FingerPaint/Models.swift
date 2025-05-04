@@ -80,7 +80,7 @@ public struct TouchStroke: Identifiable {
   public var points: [CGPoint]
   public var widths: [CGFloat]
   public var color: Color
-
+  
   public init(
     id: UUID = UUID(),
     points: [CGPoint],
@@ -95,9 +95,20 @@ public struct TouchStroke: Identifiable {
   
   /// Add a point to the stroke with a specified width
   public mutating func addPoint(
+//    lastPoint: CGPoint,
     _ point: CGPoint,
+//    touch: TrackpadTouch,
     width: CGFloat
   ) {
+    
+
+//      let distance = hypot(point.x - lastPoint.x, point.y - lastPoint.y)
+//      let shouldAddPoint = distance > minDistanceThreshold || touch.speed < minSpeedForSparseSampling
+//      if shouldAddPoint {
+//        stroke.addPoint(touchPosition, width: width)
+//      }
+//
+//    
     points.append(point)
     widths.append(width)
   }
@@ -113,7 +124,7 @@ public struct TouchStroke: Identifiable {
         CGPoint(x: 500, y: 100),
         CGPoint(x: 600, y: 200),
       ],
-      widths: [2, 6, 10, 14, 18, 22, 26],
+      widths: [2, 6, 10, 12, 8, 7, 3],
       color: .green,
     )
   ]

@@ -32,19 +32,19 @@ public struct CanvasView: View {
 
 //          renderBasicStrokes(points: stroke.points, widths: widths, context: &context)
           
-//          renderStrokes(
-//            points: stroke.points,
-//            widths: &widths,
-//            context: &context
-//          )
-          renderStrokesAlt(
-            points: stroke.points,
-            widths: widths,
+          renderStrokes(
+            points: basePoints,
+            widths: &widths,
             context: &context
           )
+//          renderStrokesAlt(
+//            points: basePoints,
+//            widths: widths,
+//            context: &context
+//          )
 
           /// Shows location of points and handles
-          //          context.debugPath(path: fullPath)
+                    context.debugPath(path: basePath)
 
         }  // END stroke loop
       }
@@ -64,73 +64,74 @@ public struct CanvasView: View {
 
 extension CanvasView {
 
-  func renderStrokesAlt(
-    points: [CGPoint],
-    widths: [CGFloat],
-    context: inout GraphicsContext
-  ) {
-
-    var leftEdge: [CGPoint] = []
-    var rightEdge: [CGPoint] = []
-
-    for i in 0..<points.count where i < widths.count {
-
-      let p = points[i]
-
-      let width = widths[i]
-
-      // Compute direction (tangent)
-      //            let prev = points[max(i - 1, 0)]
-      //            let next = points[min(i + 1, points.count - 1)]
-
-      guard points.count >= 2 else { continue }
-
-      let prev = i > 0 ? points[i - 1] : points[i]
-      let next = i < points.count - 1 ? points[i + 1] : points[i]
-
-      let dx = next.x - prev.x
-      let dy = next.y - prev.y
-      let angle = atan2(dy, dx)
-
-      let perp = CGVector(dx: -sin(angle), dy: cos(angle))
-      let offset = width / 2
-
-      let left = CGPoint(x: p.x + perp.dx * offset, y: p.y + perp.dy * offset)
-      let right = CGPoint(x: p.x - perp.dx * offset, y: p.y - perp.dy * offset)
-
-      leftEdge.append(left)
-      rightEdge.append(right)
-    }
-
-    // Reverse right edge for proper winding
-    rightEdge.reverse()
-
-    // Combine and draw
-    let fullPath = Path { path in
-      guard !leftEdge.isEmpty, !rightEdge.isEmpty else { return }
-      path.move(to: leftEdge[0])
-
-      for point in leftEdge.dropFirst() { path.addLine(to: point) }
-      for point in rightEdge { path.addLine(to: point) }
-      path.closeSubpath()
-    }
-
-    context.fill(fullPath, with: .color(.orange))
-
-  }
+//  func renderStrokesAlt(
+//    points: [CGPoint],
+//    widths: [CGFloat],
+//    context: inout GraphicsContext
+//  ) {
+//
+//    var leftEdge: [CGPoint] = []
+//    var rightEdge: [CGPoint] = []
+//
+//    for i in 0..<points.count where i < widths.count {
+//
+//      let p = points[i]
+//
+//      let width = widths[i]
+//
+//      // Compute direction (tangent)
+//      //            let prev = points[max(i - 1, 0)]
+//      //            let next = points[min(i + 1, points.count - 1)]
+//
+//      guard points.count >= 2 else { continue }
+//
+//      let prev = i > 0 ? points[i - 1] : points[i]
+//      let next = i < points.count - 1 ? points[i + 1] : points[i]
+//
+//      let dx = next.x - prev.x
+//      let dy = next.y - prev.y
+//      let angle = atan2(dy, dx)
+//
+//      let perp = CGVector(dx: -sin(angle), dy: cos(angle))
+//      let offset = width / 2
+//
+//      let left = CGPoint(x: p.x + perp.dx * offset, y: p.y + perp.dy * offset)
+//      let right = CGPoint(x: p.x - perp.dx * offset, y: p.y - perp.dy * offset)
+//
+//      leftEdge.append(left)
+//      rightEdge.append(right)
+//    }
+//
+//    // Reverse right edge for proper winding
+//    rightEdge.reverse()
+//
+//    // Combine and draw
+//    let fullPath = Path { path in
+//      guard !leftEdge.isEmpty, !rightEdge.isEmpty else { return }
+//      path.move(to: leftEdge[0])
+//
+//      for point in leftEdge.dropFirst() { path.addLine(to: point) }
+//      for point in rightEdge { path.addLine(to: point) }
+//      path.closeSubpath()
+//    }
+//
+//    context.fill(fullPath, with: .color(.orange))
+//
+//  }
 
   func renderStrokes(
     points: [CGPoint],
     widths: inout [CGFloat],
     context: inout GraphicsContext
   ) {
-    // Handle empty widths case
+    /// Handle empty widths case
     if widths.isEmpty {
       widths = Array(repeating: 5.0, count: points.count)
     }
-    // Handle case where widths.count < points.count
+    /// Handle case where widths.count < points.count
     else if widths.count < points.count {
-      // Only interpolate if we have at least 2 widths to work with
+      
+      /// Only interpolate if we have at least 2 widths to work with
       if widths.count >= 2 {
         let step = CGFloat(widths.count - 1) / CGFloat(points.count - 1)
         var interpolatedWidths: [CGFloat] = []
@@ -147,18 +148,17 @@ extension CanvasView {
         }
         widths = interpolatedWidths
       } else {
-        // Fall back to padding with last width
+        /// Fall back to padding with last width
         let lastWidth = widths.last ?? 5.0
         widths += Array(repeating: lastWidth, count: points.count - widths.count)
       }
     }
-    // If widths.count > points.count, truncate (shouldn't happen, but just in case)
+    /// If widths.count > points.count, truncate (shouldn't happen, but just in case)
     else if widths.count > points.count {
       widths = Array(widths[0..<points.count])
     }
 
-    // Now we can safely assume widths.count == points.count
-
+    /// Now we can safely assume widths.count == points.count
     for i in 0..<points.count where i < points.count - 1 {
       let p1 = points[i]
       let p2 = points[i + 1]
@@ -185,8 +185,6 @@ extension CanvasView {
 
       context.fill(path, with: .color(.purple))
     }
-
-
   }
 
   func renderBasicStrokes(
