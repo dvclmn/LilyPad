@@ -9,12 +9,10 @@ import BaseHelpers
 import SwiftUI
 
 public struct TrackpadTouchesExample: View {
-  @Binding var handler: TouchHandler
-  @FocusState private var isFocused: Bool
 
   @State private var debouncer = AsyncDebouncer()
-
-  //  @State private var strokeHandler = StrokePathBuilder()
+  @FocusState private var isFocused: Bool
+  @Binding var handler: TouchHandler
 
   public init(
     _ handler: Binding<TouchHandler>
@@ -59,23 +57,6 @@ public struct TrackpadTouchesExample: View {
 
 extension TrackpadTouchesExample {
 
-  func booleanColour(_ value: String) -> Color {
-    switch value {
-      case "true": Color.orange
-      case "false": Color.red
-      default: Color.gray
-    }
-  }
-
-  func valueString(_ item: TouchDebugItem) -> String {
-    switch item {
-      case .pointerLocked: handler.isPointerLocked.description
-      case .touchModeActive: handler.isInTouchMode.description
-      case .clickedDown: handler.isClicked.description
-      case .touchCount: handler.touches.count.string
-    }
-  }
-
   @ViewBuilder
   func Interface() -> some View {
 
@@ -101,28 +82,8 @@ extension TrackpadTouchesExample {
       .clipShape(.rect(cornerRadius: 6))
 
 
-      // Background representing the trackpad shape
-      //      Color.white.opacity(0.1)
-      Canvas { context, size in
-        // Draw all strokes
-        for stroke in handler.allStrokes {
-          let path = handler.smoothPath(for: stroke)
-          //          let offSetPath = path.offsetBy(dx: 200, dy: 200)
-          context.stroke(
-            path,
-            with: .color(stroke.color),
-            style: StrokeStyle(lineWidth: 5, lineCap: .round, lineJoin: .round)
-          )
-        }
-      }
-      .background(.gray.opacity(0.2))
-      
-      //        .contentShape(RoundedRectangle(cornerRadius: 20))
-      
-      
+      CanvasView(handler: handler)
 
-      //        .border(Color.green.opacity(0.3))
-      //      .background(.pink.opacity(0.2))
 
       if handler.isInTouchMode {
         // Visualise Touches
@@ -175,6 +136,25 @@ extension TrackpadTouchesExample {
         handler.isClicked = false
       }
   }
+  
+  
+  func booleanColour(_ value: String) -> Color {
+    switch value {
+      case "true": Color.orange
+      case "false": Color.red
+      default: Color.gray
+    }
+  }
+  
+  func valueString(_ item: TouchDebugItem) -> String {
+    switch item {
+      case .pointerLocked: handler.isPointerLocked.description
+      case .touchModeActive: handler.isInTouchMode.description
+      case .clickedDown: handler.isClicked.description
+      case .touchCount: handler.touches.count.string
+    }
+  }
+
 }
 
 #if DEBUG

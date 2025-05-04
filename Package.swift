@@ -14,11 +14,15 @@ let package = Package(
   ],
   dependencies: [
     .package(url: "https://github.com/dvclmn/BaseHelpers", branch: "main"),
+    .package(url: "https://github.com/dvclmn/BaseComponents", branch: "main"),
   ],
   targets: [
     .target(
       name: "LilyPad",
-      dependencies: [.product(name: "BaseHelpers", package: "BaseHelpers"),]
+      dependencies: [
+        .product(name: "BaseHelpers", package: "BaseHelpers"),
+        .product(name: "BaseComponents", package: "BaseComponents"),
+      ]
     ),
     .testTarget(
       name: "LilyPadTests",
