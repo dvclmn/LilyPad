@@ -8,6 +8,44 @@
 import BaseHelpers
 import SwiftUI
 
+
+
+public struct StrokeEngine {
+  public var settings: StrokeSettings
+  private var strokeWidth: StrokeWidth
+  
+  public init(settings: StrokeSettings = .default) {
+    self.settings = settings
+    self.strokeWidth = StrokeWidth(baseWidth: settings.baseStrokeWidth, sensitivity: settings.velocitySensitivity)
+  }
+  
+  public func shouldAddPoint(from last: CGPoint, to current: CGPoint, velocity: CGFloat) -> Bool {
+    let distance = hypot(current.x - last.x, current.y - last.y)
+    return distance > settings.minDistance || velocity < settings.minSpeedForSparseSampling
+  }
+  
+  public func calculateWidth(for touch: TrackpadTouch) -> CGFloat {
+    strokeWidth.calculateStrokeWidth(for: touch)
+  }
+}
+
+
+public struct StrokeSettings {
+  public var baseStrokeWidth: CGFloat
+  public var velocitySensitivity: CGFloat // 0 = insensitive, 1 = full range
+  public var minDistance: CGFloat         // Minimum Euclidean distance between sampled points
+  public var minSpeedForSparseSampling: CGFloat // Allow sparse samples if slow
+  
+  public static let `default` = StrokeSettings(
+    baseStrokeWidth: 10,
+    velocitySensitivity: 0.5,
+    minDistance: 2.0,
+    minSpeedForSparseSampling: 1.0
+  )
+}
+
+
+
 @Observable
 public final class AppHandler {
 

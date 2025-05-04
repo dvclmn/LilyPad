@@ -48,41 +48,65 @@ extension StrokeHandler {
 
 }
 
-struct StrokeWidth {
-  /// Base width for strokes
-  private var baseStrokeWidth: CGFloat = 10.0
 
-  /// Maximum width for strokes
-  private var maxStrokeWidth: CGFloat = 30.0
-
-  /// Minimum width for strokes
-  private var minStrokeWidth: CGFloat = 5.0
-
-  /// Speed at which stroke width is at its minimum
-  private var maxSpeedForMinWidth: CGFloat = 2.0
-
-
-  /// Update the base stroke width
-  public mutating func setBaseStrokeWidth(_ width: CGFloat) {
-    baseStrokeWidth = width
-    maxStrokeWidth = width * 3
-    minStrokeWidth = width * 0.5
+public struct StrokeWidth {
+  private var base: CGFloat
+  private var sensitivity: CGFloat
+  
+  private var minWidth: CGFloat { base * 0.5 }
+  private var maxWidth: CGFloat { base * 3 }
+  
+  public init(baseWidth: CGFloat, sensitivity: CGFloat) {
+    self.base = baseWidth
+    self.sensitivity = min(max(sensitivity, 0), 1) // Clamp 0...1
   }
-
-  /// Calculate stroke width based on touch velocity
+  
   public func calculateStrokeWidth(for touch: TrackpadTouch) -> CGFloat {
-    let speed = touch.speed
-
-    /// Inverse relationship: faster movement = thinner line
-    /// Clamp within min and max stroke width
-    if speed <= 0.001 {
-      return maxStrokeWidth
-    } else if speed >= maxSpeedForMinWidth {
-      return minStrokeWidth
-    } else {
-      /// Linear interpolation between max and min width based on speed
-      let speedFactor = speed / maxSpeedForMinWidth
-      return maxStrokeWidth - (maxStrokeWidth - minStrokeWidth) * speedFactor
-    }
+    let clampedSpeed = min(max(touch.speed, 0), 3.0)
+    let t = clampedSpeed / 3.0
+    let adjustedT = pow(t, sensitivity * 2) // Exponential control curve
+    return maxWidth - (maxWidth - minWidth) * adjustedT
   }
 }
+
+
+
+
+//struct StrokeWidth {
+//  /// Base width for strokes
+//  private var baseStrokeWidth: CGFloat = 10.0
+//
+//  /// Maximum width for strokes
+//  private var maxStrokeWidth: CGFloat = 30.0
+//
+//  /// Minimum width for strokes
+//  private var minStrokeWidth: CGFloat = 5.0
+//
+//  /// Speed at which stroke width is at its minimum
+//  private var maxSpeedForMinWidth: CGFloat = 2.0
+//
+//
+//  /// Update the base stroke width
+//  public mutating func setBaseStrokeWidth(_ width: CGFloat) {
+//    baseStrokeWidth = width
+//    maxStrokeWidth = width * 3
+//    minStrokeWidth = width * 0.5
+//  }
+//
+//  /// Calculate stroke width based on touch velocity
+//  public func calculateStrokeWidth(for touch: TrackpadTouch) -> CGFloat {
+//    let speed = touch.speed
+//
+//    /// Inverse relationship: faster movement = thinner line
+//    /// Clamp within min and max stroke width
+//    if speed <= 0.001 {
+//      return maxStrokeWidth
+//    } else if speed >= maxSpeedForMinWidth {
+//      return minStrokeWidth
+//    } else {
+//      /// Linear interpolation between max and min width based on speed
+//      let speedFactor = speed / maxSpeedForMinWidth
+//      return maxStrokeWidth - (maxStrokeWidth - minStrokeWidth) * speedFactor
+//    }
+//  }
+//}
