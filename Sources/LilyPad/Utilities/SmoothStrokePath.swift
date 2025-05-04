@@ -14,10 +14,8 @@ public struct StrokePath {
     
     /// Check there are enough points to actually create a Path
     guard stroke.points.count >= 2 else {
-//      print("Not enough points. Point count: \(stroke.points.count)")
       return Path()
     }
-    
     /// If there are exactly 2 points, we don't need a curve, just a line
     if stroke.points.count == 2 {
       print("Point count is exactly 2. Creating a line.")
@@ -30,7 +28,5 @@ public struct StrokePath {
     
     return CatmullRom.catmullRomPath(for: stroke.points)
   }
-  
-  
   
 }
