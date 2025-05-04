@@ -11,10 +11,9 @@ import AppKit
 
 
 // MARK: - Delegate Protocol
-
 /// Protocol for receiving touch updates
 public protocol TrackpadTouchesDelegate: AnyObject {
-  /// Called when the set of touching touches changes
+  /// Called when the set of touches changes
   func touchesView(
     _ view: TrackpadTouchesNSView,
     didUpdateTouches touches: Set<TrackpadTouch>
@@ -22,7 +21,6 @@ public protocol TrackpadTouchesDelegate: AnyObject {
 }
 
 // MARK: - SwiftUI Representable
-
 /// SwiftUI wrapper for the trackpad touches view
 public struct TrackpadTouchesView: NSViewRepresentable {
   /// Binding to the collection of current touches
