@@ -53,6 +53,10 @@ extension TouchDebugView {
       case .touchModeActive: handler.isInTouchMode.description
       case .clickedDown: handler.isClicked.description
       case .touchCount: handler.touches.count.string
+      case .strokeCount: handler.strokeHandler.allStrokes.count.string
+      case .pointCount: handler.strokeHandler.allStrokes.reduce(0) { partialResult, stroke in
+        partialResult + stroke.points.count
+      }.string
     }
   }
 
@@ -63,4 +67,27 @@ extension TouchDebugView {
   TouchDebugView(handler: AppHandler())
 }
 #endif
+
+enum TouchDebugItem: String, Identifiable, CaseIterable {
+  case touchCount
+  case touchModeActive
+  case pointerLocked
+  case clickedDown
+  case strokeCount
+  case pointCount
+  
+  var id: String { self.rawValue }
+  
+  var name: String {
+    switch self {
+      case .touchCount: "Touch Count"
+      case .touchModeActive: "Touch Mode Active"
+      case .pointerLocked: "Pointer Locked"
+      case .clickedDown: "Clicked Down"
+      case .strokeCount: "Stroke Count"
+      case .pointCount: "Point Count"
+    }
+  }
+}
+
 

@@ -84,25 +84,6 @@ public struct TrackpadTouch: Identifiable, Hashable {
   }
 }
 
-enum TouchDebugItem: String, Identifiable, CaseIterable {
-  case touchCount
-  case touchModeActive
-  case pointerLocked
-  case clickedDown
-  
-  var id: String { self.rawValue }
-  
-  var name: String {
-    switch self {
-      case .touchCount: "Touch Count"
-      case .touchModeActive: "Touch Mode Active"
-      case .pointerLocked: "Pointer Locked"
-      case .clickedDown: "Clicked Down"
-    }
-  }
-}
-
-
 
 /// Represents a touch stroke with a series of points and widths
 public struct TouchStroke: Identifiable {
