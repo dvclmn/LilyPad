@@ -27,11 +27,13 @@ public struct TrackpadTouchesExample: View {
     VStack(alignment: .leading) {
       TouchDebugView(handler: handler)
       TrackpadTouchesView { touches in
-        handler.touches = touches
+        if handler.touches != touches {
+          handler.touches = touches
+        }
         handler.processTouches()
       }
-        .overlay { CanvasView(handler: handler) }
-        .mouseLock($handler.isPointerLocked)
+      .overlay { CanvasView(handler: handler) }
+      .mouseLock($handler.isPointerLocked)
     }  // END main vstack
     .focusable(true)
     .focused($isFocused)
@@ -109,4 +111,3 @@ extension TrackpadTouchesExample {
   //    .offset(x: -200, y: 0)
 }
 #endif
-

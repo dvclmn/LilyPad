@@ -32,7 +32,7 @@ public class TrackpadTouchesNSView: NSView {
     /// Only interested in trackpad touches, not direct touches
     allowedTouchTypes = [.indirect]
     /// Include stationary touches in the updates
-    wantsRestingTouches = true
+    wantsRestingTouches = false
   }
 
   private func processTouches(with event: NSEvent) {
@@ -50,7 +50,6 @@ public class TrackpadTouchesNSView: NSView {
   }
 
   // MARK: - Touch Event Handlers
-
   public override func touchesBegan(with event: NSEvent) {
     processTouches(with: event)
   }
@@ -58,9 +57,6 @@ public class TrackpadTouchesNSView: NSView {
     processTouches(with: event)
   }
   public override func touchesEnded(with event: NSEvent) {
-    processTouches(with: event)
-  }
-  public override func touchesCancelled(with event: NSEvent) {
     processTouches(with: event)
   }
 }

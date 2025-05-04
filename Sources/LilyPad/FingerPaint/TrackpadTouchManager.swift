@@ -31,6 +31,7 @@ public class TrackpadTouchManager {
       
       /// Create a new touch with velocity information based on the previous touch
       let newTouch = TrackpadTouch(touch, previousTouch: previousTouch)
+      
       updatedTouches.insert(newTouch)
       
       /// Update last touch
