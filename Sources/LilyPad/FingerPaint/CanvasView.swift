@@ -28,7 +28,7 @@ public struct CanvasView: View {
 
           let basePoints = StrokePath.smoothPoints(for: stroke)
           let basePath = StrokePath.smoothPath(for: stroke)
-          let widths = stroke.widths
+          var widths = stroke.widths
 
           /// THIS WORKS
           //                    for point in basePoints {
@@ -39,27 +39,52 @@ public struct CanvasView: View {
 
 
           // Ensure points and widths arrays have the same count
-          guard stroke.points.count == stroke.widths.count else {
-            print("Mismatch in number of points `\(stroke.points.count)` and widths `\(stroke.widths.count)")
-            continue
+//          guard stroke.points.count == stroke.widths.count else {
+//            print("Mismatch in number of points `\(stroke.points.count)` and widths `\(stroke.widths.count)")
+//            continue
+//          }
+          
+          // Handle empty widths case
+          if widths.isEmpty {
+            widths = Array(repeating: 5.0, count: stroke.points.count)
           }
+          // Handle case where widths.count < points.count
+          else if widths.count < stroke.points.count {
+            // Only interpolate if we have at least 2 widths to work with
+            if widths.count >= 2 {
+              let step = CGFloat(widths.count - 1) / CGFloat(stroke.points.count - 1)
+              var interpolatedWidths: [CGFloat] = []
+              for i in 0..<stroke.points.count {
+                let pos = CGFloat(i) * step
+                let lowerIndex = Int(pos)
+                let upperIndex = min(lowerIndex + 1, widths.count - 1)
+                let fraction = pos - CGFloat(lowerIndex)
+                
+                let lowerWidth = widths[lowerIndex]
+                let upperWidth = widths[upperIndex]
+                let interpolated = lowerWidth + (upperWidth - lowerWidth) * fraction
+                interpolatedWidths.append(interpolated)
+              }
+              widths = interpolatedWidths
+            } else {
+              // Fall back to padding with last width
+              let lastWidth = widths.last ?? 5.0
+              widths += Array(repeating: lastWidth, count: stroke.points.count - widths.count)
+            }
+          }
+          // If widths.count > points.count, truncate (shouldn't happen, but just in case)
+          else if widths.count > stroke.points.count {
+            widths = Array(widths[0..<stroke.points.count])
+          }
+          
+          // Now we can safely assume widths.count == points.count
           
           for i in 0..<stroke.points.count {
             if i < stroke.points.count - 1 {
-              /// Create segment path between points
-              var segmentPath = Path()
-              segmentPath.move(to: stroke.points[i])
-              segmentPath.addLine(to: stroke.points[i + 1])
-              
-              /// Average width between adjacent points
-              let width = (stroke.widths[i] + stroke.widths[min(i + 1, stroke.widths.count - 1)]) / 2.0
-              
               let p1 = stroke.points[i]
               let p2 = stroke.points[i + 1]
-              
-              // Safe access to widths
-              let width1 = stroke.widths[i]
-              let width2 = stroke.widths[i + 1] // This is now safe because of the guard and the i < count-1 check
+              let width1 = widths[i]
+              let width2 = widths[i + 1]
               
               let dx = p2.x - p1.x
               let dy = p2.y - p1.y
@@ -84,53 +109,53 @@ public struct CanvasView: View {
           }
 
 
-          var leftEdge: [CGPoint] = []
-          var rightEdge: [CGPoint] = []
-
-          for i in 0..<basePoints.count {
-            guard i < widths.count else { continue }
-            
-            let p = basePoints[i]
-
-            let width = widths[i]
-
-            // Compute direction (tangent)
-            //            let prev = basePoints[max(i - 1, 0)]
-            //            let next = basePoints[min(i + 1, basePoints.count - 1)]
-
-            guard basePoints.count >= 2 else { continue }
-
-            let prev = i > 0 ? basePoints[i - 1] : basePoints[i]
-            let next = i < basePoints.count - 1 ? basePoints[i + 1] : basePoints[i]
-
-            let dx = next.x - prev.x
-            let dy = next.y - prev.y
-            let angle = atan2(dy, dx)
-
-            let perp = CGVector(dx: -sin(angle), dy: cos(angle))
-            let offset = width / 2
-
-            let left = CGPoint(x: p.x + perp.dx * offset, y: p.y + perp.dy * offset)
-            let right = CGPoint(x: p.x - perp.dx * offset, y: p.y - perp.dy * offset)
-
-            leftEdge.append(left)
-            rightEdge.append(right)
-          }
-
-          // Reverse right edge for proper winding
-          rightEdge.reverse()
-
-          // Combine and draw
-          let fullPath = Path { path in
-            guard !leftEdge.isEmpty, !rightEdge.isEmpty else { return }
-            path.move(to: leftEdge[0])
-
-            for point in leftEdge.dropFirst() { path.addLine(to: point) }
-            for point in rightEdge { path.addLine(to: point) }
-            path.closeSubpath()
-          }
-
-          context.fill(fullPath, with: .color(.orange))
+//          var leftEdge: [CGPoint] = []
+//          var rightEdge: [CGPoint] = []
+//
+//          for i in 0..<basePoints.count {
+//            guard i < widths.count else { continue }
+//            
+//            let p = basePoints[i]
+//
+//            let width = widths[i]
+//
+//            // Compute direction (tangent)
+//            //            let prev = basePoints[max(i - 1, 0)]
+//            //            let next = basePoints[min(i + 1, basePoints.count - 1)]
+//
+//            guard basePoints.count >= 2 else { continue }
+//
+//            let prev = i > 0 ? basePoints[i - 1] : basePoints[i]
+//            let next = i < basePoints.count - 1 ? basePoints[i + 1] : basePoints[i]
+//
+//            let dx = next.x - prev.x
+//            let dy = next.y - prev.y
+//            let angle = atan2(dy, dx)
+//
+//            let perp = CGVector(dx: -sin(angle), dy: cos(angle))
+//            let offset = width / 2
+//
+//            let left = CGPoint(x: p.x + perp.dx * offset, y: p.y + perp.dy * offset)
+//            let right = CGPoint(x: p.x - perp.dx * offset, y: p.y - perp.dy * offset)
+//
+//            leftEdge.append(left)
+//            rightEdge.append(right)
+//          }
+//
+//          // Reverse right edge for proper winding
+//          rightEdge.reverse()
+//
+//          // Combine and draw
+//          let fullPath = Path { path in
+//            guard !leftEdge.isEmpty, !rightEdge.isEmpty else { return }
+//            path.move(to: leftEdge[0])
+//
+//            for point in leftEdge.dropFirst() { path.addLine(to: point) }
+//            for point in rightEdge { path.addLine(to: point) }
+//            path.closeSubpath()
+//          }
+//
+//          context.fill(fullPath, with: .color(.orange))
 
 
           /// Shows location of points and handles
