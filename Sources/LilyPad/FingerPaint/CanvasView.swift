@@ -24,32 +24,23 @@ public struct CanvasView: View {
         /// Draw all strokes
         for stroke in handler.strokeHandler.allStrokes {
           let path = StrokePath.smoothPath(for: stroke)
-          
-          /// Draw the stroke with variable width
-          for i in 0..<stroke.points.count {
-            if i < stroke.points.count - 1 {
-              /// Create segment path between points
-              var segmentPath = Path()
-              segmentPath.move(to: stroke.points[i])
-              segmentPath.addLine(to: stroke.points[i+1])
-              
-              /// Average width between adjacent points
-              let width = (stroke.widths[i] + stroke.widths[min(i+1, stroke.widths.count-1)]) / 2.0
-              
-              /// Draw the segment with the calculated width
-              context.stroke(segmentPath, with: .color(stroke.color), style: StrokeStyle(lineWidth: width, lineCap: .round, lineJoin: .round))
-            }
+
+          // Ensure we have at least 2 points and matching widths
+          guard stroke.points.count >= 2,
+                  stroke.widths.count >= 2,
+                stroke.points.count == stroke.widths.count else {
+            continue  // Skip this stroke if conditions aren't met
           }
-//
-//          context.stroke(
-//            path,
-//            with: .color(stroke.color),
-//            style: StrokeStyle(
-//              lineWidth: 5,
-//              lineCap: .round,
-//              lineJoin: .round
-//            )
-//          )  // END context stroke
+          
+          context.stroke(
+            path,
+            with: .color(stroke.color),
+            style: StrokeStyle(
+              lineWidth: 5,
+              lineCap: .round,
+              lineJoin: .round
+            )
+          )  // END context stroke
 
           /// Shows location of points and handles
           context.debugPath(path: path)
