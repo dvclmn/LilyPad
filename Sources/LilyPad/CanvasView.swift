@@ -5,8 +5,8 @@
 //  Created by Dave Coleman on 4/5/2025.
 //
 
-import BaseHelpers
 import BaseComponents
+import BaseHelpers
 import SwiftUI
 
 public struct CanvasView: View {
@@ -31,9 +31,9 @@ public struct CanvasView: View {
             lineJoin: .round
           )
         )  // END context stroke
-
+        
+        /// Shows location of points and handles
         context.debugPath(path: path)
-
       }
     }
     .background(.gray.opacity(0.2))
