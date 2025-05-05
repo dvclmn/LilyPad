@@ -8,6 +8,7 @@
 import Foundation
 
 public struct StrokeEngine {
+  
   public var settings: StrokeSettings
   private var strokeWidth: StrokeWidth
   

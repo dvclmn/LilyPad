@@ -32,6 +32,7 @@ public struct TrackpadTouch: Identifiable, Hashable {
     pressureAmount: CGFloat,
     previousTouch: TrackpadTouch? = nil
   ) {
+    
     // MARK: - NSTouch
     self.id = nsTouch.identity.hash
     self.position = CGPoint(
@@ -80,22 +81,22 @@ public struct TrackpadTouch: Identifiable, Hashable {
   }
 }
 
-extension TrackpadTouch {
-  
-  /// For Debugging — not sure if needed
-  public init(
-    id: Int,
-    position: CGPoint,
-    timestamp: TimeInterval
-  ) {
-    self.id = id
-    self.position = position
-    self.timestamp = timestamp
-    
-    self.velocity = .zero
-    self.previousPosition = nil
-    self.previousTimestamp = nil
-  }
-  
-}
+//extension TrackpadTouch {
+//  
+//  /// For Debugging — not sure if needed
+//  public init(
+//    id: Int,
+//    position: CGPoint,
+//    timestamp: TimeInterval
+//  ) {
+//    self.id = id
+//    self.position = position
+//    self.timestamp = timestamp
+//    
+//    self.velocity = .zero
+//    self.previousPosition = nil
+//    self.previousTimestamp = nil
+//  }
+//  
+//}
 

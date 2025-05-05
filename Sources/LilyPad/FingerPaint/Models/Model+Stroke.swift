@@ -41,3 +41,13 @@ public struct TouchStroke: Identifiable {
   ]
 }
 
+enum StrokeState {
+  case active
+  case completed
+  case optimized
+}
+
+struct StrokeWrapper {
+  var stroke: TouchStroke
+  var state: StrokeState
+}

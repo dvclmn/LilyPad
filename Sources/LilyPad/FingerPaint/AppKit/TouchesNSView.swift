@@ -34,8 +34,11 @@ public class TrackpadTouchesNSView: NSView {
     /// Include stationary touches in the updates
     wantsRestingTouches = false
     
-    let config = NSPressureConfiguration(pressureBehavior: .primaryDefault)
-    pressureConfiguration = config
+    let pressureConfig = NSPressureConfiguration(pressureBehavior: .primaryDefault)
+    pressureConfiguration = pressureConfig
+    
+    /// Let's see what recognisers are here, and add/remove as neccesary
+    print("Current `gestureRecognizers`: \(gestureRecognizers)")
     
   }
 
