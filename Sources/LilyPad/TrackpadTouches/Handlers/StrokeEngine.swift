@@ -11,7 +11,11 @@ public struct StrokeEngine {
   
   public var strokeWidthHandler = StrokeWidthHandler()
   public var splineResolution: Int = 8
+  
+  /// Skips nearby points during fast movement
   public var minDistance: CGFloat = 20
+  
+  /// Forces inclusion of points during slow movement
   public var minSpeedForSparseSampling: CGFloat = 1.0
   
   public init() {
