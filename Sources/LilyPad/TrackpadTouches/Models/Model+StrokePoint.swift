@@ -17,17 +17,18 @@ public struct StrokePoint {
   public let position: CGPoint
   public let timestamp: TimeInterval
   public let velocity: CGVector?
-  
+
   @Init(.ignore) private var _width: CGFloat? = nil
-  
+
   public mutating func setCachedWidth(_ value: CGFloat) {
     _width = value
   }
-  
-      #warning("Not sure if falling back to `1.0` for speed is correct")
+
+  #warning("Not sure if falling back to `1.0` for speed is correct")
   public func width(using model: StrokeEngine) -> CGFloat {
     _width ?? model.calculateWidth(for: velocity?.speed ?? 1.0)
   }
+  
 }
 
 //public struct StrokePoint {
@@ -36,7 +37,7 @@ public struct StrokePoint {
 //  public var timestamp: TimeInterval
 //  public var velocity: CGVector
 //  // more in future: pressure, force, tilt, etc
-//  
+//
 //  /// Initialise from a `CGPoint`
 //  init(
 //    point: CGPoint,
@@ -44,6 +45,6 @@ public struct StrokePoint {
 //    timestamp: TimeInterval = 0,
 //    velocity: CGVector = .zero
 //  ) {
-//    
+//
 //  }
 //}

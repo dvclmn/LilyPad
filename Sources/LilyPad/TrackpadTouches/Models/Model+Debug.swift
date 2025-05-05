@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum TouchDebugItem: String, Identifiable, CaseIterable {
+public enum TouchDebugItem: String, Identifiable, CaseIterable {
   case touchCount
   case strokeCount
   case pointCount
@@ -15,9 +15,9 @@ enum TouchDebugItem: String, Identifiable, CaseIterable {
   case pointerLocked
   case clickedDown
   
-  var id: String { self.rawValue }
+  public var id: String { self.rawValue }
   
-  var name: String {
+  public var name: String {
     switch self {
       case .touchCount: "Touch Count"
       case .strokeCount: "Stroke Count"

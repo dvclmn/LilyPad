@@ -24,6 +24,15 @@ public struct TouchStroke: Identifiable {
 //    widths.append(width)
   }
   
+  public var cgPoints: [CGPoint] {
+    return points.map(\.position)
+  }
+  
+  public subscript (pointAtIndex index: Int) -> CGPoint {
+    let result = points[index].position
+    return result
+  }
+  
 //  public static let exampleStrokes: [TouchStroke] = [
 //    .init(
 //      points: [

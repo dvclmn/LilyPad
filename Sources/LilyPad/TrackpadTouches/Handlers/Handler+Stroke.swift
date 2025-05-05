@@ -13,7 +13,7 @@ public struct StrokeHandler {
 
   private var canvasSize: CGSize
 
-  var touches: Set<TrackpadTouch> = []
+  public var touches: Set<TrackpadTouch> = []
 
   /// Active strokes being drawn, keyed by touch ID
   var activeStrokes: [Int: TouchStroke] = [:]
