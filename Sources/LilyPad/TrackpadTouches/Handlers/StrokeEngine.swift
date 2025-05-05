@@ -23,14 +23,14 @@ public struct StrokeEngine {
   public func shouldAddPoint(
     from last: CGPoint,
     to current: CGPoint,
-    velocity: CGFloat
+    speed: CGFloat
   ) -> Bool {
     let distance = hypot(current.x - last.x, current.y - last.y)
-    return distance > settings.minDistance || velocity < settings.minSpeedForSparseSampling
+    return distance > settings.minDistance || speed < settings.minSpeedForSparseSampling
   }
   
-  public func calculateWidth(for velocity: CGFloat) -> CGFloat {
-    strokeWidth.calculateStrokeWidth(for: velocity)
+  public func calculateWidth(for speed: CGFloat) -> CGFloat {
+    strokeWidth.calculateStrokeWidth(for: speed)
   }
 }
 

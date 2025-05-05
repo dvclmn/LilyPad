@@ -19,8 +19,8 @@ public struct StrokeWidthHandler {
     self.sensitivity = min(max(sensitivity, 0), 1) // Clamp 0...1
   }
   
-  public func calculateStrokeWidth(for velocity: CGFloat) -> CGFloat {
-    let clampedSpeed = min(max(velocity, 0), 3.0)
+  public func calculateStrokeWidth(for speed: CGFloat) -> CGFloat {
+    let clampedSpeed = min(max(speed, 0), 3.0)
     let t = clampedSpeed / 3.0
     let adjustedT = pow(t, sensitivity * 2) // Exponential control curve
     return maxWidth - (maxWidth - minWidth) * adjustedT

@@ -24,8 +24,9 @@ public struct StrokePoint {
     _width = value
   }
   
+      #warning("Not sure if falling back to `1.0` for speed is correct")
   public func width(using model: StrokeEngine) -> CGFloat {
-    _width ?? model.calculateWidth(for: velocity)
+    _width ?? model.calculateWidth(for: velocity?.speed ?? 1.0)
   }
 }
 

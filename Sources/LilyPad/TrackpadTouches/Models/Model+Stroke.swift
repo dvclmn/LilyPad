@@ -13,11 +13,11 @@ import MemberwiseInit
 public struct TouchStroke: Identifiable {
   public let id: UUID = UUID()
   public var points: [StrokePoint]
-  public var color: Color
+  public var colour: Color
 
   /// Add a point to the stroke with a specified width
   public mutating func addPoint(
-    _ point: CGPoint,
+    _ point: StrokePoint,
 //    width: CGFloat
   ) {
     points.append(point)

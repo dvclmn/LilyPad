@@ -10,7 +10,7 @@ import SwiftUI
 public struct StrokeHandler {
 
   var engine = StrokeEngine()
-  
+
   private var canvasSize: CGSize
 
   var touches: Set<TrackpadTouch> = []
@@ -72,57 +72,52 @@ extension StrokeHandler {
     for touch in touches {
       let touchId = touch.id
       let touchPosition = touch.position.convertNormalisedToConcrete(in: canvasSize)
-      let timeStamp = touch.timestamp
-      let velocity = touch.speed
 
-      let width = engine.calculateWidth(for: touch)
+      let timeStamp = touch.timestamp
+      let speed = touch.velocity.speed
+
+      let strokePointPosition = StrokePoint(
+        position: touchPosition,
+        timestamp: timeStamp,
+        velocity: touch.velocity
+      )
+
+      let width = engine.calculateWidth(for: speed)
 
       if var stroke = activeStrokes[touchId] {
         if let last = stroke.points.last {
           let shouldAdd = engine.shouldAddPoint(
             from: last.position,
             to: touchPosition,
-            velocity: velocity
+            speed: speed
           )
           if shouldAdd {
-            stroke.addPoint(touchPosition, width: width)
+            stroke.addPoint(strokePointPosition)
           }
         }
-//        else {
-//          stroke.addPoint(touchPosition, width: width)
-//        }
+        //        else {
+        //          stroke.addPoint(touchPosition, width: width)
+        //        }
         activeStrokes[touchId] = stroke
       } else {
         /// First point for new stroke
-        
-        let strokePoint = StrokePoint(
-          position: touchPosition,
-          timestamp: touch.timestamp,
-          velocity: velocity
-        )
-        let stroke = TouchStroke(points: <#T##[StrokePoint]#>)
-        //        let stroke = TouchStroke(
-//          points: [touchPosition],
-//          widths: [width],
-//          color: .purple
-//        )
-        
+        let stroke = TouchStroke(points: [strokePointPosition], colour: .purple)
         activeStrokes[touchId] = stroke
       }
     }
 
     // Finalize ended strokes
     let currentIds = Set(touches.map { $0.id })
-    let activeIds = Set(strokeHandler.activeStrokes.keys)
+    let activeIds = Set(activeStrokes.keys)
     let endedIds = activeIds.subtracting(currentIds)
 
     for touchId in endedIds {
-      if let stroke = strokeHandler.activeStrokes[touchId],
-        stroke.points.count >= strokeHandler.minPointsForCurve
+      if let stroke = activeStrokes[touchId],
+        stroke.points.count >= minPointsForCurve
       {
-        strokeHandler.completedStrokes.append(stroke)
+        completedStrokes.append(stroke)
       }
-      strokeHandler.activeStrokes.removeValue(forKey: touchId)
+      activeStrokes.removeValue(forKey: touchId)
     }
 
     //    let timeEnded = Date.timeIntervalBetween1970AndReferenceDate
