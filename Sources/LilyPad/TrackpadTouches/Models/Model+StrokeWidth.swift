@@ -8,13 +8,13 @@
 import Foundation
 
 public struct StrokeWidthHandler {
-  private var base: CGFloat
-  private var sensitivity: CGFloat
+  public var base: CGFloat
+  public var sensitivity: CGFloat
   
   private var minWidth: CGFloat { base * 0.5 }
   private var maxWidth: CGFloat { base * 3 }
   
-  public init(baseWidth: CGFloat, sensitivity: CGFloat) {
+  public init(baseWidth: CGFloat = 10, sensitivity: CGFloat = 0.5) {
     print("`StrokeWidthHandler` created at \(Date.now.format(.timeDetailed))")
     self.base = baseWidth
     self.sensitivity = min(max(sensitivity, 0), 1) // Clamp 0...1

@@ -9,21 +9,21 @@ import SwiftUI
 
 public struct StrokeEngine {
 
-  public var settings: StrokeSettings
-//  public var renderer: StrokeRenderer
-  private let strokeWidthHandler: StrokeWidthHandler
-
+//  public var settings: StrokeSettings
+  public var strokeWidthHandler = StrokeWidthHandler()
+public var splineResolution: Int = 8
+  public var minDistance: CGFloat = 20
+  public var minSpeedForSparseSampling: CGFloat = 1.0
+  
   public init(
-    settings: StrokeSettings = .default
+//    settings: StrokeSettings = .default
   ) {
     print("`StrokeEngine` created at \(Date.now.format(.timeDetailed))")
-    self.settings = settings
-    let widthHandler = StrokeWidthHandler(
-      baseWidth: settings.baseStrokeWidth,
-      sensitivity: settings.velocitySensitivity
-    )
-
-    self.strokeWidthHandler = widthHandler
+//    self.settings = settings
+//    let widthHandler = StrokeWidthHandler(
+//      baseWidth: settings.baseStrokeWidth,
+//      sensitivity: settings.velocitySensitivity
+//    )
 
   }
 
@@ -33,7 +33,7 @@ public struct StrokeEngine {
     speed: CGFloat
   ) -> Bool {
     let distance = hypot(current.x - last.x, current.y - last.y)
-    return distance > settings.minDistance || speed < settings.minSpeedForSparseSampling
+    return distance > minDistance || speed < minSpeedForSparseSampling
   }
 
 }
@@ -54,8 +54,8 @@ extension StrokeEngine {
       let p2 = controlPoints[i + 1]
       let p3 = controlPoints[i + 2]
       
-      for j in 0..<settings.splineResolution {
-        let t = CGFloat(j) / CGFloat(settings.splineResolution)
+      for j in 0..<splineResolution {
+        let t = CGFloat(j) / CGFloat(splineResolution)
         let position = catmullRom(p0.position, p1.position, p2.position, p3.position, t)
         
         let width = interpolatedWidth(p0: p0, p1: p1, p2: p2, p3: p3, t: t)
