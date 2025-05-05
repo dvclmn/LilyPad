@@ -6,24 +6,27 @@
 //
 
 import Foundation
+import MemberwiseInit
 
+@MemberwiseInit(.public)
 public struct StrokeWidthHandler {
-  public var base: CGFloat
-  public var sensitivity: CGFloat
   
-  private var minWidth: CGFloat { base * 0.5 }
-  private var maxWidth: CGFloat { base * 3 }
+  /// Note: This may need to be clamped, i.e.
+  /// `self.sensitivity = min(max(sensitivity, 0), 1)`
+  public var sensitivity: CGFloat = 0.5
+  public var minWidth: CGFloat = 1.0
+  public var maxWidth: CGFloat = 100
   
-  public init(baseWidth: CGFloat = 10, sensitivity: CGFloat = 0.5) {
-    print("`StrokeWidthHandler` created at \(Date.now.format(.timeDetailed))")
-    self.base = baseWidth
-    self.sensitivity = min(max(sensitivity, 0), 1) // Clamp 0...1
-  }
-  
+  /// Speed at which the stroke is fully thinned
+  /// Directly ties the speed input to the visual outcome (width thinning)
+  public var maxThinningSpeed: CGFloat = 3.0
+
   public func calculateStrokeWidth(for speed: CGFloat) -> CGFloat {
-    let clampedSpeed = min(max(speed, 0), 3.0)
-    let t = clampedSpeed / 3.0
-    let adjustedT = pow(t, sensitivity * 2) // Exponential control curve
-    return maxWidth - (maxWidth - minWidth) * adjustedT
+    let clampedSpeed = min(max(speed, 0), maxThinningSpeed)
+    let t = clampedSpeed / maxThinningSpeed
+    let adjustedT = pow(t, sensitivity * 2)  // Exponential control curve
+    
+    let result = max(0.001, (maxWidth - (maxWidth - minWidth) * adjustedT))
+    return result
   }
 }

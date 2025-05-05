@@ -18,7 +18,6 @@ public struct TouchStroke: Identifiable {
   /// Add a point to the stroke with a specified width
   public mutating func addPoint(_ point: StrokePoint) {
     points.append(point)
-
   }
 
   public var cgPoints: [CGPoint] {
