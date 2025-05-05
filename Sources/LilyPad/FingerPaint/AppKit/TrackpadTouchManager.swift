@@ -21,7 +21,12 @@ public class TrackpadTouchManager {
   private var touchHistories: [Int: [TrackpadTouch]] = [:]
   
   /// Process new touches and calculate velocity based on history
-  public func processTouches(_ touches: Set<NSTouch>, in view: NSView) -> Set<TrackpadTouch> {
+  public func processTouches(
+    _ touches: Set<NSTouch>,
+    timestamp: TimeInterval,
+    pressure: NSEvent.PressureBehavior,
+    in view: NSView
+  ) -> Set<TrackpadTouch> {
     
     var updatedTouches = Set<TrackpadTouch>()
     
@@ -30,7 +35,11 @@ public class TrackpadTouchManager {
       let previousTouch = lastTouches[touchId]
       
       /// Create a new touch with velocity information based on the previous touch
-      let newTouch = TrackpadTouch(touch, previousTouch: previousTouch)
+      let newTouch = TrackpadTouch(
+        touch,
+        timestamp: timestamp,
+        previousTouch: previousTouch
+      )
       
       updatedTouches.insert(newTouch)
       

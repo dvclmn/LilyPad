@@ -12,8 +12,7 @@ import MemberwiseInit
 @MemberwiseInit(.public)
 public struct TouchStroke: Identifiable {
   public let id: UUID = UUID()
-  public var points: [CGPoint]
-  public var widths: [CGFloat]
+  public var points: [StrokePoint]
   public var color: Color = .purple
   
   /// Add a point to the stroke with a specified width
@@ -41,3 +40,4 @@ public struct TouchStroke: Identifiable {
     )
   ]
 }
+

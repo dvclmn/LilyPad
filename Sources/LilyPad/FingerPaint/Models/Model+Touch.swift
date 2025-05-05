@@ -6,25 +6,48 @@
 //
 
 import AppKit
+import MemberwiseInit
+
+@MemberwiseInit(.public)
+public struct TouchPressure: Hashable {
+  public var behavior: NSEvent.PressureBehavior
+  public var value: CGFloat?
+}
 
 public struct TrackpadTouch: Identifiable, Hashable {
   public let id: Int
   public let position: CGPoint
   public let timestamp: TimeInterval
+  public let pressure: TouchPressure
   
   public var velocity: CGVector
   public var previousPosition: CGPoint?
   public var previousTimestamp: TimeInterval?
   
   /// Initializer from an NSTouch, capturing its state at a specific moment
-  public init(_ nsTouch: NSTouch, previousTouch: TrackpadTouch? = nil) {
+  public init(
+    _ nsTouch: NSTouch,
+    timestamp: TimeInterval,
+    pressureBehaviour: NSEvent.PressureBehavior,
+    pressureAmount: CGFloat,
+    previousTouch: TrackpadTouch? = nil
+  ) {
+    // MARK: - NSTouch
     self.id = nsTouch.identity.hash
     self.position = CGPoint(
       x: nsTouch.normalizedPosition.x,
       /// Flip Y to match SwiftUI coordinate system
       y: 1.0 - nsTouch.normalizedPosition.y
     )
-    self.timestamp = Date().timeIntervalSince1970
+    
+    // MARK: - Timestamp
+    self.timestamp = timestamp
+    
+    // MARK: - Pressure
+    self.pressure = TouchPressure(
+      behavior: pressureBehaviour,
+      value: pressureAmount
+    )
     
     /// Initialize with previous touch data if available
     self.previousPosition = previousTouch?.position
@@ -59,15 +82,15 @@ public struct TrackpadTouch: Identifiable, Hashable {
 
 extension TrackpadTouch {
   
-  /// For Debugging
+  /// For Debugging — not sure if needed
   public init(
     id: Int,
     position: CGPoint,
-    time: TimeInterval
+    timestamp: TimeInterval
   ) {
     self.id = id
     self.position = position
-    self.timestamp = time
+    self.timestamp = timestamp
     
     self.velocity = .zero
     self.previousPosition = nil
@@ -75,3 +98,4 @@ extension TrackpadTouch {
   }
   
 }
+

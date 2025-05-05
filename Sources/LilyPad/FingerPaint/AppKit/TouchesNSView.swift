@@ -33,6 +33,10 @@ public class TrackpadTouchesNSView: NSView {
     allowedTouchTypes = [.indirect]
     /// Include stationary touches in the updates
     wantsRestingTouches = false
+    
+    let config = NSPressureConfiguration(pressureBehavior: .primaryDefault)
+    pressureConfiguration = config
+    
   }
 
   private func processTouches(with event: NSEvent) {
@@ -40,10 +44,19 @@ public class TrackpadTouchesNSView: NSView {
     /// or `stationary` phases of a touch.
     /// Note: Using `end` sems to break things, so don't use that
     let touches = event.touches(matching: [.touching], in: self)
+    
+    let pressureBehaviour = event.pressureBehavior
+    let pressureAmount = event.pressure
 
     /// Convert to data model
     /// Process touches through the manager to get velocity information
-    let trackpadTouches = touchManager.processTouches(touches, in: self)
+    let trackpadTouches = touchManager.processTouches(
+      touches,
+      timestamp: event.timestamp,
+      pressure: pressureBehaviour,
+      pressureAmount: pressureAmount,
+      in: self
+    )
 
     /// Forward via delegate
     delegate?.touchesView(self, didUpdateTouches: trackpadTouches)
@@ -57,6 +70,10 @@ public class TrackpadTouchesNSView: NSView {
     processTouches(with: event)
   }
   public override func touchesEnded(with event: NSEvent) {
+    processTouches(with: event)
+  }
+  
+  public override func pressureChange(with event: NSEvent) {
     processTouches(with: event)
   }
 }
