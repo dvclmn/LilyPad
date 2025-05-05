@@ -19,14 +19,13 @@ public struct TrackpadTouch: Identifiable, Hashable {
   public let position: CGPoint
   public let timestamp: TimeInterval
   public let pressure: TouchPressure
-  
   public var velocity: CGVector
-  public var previousPosition: CGPoint?
-  public var previousTimestamp: TimeInterval?
+//  public var previousPosition: CGPoint?
+//  public var previousTimestamp: TimeInterval?
   
   /// Initializer from an NSTouch, capturing its state at a specific moment
   public init(
-    _ nsTouch: NSTouch,
+    id: Int,
     timestamp: TimeInterval,
     pressureBehaviour: NSEvent.PressureBehavior,
     pressureAmount: CGFloat,
@@ -34,12 +33,8 @@ public struct TrackpadTouch: Identifiable, Hashable {
   ) {
     
     // MARK: - NSTouch
-    self.id = nsTouch.identity.hash
-    self.position = CGPoint(
-      x: nsTouch.normalizedPosition.x,
-      /// Flip Y to match SwiftUI coordinate system
-      y: 1.0 - nsTouch.normalizedPosition.y
-    )
+    self.id = id
+
     
     // MARK: - Timestamp
     self.timestamp = timestamp

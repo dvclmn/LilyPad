@@ -56,8 +56,8 @@ public class TrackpadTouchesNSView: NSView {
     let trackpadTouches = touchManager.processTouches(
       touches,
       timestamp: event.timestamp,
-      pressure: pressureBehaviour,
-      pressureAmount: pressureAmount,
+      pressureBehaviour: pressureBehaviour,
+      pressureAmount: CGFloat(pressureAmount),
       in: self
     )
 

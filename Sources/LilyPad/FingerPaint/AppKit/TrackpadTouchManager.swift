@@ -36,12 +36,18 @@ public class TrackpadTouchManager {
       let previousTouch = lastTouches[touchId]
       
       /// Create a new touch with velocity information based on the previous touch
-      let newTouch = TrackpadTouch(
-        touch,
+//      let newTouch = TrackpadTouch(
+//        touch,
+//        timestamp: timestamp,
+//        pressureBehaviour: pressureBehaviour,
+//        pressureAmount: pressureAmount,
+//        previousTouch: previousTouch
+//      )
+      
+      let newTouch = makeTouch(
+        from: touch,
         timestamp: timestamp,
-        pressureBehaviour: pressureBehaviour,
-        pressureAmount: pressureAmount,
-        previousTouch: previousTouch
+        previous: previousTouch
       )
       
       updatedTouches.insert(newTouch)
@@ -65,6 +71,41 @@ public class TrackpadTouchManager {
     }
     
     return updatedTouches
+  }
+  
+  func makeTouch(
+    from nsTouch: NSTouch,
+    timestamp: TimeInterval,
+    previous: TrackpadTouch?
+  ) -> TrackpadTouch {
+    let now = timestamp
+    let position = CGPoint(
+      x: nsTouch.normalizedPosition.x,
+      
+      /// Flip Y to match SwiftUI coordinate system
+      y: 1.0 - nsTouch.normalizedPosition.y
+    )
+    
+    let velocity: CGVector? = {
+      guard let prev = previous else { return nil }
+      return CGVector.between(prev.position, position, dt: now - prev.timestamp)
+    }()
+    
+    return TrackpadTouch(
+      ,
+      timestamp: <#T##TimeInterval#>,
+      pressureBehaviour: <#T##NSEvent.PressureBehavior#>,
+      pressureAmount: <#T##CGFloat#>,
+      previousTouch: <#T##TrackpadTouch?#>
+    )
+    
+    //    return TrackpadTouch(
+    //      id: nsTouch.identity.hash,
+    //      position: position,
+    //      timestamp: now,
+    //      velocity: velocity,
+    //      pressure: CGFloat(nsTouch.pressure) // if you support pressure
+    //    )
   }
   
   /// Updates the history for a specific touch ID
