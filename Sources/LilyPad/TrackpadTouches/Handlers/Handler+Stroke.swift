@@ -49,13 +49,6 @@ extension StrokeHandler {
 
   /// Process touch updates and update strokes
   public mutating func processTouches() {
-    //    let timeStarted = Date.timeIntervalBetween1970AndReferenceDate
-    //    print("Running `processTouches`")
-
-    //    guard isInTouchMode else {
-    //      print("No need to process touches, not in touch mode.")
-    //      return
-    //    }
 
     guard canvasSize != .zero else {
       print("Canvas size cannot be zero, skipping touch processing.")
@@ -74,8 +67,6 @@ extension StrokeHandler {
         velocity: touch.velocity
       )
 
-//      let width = engine.calculateWidth(for: speed)
-      
       if var stroke = activeStrokes[touchId] {
         if let last = stroke.points.last {
           let shouldAdd = engine.shouldAddPoint(
@@ -87,9 +78,6 @@ extension StrokeHandler {
             stroke.addPoint(strokePointPosition)
           }
         }
-        //        else {
-        //          stroke.addPoint(touchPosition, width: width)
-        //        }
         activeStrokes[touchId] = stroke
       } else {
         /// First point for new stroke
@@ -98,7 +86,7 @@ extension StrokeHandler {
       }
     }
 
-    // Finalize ended strokes
+    /// Finalize ended strokes
     let currentIds = Set(touches.map { $0.id })
     let activeIds = Set(activeStrokes.keys)
     let endedIds = activeIds.subtracting(currentIds)
@@ -111,11 +99,6 @@ extension StrokeHandler {
       }
       activeStrokes.removeValue(forKey: touchId)
     }
-
-    //    let timeEnded = Date.timeIntervalBetween1970AndReferenceDate
-    //
-    //    let timeElapsed = timeEnded - timeStarted
-    //    print("Time taken to process touches: \(timeElapsed) seconds")
   }
 
 }
