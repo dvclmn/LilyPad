@@ -12,7 +12,7 @@ public struct TrackpadTouch: Identifiable, Hashable {
   public let id: Int
   public let position: CGPoint
   public let timestamp: TimeInterval
-  public let pressure: TouchPressure
+  public let pressure: TouchPressure?
   public var velocity: CGVector
   
   /// Initializer from an NSTouch, capturing its state at a specific moment
@@ -21,7 +21,7 @@ public struct TrackpadTouch: Identifiable, Hashable {
     position: CGPoint,
     timestamp: TimeInterval,
     velocity: CGVector?,
-    pressureData: TouchPressure,
+    pressureData: TouchPressure?,
     previousTouch: TrackpadTouch? = nil
   ) {
     self.id = id

@@ -34,11 +34,11 @@ public class TrackpadTouchesNSView: NSView {
     /// Include stationary touches in the updates
     wantsRestingTouches = false
     
-    let pressureConfig = NSPressureConfiguration(pressureBehavior: .primaryDefault)
-    pressureConfiguration = pressureConfig
+//    let pressureConfig = NSPressureConfiguration(pressureBehavior: .primaryDefault)
+//    pressureConfiguration = pressureConfig
     
     /// Let's see what recognisers are here, and add/remove as neccesary
-    print("Current `gestureRecognizers`: \(gestureRecognizers)")
+//    print("Current `gestureRecognizers`: \(gestureRecognizers)")
     
   }
 
@@ -48,19 +48,19 @@ public class TrackpadTouchesNSView: NSView {
     /// Note: Using `end` sems to break things, so don't use that
     let touches = event.touches(matching: [.touching], in: self)
     
-    let pressureBehaviour = event.pressureBehavior
-    let pressureAmount = event.pressure
+//    let pressureBehaviour = event.pressureBehavior
+//    let pressureAmount = event.pressure
     
-    let pressureData = TouchPressure(
-      behaviour: pressureBehaviour,
-      value: CGFloat(pressureAmount)
-    )
+//    let pressureData = TouchPressure(
+//      behaviour: pressureBehaviour,
+//      value: CGFloat(pressureAmount)
+//    )
 
     /// Convert to data model
     let trackpadTouches = touchManager.processTouches(
       touches,
       timestamp: event.timestamp,
-      pressureData: pressureData,
+      pressureData: nil,
       in: self
     )
 
@@ -79,7 +79,7 @@ public class TrackpadTouchesNSView: NSView {
     processTouches(with: event)
   }
   
-  public override func pressureChange(with event: NSEvent) {
-    processTouches(with: event)
-  }
+//  public override func pressureChange(with event: NSEvent) {
+//    processTouches(with: event)
+//  }
 }
