@@ -15,6 +15,7 @@ public struct StrokeWidthHandler {
   private var maxWidth: CGFloat { base * 3 }
   
   public init(baseWidth: CGFloat, sensitivity: CGFloat) {
+    print("`StrokeWidthHandler` created at \(Date.now.format(.timeDetailed))")
     self.base = baseWidth
     self.sensitivity = min(max(sensitivity, 0), 1) // Clamp 0...1
   }

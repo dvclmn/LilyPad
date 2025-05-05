@@ -16,6 +16,7 @@ public struct StrokeEngine {
   public init(
     settings: StrokeSettings = .default
   ) {
+    print("`StrokeEngine` created at \(Date.now.format(.timeDetailed))")
     self.settings = settings
     let widthHandler = StrokeWidthHandler(
       baseWidth: settings.baseStrokeWidth,
@@ -56,6 +57,19 @@ public struct StrokeSettings {
 
   /// Allow sparse samples if slow
   public var minSpeedForSparseSampling: CGFloat
+  
+  public init(
+    baseStrokeWidth: CGFloat,
+    velocitySensitivity: CGFloat,
+    minDistance: CGFloat,
+    minSpeedForSparseSampling: CGFloat
+  ) {
+    print("`StrokeSettings` created at \(Date.now.format(.timeDetailed))")
+    self.baseStrokeWidth = baseStrokeWidth
+    self.velocitySensitivity = velocitySensitivity
+    self.minDistance = minDistance
+    self.minSpeedForSparseSampling = minSpeedForSparseSampling
+  }
 
   public static let `default` = StrokeSettings(
     baseStrokeWidth: 10,

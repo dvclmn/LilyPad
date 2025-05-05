@@ -8,10 +8,19 @@
 import SwiftUI
 import MemberwiseInit
 
-@MemberwiseInit(.public)
+//@MemberwiseInit(.public)
 public struct StrokeRenderer {
   public let strokeWidthHandler: StrokeWidthHandler
-  public let resolution: Int = 8 // how many points per spline segment
+  public let resolution: Int  // how many points per spline segment
+  
+  public init(
+    strokeWidthHandler: StrokeWidthHandler,
+    resolution: Int = 8
+  ) {
+    print("`StrokeHandler` created at \(Date.now.format(.timeDetailed))")
+    self.strokeWidthHandler = strokeWidthHandler
+    self.resolution = resolution
+  }
   
   public func drawStroke(_ stroke: TouchStroke, in context: GraphicsContext) {
     guard stroke.points.count >= 4 else { return }

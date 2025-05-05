@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import BaseHelpers
 
 public struct StrokeHandler {
 
@@ -35,6 +36,7 @@ public struct StrokeHandler {
   }
 
   public init(canvasSize: CGSize) {
+    print("`StrokeHandler` created at \(Date.now.format(.timeDetailed))")
     self.canvasSize = canvasSize
   }
 }
