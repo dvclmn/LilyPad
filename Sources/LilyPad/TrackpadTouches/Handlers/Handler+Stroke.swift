@@ -21,18 +21,8 @@ public struct StrokeHandler {
   /// Completed strokes
   var completedStrokes: [TouchStroke] = []
 
-  /// Stroke Width handler
-  //  var strokeWidth = StrokeWidth(baseWidth: 6, sensitivity: 1.0)
-
-  //  private var currentColor: Color = .blue
-
   /// Minimum number of points required to create a smooth curve
   let minPointsForCurve = 3
-
-  /// Set the current stroke color
-  //  public mutating func setCurrentColor(_ color: Color) {
-  //    currentColor = color
-  //  }
 
   /// Clear all strokes
   public mutating func clearStrokes() {

@@ -28,6 +28,15 @@ public struct TouchStroke: Identifiable {
     return points.map(\.position)
   }
   
+  public subscript (widthAtPoint point: CGPoint) -> CGFloat? {
+    let targetStrokePoint = points.first { strokePoint in
+      strokePoint.position == point
+    }
+    let width = targetStrokePoint?.width(using: <#T##StrokeEngine#>)
+  }
+  
+  
+  
   public subscript (pointAtIndex index: Int) -> CGPoint {
     let result = points[index].position
     return result
