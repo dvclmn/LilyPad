@@ -11,16 +11,22 @@ import BaseHelpers
 public struct StrokeHandler {
 
   public var engine = StrokeEngine()
-
+  
+  /// The number of fingers touching the trackpad
+  /// Inadvertant touches may be made by a palm etc as well.
+  public var touches: Set<TrackpadTouch> = []
   private var canvasSize: CGSize
 
-  public var touches: Set<TrackpadTouch> = []
-
   /// Active strokes being drawn, keyed by touch ID
-  var activeStrokes: [Int: TouchStroke] = [:]
+  /// As I understand it, the item count for this is always
+  /// going to match the number of `touches`.
+  ///
+  /// Once a stroke is complete (finger is lifted off the trackpad),
+  /// it becomes
+  public var activeStrokes: [Int: TouchStroke] = [:]
 
   /// Completed strokes
-  var completedStrokes: [TouchStroke] = []
+  public var completedStrokes: [TouchStroke] = []
 
   /// Minimum number of points required to create a smooth curve
   let minPointsForCurve = 3
@@ -43,52 +49,53 @@ public struct StrokeHandler {
 
 extension StrokeHandler {
 
+  /// This property allows the Canvas view to draw not only completed/captured
+  /// strokes, but those being *actively drawn* in real time as well.
   public var allStrokes: [TouchStroke] {
     return Array(activeStrokes.values) + completedStrokes
   }
 
   /// Process touch updates and update strokes
-  public mutating func processTouches() {
+  public mutating func processTouchesIntoStrokes(isDebugMode: Bool = false) {
 
     guard canvasSize != .zero else {
       print("Canvas size cannot be zero, skipping touch processing.")
       return
     }
-    for touch in touches {
-      let touchId = touch.id
-      let touchPosition = touch.position.convertNormalisedToConcrete(in: canvasSize)
+    
+    if isDebugMode {
+      
+      let savedTouches = completedStrokes.rawTouches
+      print("Process touches in debug mode. Do we have any `touches` we can resurrect, saved in `completedStrokes`?: \(savedTouches)")
 
-      let timeStamp = touch.timestamp
-      let speed = touch.velocity.speed
-
-      let strokePointPosition = StrokePoint(
-        position: touchPosition,
-        timestamp: timeStamp,
-        velocity: touch.velocity
-      )
-
-      if var stroke = activeStrokes[touchId] {
-        if let last = stroke.points.last {
-          let shouldAdd = engine.shouldAddPoint(
-            from: last.position,
-            to: touchPosition,
-            speed: speed
-          )
-          if shouldAdd {
-            stroke.addPoint(strokePointPosition)
-          }
-        }
-        activeStrokes[touchId] = stroke
-      } else {
-        /// First point for new stroke
-        let stroke = TouchStroke(points: [strokePointPosition], colour: .purple)
-        activeStrokes[touchId] = stroke
+      guard !savedTouches.isEmpty else {
+        print("No saved touches to retrieve, exiting.")
+        return
       }
+      let touchesSet: Set<TrackpadTouch> = Set(completedStrokes.rawTouches)
+      
+      touches = touchesSet
+      
+      /// I think we'll need to clear out the previous lot of saved touches, or they build up
+      
+    }
+    
+    guard !touches.isEmpty else {
+      print("No touches to process.")
+      return
+    }
+    
+    for touch in touches {
+      handleTouch(touch, isDebugMode: isDebugMode)
     }
 
     /// Finalize ended strokes
+    /// Get the ID's for every `TrackpadTouch` in `touches`
     let currentIds = Set(touches.map { $0.id })
+    
+    /// Active `TouchStroke`s are keyed by their ID (`Int`)
     let activeIds = Set(activeStrokes.keys)
+    
     let endedIds = activeIds.subtracting(currentIds)
 
     for touchId in endedIds {
@@ -99,6 +106,54 @@ extension StrokeHandler {
       }
       activeStrokes.removeValue(forKey: touchId)
     }
+  }
+  
+  mutating func handleTouch(_ touch: TrackpadTouch, isDebugMode: Bool) {
+    
+    /// Set up some convenient constants
+    let touchId = touch.id
+    let touchPosition = touch.position.convertNormalisedToConcrete(in: canvasSize)
+    let timeStamp = touch.timestamp
+    let touchSpeed = touch.velocity.speed
+    
+    /// Width is not yet considered at this stage.
+    /// It is later calculated based on velocity etc.
+    let strokePointPosition = StrokePoint(
+      position: touchPosition,
+      timestamp: timeStamp,
+      velocity: touch.velocity
+    )
+    
+    /// When first running the app, or after clearing `activeStrokes` will be empty
+    guard var stroke = activeStrokes[touchId] else {
+      /// First point for new stroke
+      let newStroke = TouchStroke(points: [strokePointPosition], colour: .purple)
+      activeStrokes[touchId] = newStroke
+      return  // Move to next touch in the loop
+    }
+    
+    /// Handle existing stroke
+    ///
+    /// We get the *last* stroke point, so we can compare it against
+    /// `touchPosition`.
+    if let last = stroke.points.last {
+      
+      /// Set up the boolean, to determine if we add this point or not
+      let shouldAdd = engine.shouldAddPoint(
+        from: last.position,
+        to: touchPosition,
+        speed: touchSpeed
+      )
+      
+      if shouldAdd {
+        stroke.addPoint(kind: .strokePoint(strokePointPosition))
+      }
+    }
+    /// Let's also add *all* points, to our backup of raw touches
+    if !isDebugMode {
+      stroke.addPoint(kind: .rawTouchPoint(touch))
+    }
+    activeStrokes[touchId] = stroke
   }
 
 }

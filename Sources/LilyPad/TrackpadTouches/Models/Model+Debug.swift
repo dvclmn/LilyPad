@@ -9,8 +9,11 @@ import Foundation
 
 public enum TouchDebugItem: String, Identifiable, CaseIterable {
   case touchCount
-  case strokeCount
-  case pointCount
+  case strokeCountActive
+  case strokeCountCompleted
+  case strokeCountTotal
+  case pointCountFiltered
+  case pointCountRaw
   case touchModeActive
   case pointerLocked
   case clickedDown
@@ -20,8 +23,11 @@ public enum TouchDebugItem: String, Identifiable, CaseIterable {
   public var name: String {
     switch self {
       case .touchCount: "Touch Count"
-      case .strokeCount: "Stroke Count"
-      case .pointCount: "Point Count"
+      case .strokeCountActive: "Strokes (Active)"
+      case .strokeCountCompleted: "Strokes (Completed)"
+      case .strokeCountTotal: "Strokes (Total)"
+      case .pointCountFiltered: "Points (Filtered)"
+      case .pointCountRaw: "Points (Raw)"
       case .touchModeActive: "Touch Mode Active"
       case .pointerLocked: "Pointer Locked"
       case .clickedDown: "Clicked Down"

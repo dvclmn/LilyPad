@@ -43,24 +43,3 @@ public struct TouchPressure: Hashable {
   public var behaviour: NSEvent.PressureBehavior
   public var value: CGFloat?
 }
-
-
-//extension TrackpadTouch {
-//  
-//  /// For Debugging — not sure if needed
-//  public init(
-//    id: Int,
-//    position: CGPoint,
-//    timestamp: TimeInterval
-//  ) {
-//    self.id = id
-//    self.position = position
-//    self.timestamp = timestamp
-//    
-//    self.velocity = .zero
-//    self.previousPosition = nil
-//    self.previousTimestamp = nil
-//  }
-//  
-//}
-

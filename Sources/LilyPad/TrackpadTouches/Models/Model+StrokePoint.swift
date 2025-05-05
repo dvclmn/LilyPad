@@ -37,7 +37,6 @@ public struct StrokePoint: Identifiable {
       return model.calculateStrokeWidth(for: speed)
     }
     return cachedWidth
-
   }
 
 }
