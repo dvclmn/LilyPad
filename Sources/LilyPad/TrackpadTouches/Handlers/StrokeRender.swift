@@ -8,10 +8,9 @@
 import SwiftUI
 import MemberwiseInit
 
-//@MemberwiseInit(.public)
 public struct StrokeRenderer {
   public let strokeWidthHandler: StrokeWidthHandler
-  public let resolution: Int  // how many points per spline segment
+  public var resolution: Int  // how many points per spline segment
   
   public init(
     strokeWidthHandler: StrokeWidthHandler,
@@ -78,7 +77,13 @@ public struct StrokeRenderer {
     return CGPoint(x: x, y: y)
   }
   
-  func interpolatedWidth(p0: StrokePoint, p1: StrokePoint, p2: StrokePoint, p3: StrokePoint, t: CGFloat) -> CGFloat {
+  func interpolatedWidth(
+    p0: StrokePoint,
+    p1: StrokePoint,
+    p2: StrokePoint,
+    p3: StrokePoint,
+    t: CGFloat
+  ) -> CGFloat {
     func width(for p: StrokePoint) -> CGFloat {
       p.width(using: strokeWidthHandler) ?? strokeWidthHandler.calculateStrokeWidth(for: 0)
     }

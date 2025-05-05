@@ -10,7 +10,7 @@ import Foundation
 public struct StrokeEngine {
 
   public var settings: StrokeSettings
-  public let renderer: StrokeRenderer
+  public var renderer: StrokeRenderer
   private let strokeWidthHandler: StrokeWidthHandler
 
   public init(
@@ -25,10 +25,6 @@ public struct StrokeEngine {
     self.renderer = StrokeRenderer(strokeWidthHandler: widthHandler)
     self.strokeWidthHandler = widthHandler
 
-    //    self.strokeWidth = StrokeWidthHandler(
-    //      baseWidth: settings.baseStrokeWidth,
-    //      sensitivity: settings.velocitySensitivity
-    //    )
   }
 
   public func shouldAddPoint(
@@ -40,9 +36,6 @@ public struct StrokeEngine {
     return distance > settings.minDistance || speed < settings.minSpeedForSparseSampling
   }
 
-  //  public func calculateWidth(for speed: CGFloat) -> CGFloat {
-  //    strokeWidth.calculateStrokeWidth(for: speed)
-  //  }
 }
 
 
@@ -74,7 +67,7 @@ public struct StrokeSettings {
   public static let `default` = StrokeSettings(
     baseStrokeWidth: 10,
     velocitySensitivity: 0.5,
-    minDistance: 200,
+    minDistance: 20,
     minSpeedForSparseSampling: 1.0
   )
 }
