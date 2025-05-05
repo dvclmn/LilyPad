@@ -31,7 +31,8 @@ public struct StrokeHandler {
   /// Completed strokes
   public var completedStrokes: [TouchStroke] = []
   
-  public var completedRawTouches: [RawTouches] = []
+  public var completedRawTouches: [TouchStroke.ID: [TrackpadTouch]] = [:]
+//  public var completedRawTouches: [RawTouches] = []
   
   
 
@@ -70,24 +71,43 @@ extension StrokeHandler {
       return
     }
 
-    if isDebugMode {
-
-      let savedTouches = completedRawTouches.
-      print(
-        "Process touches in debug mode. Do we have any `touches` we can resurrect, saved in `completedStrokes`?: \(savedTouches)"
-      )
-
-      guard !savedTouches.isEmpty else {
-        print("No saved touches to retrieve, exiting.")
-        return
-      }
-      let touchesSet: Set<TrackpadTouch> = Set(completedStrokes.rawTouches)
-
-      touches = touchesSet
-
-      /// I think we'll need to clear out the previous lot of saved touches, or they build up
-
-    }
+//    guard !isDebugMode else {
+//      
+//      let savedTouches: [TrackpadTouch] = allStrokes.compactMap(\.)
+//      
+////      var savedTouches: [TrackpadTouch] = []
+//      
+////      let savedTouches: [TrackpadTouch] = {
+////        allStrokes.filter { stroke in
+////          
+////        }
+////      }()
+//      
+////      for stroke in allStrokes {
+////        
+////        let savedTouches: [TrackpadTouch] = completedRawTouches[stroke.id]
+////        
+////        savedTouches.append(<#T##newElement: TrackpadTouch##TrackpadTouch#>)
+////      }
+////      let savedTouches = allStrokes.map { stroke in
+////        <#code#>
+////      }
+////      let savedTouches = completedRawTouches.getTouchesForID(<#T##id: TouchStroke.ID##TouchStroke.ID#>)
+//      print(
+//        "Process touches in debug mode. Do we have any `touches` we can resurrect, saved in `completedStrokes`?: \(savedTouches)"
+//      )
+//
+//      guard !savedTouches.isEmpty else {
+//        print("No saved touches to retrieve, exiting.")
+//        return
+//      }
+//      let touchesSet: Set<TrackpadTouch> = Set(completedStrokes.rawTouches)
+//
+//      touches = touchesSet
+//
+//      /// I think we'll need to clear out the previous lot of saved touches, or they build up
+//
+//    }
 
     guard !touches.isEmpty else {
       print("No touches to process.")
@@ -153,12 +173,12 @@ extension StrokeHandler {
       )
 
       if shouldAdd {
-        stroke.addPoint(kind: .strokePoint(strokePointPosition))
+        stroke.addPoint(strokePointPosition)
       }
     }
-    /// Let's also add *all* points, to our backup of raw touches
+    /// Let's also add to our backup of raw touches
     if !isDebugMode {
-      stroke.addPoint(kind: .rawTouchPoint(touch))
+      completedRawTouches[stroke.id]?.append(touch)
     }
     activeStrokes[touchId] = stroke
   }

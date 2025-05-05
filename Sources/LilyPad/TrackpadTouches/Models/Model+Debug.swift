@@ -13,7 +13,7 @@ public enum TouchDebugItem: String, Identifiable, CaseIterable {
   case strokeCountCompleted
   case strokeCountTotal
   case pointCountFiltered
-  case pointCountRaw
+//  case pointCountRaw
   case touchModeActive
   case pointerLocked
   case clickedDown
@@ -27,7 +27,7 @@ public enum TouchDebugItem: String, Identifiable, CaseIterable {
       case .strokeCountCompleted: "Strokes (Completed)"
       case .strokeCountTotal: "Strokes (Total)"
       case .pointCountFiltered: "Points (Filtered)"
-      case .pointCountRaw: "Points (Raw)"
+//      case .pointCountRaw: "Points (Raw)"
       case .touchModeActive: "Touch Mode Active"
       case .pointerLocked: "Pointer Locked"
       case .clickedDown: "Clicked Down"
