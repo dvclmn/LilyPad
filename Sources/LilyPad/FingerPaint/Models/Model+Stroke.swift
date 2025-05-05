@@ -6,26 +6,15 @@
 //
 
 import SwiftUI
-
+import MemberwiseInit
 
 /// Represents a touch stroke with a series of points and widths
+@MemberwiseInit(.public)
 public struct TouchStroke: Identifiable {
-  public let id: UUID
+  public let id: UUID = UUID()
   public var points: [CGPoint]
   public var widths: [CGFloat]
-  public var color: Color
-  
-  public init(
-    id: UUID = UUID(),
-    points: [CGPoint],
-    widths: [CGFloat],
-    color: Color = .black
-  ) {
-    self.id = id
-    self.points = points
-    self.widths = widths
-    self.color = color
-  }
+  public var color: Color = .purple
   
   /// Add a point to the stroke with a specified width
   public mutating func addPoint(

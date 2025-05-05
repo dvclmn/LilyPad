@@ -8,7 +8,8 @@
 import SwiftUI
 import BaseComponents
 
-public struct TouchDebugView: View {
+
+public struct DebugInfoView: View {
   
   let handler: AppHandler
   
@@ -38,7 +39,7 @@ public struct TouchDebugView: View {
   }
 }
 
-extension TouchDebugView {
+extension DebugInfoView {
   func booleanColour(_ value: String) -> Color {
     switch value {
       case "true": Color.orange
@@ -64,30 +65,10 @@ extension TouchDebugView {
 #if DEBUG
 @available(macOS 15, iOS 18, *)
 #Preview(traits: .size(.normal)) {
-  TouchDebugView(handler: AppHandler())
+  DebugInfoView(handler: AppHandler())
 }
 #endif
 
-enum TouchDebugItem: String, Identifiable, CaseIterable {
-  case touchCount
-  case touchModeActive
-  case pointerLocked
-  case clickedDown
-  case strokeCount
-  case pointCount
-  
-  var id: String { self.rawValue }
-  
-  var name: String {
-    switch self {
-      case .touchCount: "Touch Count"
-      case .touchModeActive: "Touch Mode Active"
-      case .pointerLocked: "Pointer Locked"
-      case .clickedDown: "Clicked Down"
-      case .strokeCount: "Stroke Count"
-      case .pointCount: "Point Count"
-    }
-  }
-}
+
 
 

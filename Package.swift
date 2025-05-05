@@ -15,6 +15,7 @@ let package = Package(
   dependencies: [
     .package(url: "https://github.com/dvclmn/BaseHelpers", branch: "main"),
     .package(url: "https://github.com/dvclmn/BaseComponents", branch: "main"),
+    .package(url: "https://github.com/gohanlon/swift-memberwise-init-macro.git", from: "0.5.1"),
   ],
   targets: [
     .target(
@@ -22,6 +23,7 @@ let package = Package(
       dependencies: [
         .product(name: "BaseHelpers", package: "BaseHelpers"),
         .product(name: "BaseComponents", package: "BaseComponents"),
+        .product(name: "MemberwiseInit", package: "swift-memberwise-init-macro"),
       ]
     ),
     .testTarget(

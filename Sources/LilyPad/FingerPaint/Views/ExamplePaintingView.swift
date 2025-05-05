@@ -27,7 +27,7 @@ public struct TrackpadTouchesExample: View {
 
     VStack(alignment: .leading) {
       HStack {
-        TouchDebugView(handler: handler)
+        DebugInfoView(handler: handler)
 
         SimpleSlider(
           QuickLabel("Density"),
