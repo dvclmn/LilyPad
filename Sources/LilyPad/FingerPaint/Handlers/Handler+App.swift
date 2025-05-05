@@ -28,8 +28,6 @@ public final class AppHandler {
 
 extension AppHandler {
   
-  
-
   var trackPadSize: CGSize {
     let trackPadWidth: CGFloat = 700
     let trackPadAspectRatio: CGFloat = 10.0 / 16.0

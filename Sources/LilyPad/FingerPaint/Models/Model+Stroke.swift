@@ -24,21 +24,21 @@ public struct TouchStroke: Identifiable {
     widths.append(width)
   }
   
-  public static let exampleStrokes: [TouchStroke] = [
-    .init(
-      points: [
-        CGPoint.zero,
-        CGPoint(x: 100, y: 100),
-        CGPoint(x: 200, y: 0),
-        CGPoint(x: 300, y: 100),
-        CGPoint(x: 400, y: 200),
-        CGPoint(x: 500, y: 100),
-        CGPoint(x: 600, y: 200),
-      ],
-      widths: [2, 6, 10, 12, 8, 7, 3],
-      color: .green,
-    )
-  ]
+//  public static let exampleStrokes: [TouchStroke] = [
+//    .init(
+//      points: [
+//        CGPoint.zero,
+//        CGPoint(x: 100, y: 100),
+//        CGPoint(x: 200, y: 0),
+//        CGPoint(x: 300, y: 100),
+//        CGPoint(x: 400, y: 200),
+//        CGPoint(x: 500, y: 100),
+//        CGPoint(x: 600, y: 200),
+//      ],
+//      widths: [2, 6, 10, 12, 8, 7, 3],
+//      color: .green,
+//    )
+//  ]
 }
 
 enum StrokeState {

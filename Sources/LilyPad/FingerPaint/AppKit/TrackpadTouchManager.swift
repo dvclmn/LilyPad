@@ -34,18 +34,10 @@ public class TrackpadTouchManager {
       let touchId = touch.identity.hash
       let previousTouch = lastTouches[touchId]
 
-      /// Create a new touch with velocity information based on the previous touch
-      //      let newTouch = TrackpadTouch(
-      //        touch,
-      //        timestamp: timestamp,
-      //        pressureBehaviour: pressureBehaviour,
-      //        pressureAmount: pressureAmount,
-      //        previousTouch: previousTouch
-      //      )
-
       let newTouch = makeTouch(
         from: touch,
         timestamp: timestamp,
+        pressureData: pressureData,
         previous: previousTouch
       )
 
@@ -96,16 +88,8 @@ public class TrackpadTouchManager {
       timestamp: timestamp,
       velocity: velocity,
       pressureData: pressureData,
-      previousTouch: <#T##TrackpadTouch?#>
+      previousTouch: previous
     )
-
-    //    return TrackpadTouch(
-    //      id: nsTouch.identity.hash,
-    //      position: position,
-    //      timestamp: now,
-    //      velocity: velocity,
-    //      pressure: CGFloat(nsTouch.pressure) // if you support pressure
-    //    )
   }
 
   /// Updates the history for a specific touch ID

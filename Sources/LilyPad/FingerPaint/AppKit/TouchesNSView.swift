@@ -57,7 +57,6 @@ public class TrackpadTouchesNSView: NSView {
     )
 
     /// Convert to data model
-    /// Process touches through the manager to get velocity information
     let trackpadTouches = touchManager.processTouches(
       touches,
       timestamp: event.timestamp,
