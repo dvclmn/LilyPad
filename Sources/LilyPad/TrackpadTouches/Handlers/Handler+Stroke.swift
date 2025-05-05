@@ -31,7 +31,7 @@ public struct StrokeHandler {
   /// Completed strokes
   public var completedStrokes: [TouchStroke] = []
   
-  public var completedRawTouches: [TouchStroke.ID: [TrackpadTouch]] = [:]
+//  public var completedRawTouches: [TouchStroke.ID: [TrackpadTouch]] = [:]
 //  public var completedRawTouches: [RawTouches] = []
   
   
@@ -62,6 +62,42 @@ extension StrokeHandler {
   public var allStrokes: [TouchStroke] {
     return Array(activeStrokes.values) + completedStrokes
   }
+  
+//  public mutating func processTouchesIntoStrokesDebugVersion() {
+//    
+//    guard canvasSize != .zero else {
+//      print("Canvas size cannot be zero, skipping touch processing.")
+//      return
+//    }
+//    
+//    /// I don't need touches, only need the saved stuff, right?
+//    
+//    
+////    guard !touches.isEmpty else {
+////      print("No touches to process.")
+////      return
+////    }
+////    
+////    for touch in touches {
+////      handleTouch(touch, isDebugMode: isDebugMode)
+////    }
+////    
+////    /// Finalize ended strokes
+////    /// Get the ID's for every `TrackpadTouch` in `touches`
+////    let currentIds = Set(touches.map { $0.id })
+////    
+////    /// Active `TouchStroke`s are keyed by their ID (`Int`)
+////    let activeIds = Set(activeStrokes.keys)
+////    
+////    let endedIds = activeIds.subtracting(currentIds)
+////    
+////    for touchId in endedIds {
+////      if let stroke = activeStrokes[touchId], stroke.points.count >= minPointsForCurve {
+////        completedStrokes.append(stroke)
+////      }
+////      activeStrokes.removeValue(forKey: touchId)
+////    }
+//  }
 
   /// Process touch updates and update strokes
   public mutating func processTouchesIntoStrokes(isDebugMode: Bool = false) {
@@ -70,44 +106,14 @@ extension StrokeHandler {
       print("Canvas size cannot be zero, skipping touch processing.")
       return
     }
-
-//    guard !isDebugMode else {
-//      
-//      let savedTouches: [TrackpadTouch] = allStrokes.compactMap(\.)
-//      
-////      var savedTouches: [TrackpadTouch] = []
-//      
-////      let savedTouches: [TrackpadTouch] = {
-////        allStrokes.filter { stroke in
-////          
-////        }
-////      }()
-//      
-////      for stroke in allStrokes {
-////        
-////        let savedTouches: [TrackpadTouch] = completedRawTouches[stroke.id]
-////        
-////        savedTouches.append(<#T##newElement: TrackpadTouch##TrackpadTouch#>)
-////      }
-////      let savedTouches = allStrokes.map { stroke in
-////        <#code#>
-////      }
-////      let savedTouches = completedRawTouches.getTouchesForID(<#T##id: TouchStroke.ID##TouchStroke.ID#>)
-//      print(
-//        "Process touches in debug mode. Do we have any `touches` we can resurrect, saved in `completedStrokes`?: \(savedTouches)"
-//      )
-//
-//      guard !savedTouches.isEmpty else {
-//        print("No saved touches to retrieve, exiting.")
-//        return
-//      }
-//      let touchesSet: Set<TrackpadTouch> = Set(completedStrokes.rawTouches)
-//
-//      touches = touchesSet
-//
-//      /// I think we'll need to clear out the previous lot of saved touches, or they build up
-//
-//    }
+    
+    if isDebugMode {
+      let savedTouches = completedStrokes.flatMap { stroke in
+        stroke.rawTouchPoints
+      }
+      let touchesSet: Set<TrackpadTouch> = Set(savedTouches)
+      touches = touchesSet
+    }
 
     guard !touches.isEmpty else {
       print("No touches to process.")
@@ -173,12 +179,15 @@ extension StrokeHandler {
       )
 
       if shouldAdd {
-        stroke.addPoint(strokePointPosition)
+        stroke.addPoint(kind: .strokePoint(strokePointPosition))
       }
     }
     /// Let's also add to our backup of raw touches
     if !isDebugMode {
-      completedRawTouches[stroke.id]?.append(touch)
+      
+      stroke.addPoint(kind: .rawTouchPoint(touch))
+      
+//      completedRawTouches[stroke.id]?.append(touch)
     }
     activeStrokes[touchId] = stroke
   }

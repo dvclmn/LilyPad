@@ -14,10 +14,26 @@ public struct TouchStroke: Identifiable {
   public let id: UUID = UUID()
   public var points: [StrokePoint]
   public var colour: Color
+  
+  /// These are the *original* points recieved, before filtering.
+  /// Used for debugging only
+  public var rawTouchPoints: [TrackpadTouch] = []
 
   /// Add a point to the stroke with a specified width
-  public mutating func addPoint(_ point: StrokePoint) {
-    points.append(point)
+//  public mutating func addPoint(_ point: StrokePoint) {
+//    points.append(point)
+//  }
+  
+  public mutating func addPoint(
+    kind: StrokePointType
+  ) {
+    switch kind {
+      case .strokePoint(let newPoints):
+        points.append(newPoints)
+        
+      case .rawTouchPoint(let newTouches):
+        rawTouchPoints.append(newTouches)
+    }
   }
 
   public var cgPoints: [CGPoint] {
@@ -28,6 +44,11 @@ public struct TouchStroke: Identifiable {
     let result = points[index].position
     return result
   }
+}
+
+public enum StrokePointType {
+  case strokePoint(StrokePoint)
+  case rawTouchPoint(TrackpadTouch)
 }
 
 enum StrokeState {

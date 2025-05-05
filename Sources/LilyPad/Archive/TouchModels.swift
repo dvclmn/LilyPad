@@ -28,23 +28,24 @@ public struct GestureState {
 
 }
 
-public struct TrackPadTouch: Identifiable, Hashable {
-  public var id: Int
-  public let position: CGPoint
-  
-  public init(_ nsTouch: NSTouch) {
-    self.id = nsTouch.hash
-    self.position = CGPoint(
-      x: nsTouch.normalizedPosition.x,
-      y: 1.0 - nsTouch.normalizedPosition.y
-    )
-  }
-  
-  public init(x: CGFloat, y: CGFloat) {
-    self.id = UUID().hashValue
-    self.position = CGPoint(x: x, y: 1.0 - y)
-  }
-}
+/// Deprecated. See new ``TrackpadTouch``
+//public struct TrackPadTouch: Identifiable, Hashable {
+//  public var id: Int
+//  public let position: CGPoint
+//  
+//  public init(_ nsTouch: NSTouch) {
+//    self.id = nsTouch.hash
+//    self.position = CGPoint(
+//      x: nsTouch.normalizedPosition.x,
+//      y: 1.0 - nsTouch.normalizedPosition.y
+//    )
+//  }
+//  
+//  public init(x: CGFloat, y: CGFloat) {
+//    self.id = UUID().hashValue
+//    self.position = CGPoint(x: x, y: 1.0 - y)
+//  }
+//}
 
 
 public enum GestureType: CaseIterable {
