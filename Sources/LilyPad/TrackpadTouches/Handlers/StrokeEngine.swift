@@ -10,23 +10,27 @@ import Foundation
 public struct StrokeEngine {
   
   public var settings: StrokeSettings
-  private var strokeWidth: StrokeWidth
+  private var strokeWidth: StrokeWidthHandler
   
   public init(settings: StrokeSettings = .default) {
     self.settings = settings
-    self.strokeWidth = StrokeWidth(
+    self.strokeWidth = StrokeWidthHandler(
       baseWidth: settings.baseStrokeWidth,
       sensitivity: settings.velocitySensitivity
     )
   }
   
-  public func shouldAddPoint(from last: CGPoint, to current: CGPoint, velocity: CGFloat) -> Bool {
+  public func shouldAddPoint(
+    from last: CGPoint,
+    to current: CGPoint,
+    velocity: CGFloat
+  ) -> Bool {
     let distance = hypot(current.x - last.x, current.y - last.y)
     return distance > settings.minDistance || velocity < settings.minSpeedForSparseSampling
   }
   
-  public func calculateWidth(for touch: TrackpadTouch) -> CGFloat {
-    strokeWidth.calculateStrokeWidth(for: touch)
+  public func calculateWidth(for velocity: CGFloat) -> CGFloat {
+    strokeWidth.calculateStrokeWidth(for: velocity)
   }
 }
 

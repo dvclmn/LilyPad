@@ -6,16 +6,19 @@
 //
 
 import Foundation
+import MemberwiseInit
 
 /// Velocity describes the motion between two sampled positions over time.
 /// We're storing a motion vector associated with a timestamped position sample.
 /// `velocity`: How fast the touch was moving when it arrived at `position`
+
+@MemberwiseInit(.public)
 public struct StrokePoint {
   public let position: CGPoint
   public let timestamp: TimeInterval
   public let velocity: CGVector?
   
-  private var _width: CGFloat? = nil
+  @Init(.ignore) private var _width: CGFloat? = nil
   
   public mutating func setCachedWidth(_ value: CGFloat) {
     _width = value

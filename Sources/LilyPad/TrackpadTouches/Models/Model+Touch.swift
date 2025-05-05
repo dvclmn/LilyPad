@@ -31,11 +31,7 @@ public struct TrackpadTouch: Identifiable, Hashable {
     self.velocity = velocity ?? .zero
     self.pressure = pressureData
   }
-  /// The magnitude of the velocity vector (speed)
-  public var speed: CGFloat {
-    return sqrt(velocity.dx * velocity.dx + velocity.dy * velocity.dy)
-  }
-  
+
   /// The direction of movement in radians
   public var direction: CGFloat {
     return atan2(velocity.dy, velocity.dx)

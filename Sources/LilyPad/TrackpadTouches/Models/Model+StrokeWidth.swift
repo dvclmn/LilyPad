@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct StrokeWidth {
+public struct StrokeWidthHandler {
   private var base: CGFloat
   private var sensitivity: CGFloat
   
@@ -19,8 +19,8 @@ public struct StrokeWidth {
     self.sensitivity = min(max(sensitivity, 0), 1) // Clamp 0...1
   }
   
-  public func calculateStrokeWidth(for touch: TrackpadTouch) -> CGFloat {
-    let clampedSpeed = min(max(touch.speed, 0), 3.0)
+  public func calculateStrokeWidth(for velocity: CGFloat) -> CGFloat {
+    let clampedSpeed = min(max(velocity, 0), 3.0)
     let t = clampedSpeed / 3.0
     let adjustedT = pow(t, sensitivity * 2) // Exponential control curve
     return maxWidth - (maxWidth - minWidth) * adjustedT
