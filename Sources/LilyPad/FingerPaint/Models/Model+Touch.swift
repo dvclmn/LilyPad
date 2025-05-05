@@ -7,7 +7,6 @@
 
 import AppKit
 
-/// Represents a normalized touch on the trackpad
 public struct TrackpadTouch: Identifiable, Hashable {
   public let id: Int
   public let position: CGPoint
@@ -47,6 +46,19 @@ public struct TrackpadTouch: Identifiable, Hashable {
       self.velocity = CGVector.zero
     }
   }
+  /// The magnitude of the velocity vector (speed)
+  public var speed: CGFloat {
+    return sqrt(velocity.dx * velocity.dx + velocity.dy * velocity.dy)
+  }
+  
+  /// The direction of movement in radians
+  public var direction: CGFloat {
+    return atan2(velocity.dy, velocity.dx)
+  }
+}
+
+extension TrackpadTouch {
+  
   /// For Debugging
   public init(
     id: Int,
@@ -62,13 +74,4 @@ public struct TrackpadTouch: Identifiable, Hashable {
     self.previousTimestamp = nil
   }
   
-  /// The magnitude of the velocity vector (speed)
-  public var speed: CGFloat {
-    return sqrt(velocity.dx * velocity.dx + velocity.dy * velocity.dy)
-  }
-  
-  /// The direction of movement in radians
-  public var direction: CGFloat {
-    return atan2(velocity.dy, velocity.dx)
-  }
 }

@@ -18,20 +18,9 @@ public struct TouchStroke: Identifiable {
   
   /// Add a point to the stroke with a specified width
   public mutating func addPoint(
-//    lastPoint: CGPoint,
     _ point: CGPoint,
-//    touch: TrackpadTouch,
     width: CGFloat
   ) {
-    
-
-//      let distance = hypot(point.x - lastPoint.x, point.y - lastPoint.y)
-//      let shouldAddPoint = distance > minDistanceThreshold || touch.speed < minSpeedForSparseSampling
-//      if shouldAddPoint {
-//        stroke.addPoint(touchPosition, width: width)
-//      }
-//
-//    
     points.append(point)
     widths.append(width)
   }
