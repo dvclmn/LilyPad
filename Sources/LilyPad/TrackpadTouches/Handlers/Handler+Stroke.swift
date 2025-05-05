@@ -9,7 +9,7 @@ import SwiftUI
 
 public struct StrokeHandler {
   
-  var isInTouchMode:
+//  let isInTouchMode: Bool
   
   var touches: Set<TrackpadTouch> = []
   
@@ -38,7 +38,9 @@ public struct StrokeHandler {
     completedStrokes.removeAll()
   }
   
-  public init() {
+  public init(isInTouchMode: Bool) {
+    self.isInTouchMode = isInTouchMode
+    print("StrokeHandler was initialised. `isInTouchMode`: `\(isInTouchMode)`.")
   }
 }
 
@@ -53,10 +55,10 @@ extension StrokeHandler {
     //    let timeStarted = Date.timeIntervalBetween1970AndReferenceDate
     //    print("Running `processTouches`")
     
-    guard isInTouchMode else {
-      print("No need to process touches, not in touch mode.")
-      return
-    }
+//    guard isInTouchMode else {
+//      print("No need to process touches, not in touch mode.")
+//      return
+//    }
     for touch in touches {
       let touchId = touch.id
       let touchPosition = touchPosition(touch)
