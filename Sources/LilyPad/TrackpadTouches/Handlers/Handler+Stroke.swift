@@ -9,7 +9,7 @@ import SwiftUI
 
 public struct StrokeHandler {
 
-  var engine = StrokeEngine()
+  public var engine = StrokeEngine()
 
   private var canvasSize: CGSize
 
@@ -72,8 +72,8 @@ extension StrokeHandler {
         velocity: touch.velocity
       )
 
-      let width = engine.calculateWidth(for: speed)
-
+//      let width = engine.calculateWidth(for: speed)
+      
       if var stroke = activeStrokes[touchId] {
         if let last = stroke.points.last {
           let shouldAdd = engine.shouldAddPoint(

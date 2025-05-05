@@ -25,6 +25,7 @@ public struct StrokePoint: Identifiable {
     _width = value
   }
 
+  /// Note: currently used by `StrokeRenderer`
   public func width(using model: StrokeWidthHandler) -> CGFloat? {
 
     guard let speed = velocity?.speed else {

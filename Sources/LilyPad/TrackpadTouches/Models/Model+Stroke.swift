@@ -28,14 +28,15 @@ public struct TouchStroke: Identifiable {
     return points.map(\.position)
   }
 
-  public func getWidthAtPoint(_ point: CGPoint, model: StrokeWidthHandler) -> CGFloat? {
-    let targetStrokePoint = points.first { strokePoint in
-      strokePoint.position == point
-    }
-    let width = targetStrokePoint?.width(using: model)
-    
-    return width
-  }
+  /// Possibly now not needed, given `StrokeRenderer`?
+//  public func getWidthAtPoint(_ point: CGPoint, model: StrokeWidthHandler) -> CGFloat? {
+//    let targetStrokePoint = points.first { strokePoint in
+//      strokePoint.position == point
+//    }
+//    let width = targetStrokePoint?.width(using: model)
+//    
+//    return width
+//  }
   
   public subscript (pointAtIndex index: Int) -> CGPoint {
     let result = points[index].position
