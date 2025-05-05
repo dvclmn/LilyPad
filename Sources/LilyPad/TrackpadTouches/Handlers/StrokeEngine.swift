@@ -13,7 +13,7 @@ public struct StrokeEngine {
   public var splineResolution: Int = 8
   public var minDistance: CGFloat = 20
   public var minSpeedForSparseSampling: CGFloat = 1.0
-  public var splinetension: CGFloat = 0.0 // Added from CatmullRom
+  public var splineTension: CGFloat = 0.0 // Added from CatmullRom
 
   public init() {
     print("`StrokeEngine` created at \(Date.now.format(.timeDetailed))")
@@ -98,24 +98,38 @@ extension StrokeEngine {
     )
     path.addEllipse(in: rect)
   }
+  
 
-  func catmullRom(_ p0: CGPoint, _ p1: CGPoint, _ p2: CGPoint, _ p3: CGPoint, _ t: CGFloat) -> CGPoint {
+  func catmullRom(
+    _ p0: CGPoint,
+    _ p1: CGPoint,
+    _ p2: CGPoint,
+    _ p3: CGPoint,
+    _ t: CGFloat
+  ) -> CGPoint {
+    // Apply tension parameter from CatmullRom struct
+    let alpha = (1.0 - splineTension) / 2.0
+    
     let t2 = t * t
     let t3 = t2 * t
-
-    let x =
-      0.5
-      * (2 * p1.x + (p2.x - p0.x) * t + (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2
-        + (3 * p1.x - p0.x - 3 * p2.x + p3.x) * t3)
-
-    let y =
-      0.5
-      * (2 * p1.y + (p2.y - p0.y) * t + (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2
-        + (3 * p1.y - p0.y - 3 * p2.y + p3.y) * t3)
-
+    
+    let x = 0.5 * (
+      2 * p1.x +
+      (p2.x - p0.x) * t * alpha +
+      (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2 +
+      (3 * p1.x - p0.x - 3 * p2.x + p3.x) * t3
+    )
+    
+    let y = 0.5 * (
+      2 * p1.y +
+      (p2.y - p0.y) * t * alpha +
+      (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2 +
+      (3 * p1.y - p0.y - 3 * p2.y + p3.y) * t3
+    )
+    
     return CGPoint(x: x, y: y)
   }
-
+  
   func interpolatedWidth(
     p0: StrokePoint,
     p1: StrokePoint,
@@ -126,15 +140,20 @@ extension StrokeEngine {
     func width(for p: StrokePoint) -> CGFloat {
       p.width(using: strokeWidthHandler) ?? strokeWidthHandler.calculateStrokeWidth(for: 0)
     }
-
+    
     let w0 = width(for: p0)
     let w1 = width(for: p1)
     let w2 = width(for: p2)
     let w3 = width(for: p3)
-
+    
     let t2 = t * t
     let t3 = t2 * t
-
-    return 0.5 * (2 * w1 + (w2 - w0) * t + (2 * w0 - 5 * w1 + 4 * w2 - w3) * t2 + (3 * w1 - w0 - 3 * w2 + w3) * t3)
+    
+    return 0.5 * (
+      2 * w1 +
+      (w2 - w0) * t +
+      (2 * w0 - 5 * w1 + 4 * w2 - w3) * t2 +
+      (3 * w1 - w0 - 3 * w2 + w3) * t3
+    )
   }
 }
