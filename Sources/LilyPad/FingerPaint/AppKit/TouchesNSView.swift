@@ -50,14 +50,18 @@ public class TrackpadTouchesNSView: NSView {
     
     let pressureBehaviour = event.pressureBehavior
     let pressureAmount = event.pressure
+    
+    let pressureData = TouchPressure(
+      behaviour: pressureBehaviour,
+      value: CGFloat(pressureAmount)
+    )
 
     /// Convert to data model
     /// Process touches through the manager to get velocity information
     let trackpadTouches = touchManager.processTouches(
       touches,
       timestamp: event.timestamp,
-      pressureBehaviour: pressureBehaviour,
-      pressureAmount: CGFloat(pressureAmount),
+      pressureData: pressureData,
       in: self
     )
 
