@@ -13,6 +13,7 @@ public struct StrokeEngine {
   public var splineResolution: Int = 8
   public var minDistance: CGFloat = 20
   public var minSpeedForSparseSampling: CGFloat = 1.0
+  public var splinetension: CGFloat = 0.0 // Added from CatmullRom
 
   public init() {
     print("`StrokeEngine` created at \(Date.now.format(.timeDetailed))")
@@ -32,29 +33,59 @@ public struct StrokeEngine {
 extension StrokeEngine {
   public func drawStroke(
     _ stroke: TouchStroke,
+    isClosed: Bool = false,
     in context: GraphicsContext
   ) {
-    guard stroke.points.count >= 4 else { return }
-
+    let points = stroke.points
+    guard points.count >= 2 else { return }
+    
     var path = Path()
-
-    let controlPoints = stroke.points
-    for i in 1..<controlPoints.count - 2 {
-      let p0 = controlPoints[i - 1]
-      let p1 = controlPoints[i]
-      let p2 = controlPoints[i + 1]
-      let p3 = controlPoints[i + 2]
-
+    
+    /// Handle special cases based on point count
+    if points.count < 4 && !isClosed {
+      // Draw simple lines for few points
+      if let first = points.first {
+        path.move(to: first.position)
+        for i in 1..<points.count {
+          let position = points[i].position
+          let width = points[i].width(using: strokeWidthHandler) ??
+          strokeWidthHandler.calculateStrokeWidth(for: 0)
+          drawPoint(position, width: width, in: &path)
+        }
+      }
+      context.stroke(path, with: .color(.black), lineWidth: 1)
+      return
+    }
+    
+    // Create working array for closed paths if needed
+    var workingPoints = points
+    if isClosed && points.count >= 3 {
+      workingPoints.append(points[0])
+      workingPoints.insert(points[points.count - 1], at: 0)
+    }
+    
+    // Start and end indices for the spline calculation
+    let startIndex = isClosed ? 1 : 0
+    let endIndex = isClosed ? workingPoints.count - 2 : workingPoints.count - 3
+    
+    for i in startIndex...endIndex {
+      let p0 = workingPoints[max(0, i - 1)]
+      let p1 = workingPoints[i]
+      let p2 = workingPoints[min(workingPoints.count - 1, i + 1)]
+      let p3 = workingPoints[min(workingPoints.count - 1, i + 2)]
+      
       for j in 0..<splineResolution {
         let t = CGFloat(j) / CGFloat(splineResolution)
         let position = catmullRom(p0.position, p1.position, p2.position, p3.position, t)
-
         let width = interpolatedWidth(p0: p0, p1: p1, p2: p2, p3: p3, t: t)
-
         drawPoint(position, width: width, in: &path)
       }
     }
-
+    
+    if isClosed {
+      path.closeSubpath()
+    }
+    #warning("This is where I could play with 'brush' style")
     context.stroke(path, with: .color(.black), lineWidth: 1)
   }
 
