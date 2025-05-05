@@ -5,6 +5,7 @@
 //  Created by Dave Coleman on 3/5/2025.
 //
 
+import BaseComponents
 import BaseHelpers
 import SwiftUI
 
@@ -25,7 +26,24 @@ public struct TrackpadTouchesExample: View {
     // MARK: - Touch Tracking View
 
     VStack(alignment: .leading) {
-      TouchDebugView(handler: handler)
+      HStack {
+        TouchDebugView(handler: handler)
+
+        SimpleSlider(
+          QuickLabel("Density"),
+          value: $handler.strokeEngine.settings.minDistance.asBoundDouble,
+          range: 0.001...200,
+        )
+        .configure(.custom.valueDisplay(.precise))
+
+        SimpleSlider(
+          QuickLabel("Min Speed for Sparse"),
+          value: $handler.strokeEngine.settings.minSpeedForSparseSampling.asBoundDouble,
+          range: 0.001...200,
+        )
+        .configure(.custom.valueDisplay(.precise))
+
+      }
       TrackpadTouchesView { touches in
         if handler.touches != touches {
           handler.touches = touches
@@ -33,7 +51,7 @@ public struct TrackpadTouchesExample: View {
         handler.processTouches()
       }
       .overlay { CanvasView(handler: handler) }
-      .mouseLock($handler.isPointerLocked)
+      //      .mouseLock($handler.isPointerLocked)
     }  // END main vstack
     .focusable(true)
     .focused($isFocused)
@@ -66,6 +84,16 @@ public struct TrackpadTouchesExample: View {
 
     .onAppear {
       handler.isPointerLocked = true
+    }
+    .task(id: handler.strokeEngine.settings.minDistance) {
+      await debouncer.execute { @MainActor in
+        handler.processTouches()
+      }
+    }
+    .task(id: handler.strokeEngine.settings.minSpeedForSparseSampling) {
+      await debouncer.execute { @MainActor in
+        handler.processTouches()
+      }
     }
 
   }

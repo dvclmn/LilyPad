@@ -8,22 +8,20 @@
 import BaseHelpers
 import SwiftUI
 
-
-
 public struct StrokeEngine {
   public var settings: StrokeSettings
   private var strokeWidth: StrokeWidth
-  
+
   public init(settings: StrokeSettings = .default) {
     self.settings = settings
     self.strokeWidth = StrokeWidth(baseWidth: settings.baseStrokeWidth, sensitivity: settings.velocitySensitivity)
   }
-  
+
   public func shouldAddPoint(from last: CGPoint, to current: CGPoint, velocity: CGFloat) -> Bool {
     let distance = hypot(current.x - last.x, current.y - last.y)
     return distance > settings.minDistance || velocity < settings.minSpeedForSparseSampling
   }
-  
+
   public func calculateWidth(for touch: TrackpadTouch) -> CGFloat {
     strokeWidth.calculateStrokeWidth(for: touch)
   }
@@ -32,18 +30,23 @@ public struct StrokeEngine {
 
 public struct StrokeSettings {
   public var baseStrokeWidth: CGFloat
-  public var velocitySensitivity: CGFloat // 0 = insensitive, 1 = full range
-  public var minDistance: CGFloat         // Minimum Euclidean distance between sampled points
-  public var minSpeedForSparseSampling: CGFloat // Allow sparse samples if slow
-  
+
+  /// 0 = insensitive, 1 = full range
+  public var velocitySensitivity: CGFloat
+
+  /// Minimum Euclidean distance between sampled points
+  public var minDistance: CGFloat
+
+  /// Allow sparse samples if slow
+  public var minSpeedForSparseSampling: CGFloat
+
   public static let `default` = StrokeSettings(
     baseStrokeWidth: 10,
     velocitySensitivity: 0.5,
-    minDistance: 2.0,
+    minDistance: 200,
     minSpeedForSparseSampling: 1.0
   )
 }
-
 
 
 @Observable
@@ -52,16 +55,16 @@ public final class AppHandler {
   var touches: Set<TrackpadTouch> = []
 
   var strokeHandler = StrokeHandler()
-  
+
   var strokeEngine = StrokeEngine()
-  
+
   let isDebugMode: Bool = false
   var windowSize: CGSize = .zero
   var isPointerLocked: Bool = false
   var isClicked: Bool = false
-  
-  let minDistanceThreshold: CGFloat = 10
-  let minSpeedForSparseSampling: CGFloat = 0.1
+
+  //  let minDistanceThreshold: CGFloat = 10
+  //  let minSpeedForSparseSampling: CGFloat = 0.1
 
   public init() {}
 
@@ -98,13 +101,20 @@ extension AppHandler {
 
   /// Process touch updates and update strokes
   public func processTouches() {
+    //    let timeStarted = Date.timeIntervalBetween1970AndReferenceDate
+    //    print("Running `processTouches`")
+
+    guard isInTouchMode else {
+      print("No need to process touches, not in touch mode.")
+      return
+    }
     for touch in touches {
       let touchId = touch.id
       let touchPosition = touchPosition(touch)
       let velocity = touch.speed
-      
+
       let width = strokeEngine.calculateWidth(for: touch)
-      
+
       if var stroke = strokeHandler.activeStrokes[touchId] {
         if let last = stroke.points.last {
           let shouldAdd = strokeEngine.shouldAddPoint(from: last, to: touchPosition, velocity: velocity)
@@ -116,7 +126,7 @@ extension AppHandler {
         }
         strokeHandler.activeStrokes[touchId] = stroke
       } else {
-        // First point for new stroke
+        /// First point for new stroke
         let stroke = TouchStroke(
           points: [touchPosition],
           widths: [width],
@@ -125,81 +135,87 @@ extension AppHandler {
         strokeHandler.activeStrokes[touchId] = stroke
       }
     }
-    
+
     // Finalize ended strokes
     let currentIds = Set(touches.map { $0.id })
     let activeIds = Set(strokeHandler.activeStrokes.keys)
     let endedIds = activeIds.subtracting(currentIds)
-    
+
     for touchId in endedIds {
       if let stroke = strokeHandler.activeStrokes[touchId],
-         stroke.points.count >= strokeHandler.minPointsForCurve {
+        stroke.points.count >= strokeHandler.minPointsForCurve
+      {
         strokeHandler.completedStrokes.append(stroke)
       }
       strokeHandler.activeStrokes.removeValue(forKey: touchId)
     }
+
+    //    let timeEnded = Date.timeIntervalBetween1970AndReferenceDate
+    //
+    //    let timeElapsed = timeEnded - timeStarted
+    //    print("Time taken to process touches: \(timeElapsed) seconds")
   }
-//  public func processTouches() {
-//
-//    guard isInTouchMode else {
-//      print("No need to process touches, not in touch mode.")
-//      return
-//    }
-//
-//    if isDebugMode { print("Processing touches. Touch count: \(touches.count)") }
-//    /// Process each touch to update strokes
-//    for touch in touches {
-//      let touchId = touch.id
-//      let touchPosition = touchPosition(touch)
-//
-//      /// Calculate width based on velocity
-//      let width = strokeHandler.strokeWidth.calculateStrokeWidth(for: touch)
-//
-//      /// Update or create stroke for this touch
-//      if var stroke = strokeHandler.activeStrokes[touchId] {
-//        if isDebugMode {
-//          print("There are active strokes for touch \(touchId). Count: \(stroke.points.count)")
-//          print("Point count for stroke BEFORE: \(stroke.points.count)")
-//        }
-//        
-//        if let last = stroke.points.last {
-//          let distance = hypot(touchPosition.x - last.x, touchPosition.y - last.y)
-//          let shouldAddPoint = distance > minDistanceThreshold || touch.speed < minSpeedForSparseSampling
-//          if shouldAddPoint {
-//            stroke.addPoint(touchPosition, width: width)
-//          }
-//        }
-//        
-//
-////        stroke.addPoint(touchPosition, width: width)
-//        strokeHandler.activeStrokes[touchId] = stroke
-//
-//      } else {
-//        /// New touch, create a new stroke
-//        if isDebugMode { print("Creating a new stroke for touch \(touchId)") }
-//
-//        let stroke = TouchStroke(
-//          points: [touchPosition],
-//          widths: [2],
-//          color: .purple
-//        )
-//        strokeHandler.activeStrokes[touchId] = stroke
-//      }
-//    }
-//
-//    /// Check for ended touches
-//    let currentIds = Set(touches.map { $0.id })
-//    let activeIds = Set(strokeHandler.activeStrokes.keys)
-//    let endedIds = activeIds.subtracting(currentIds)
-//
-//    /// Finalize ended strokes
-//    for touchId in endedIds {
-//      if let stroke = strokeHandler.activeStrokes[touchId], stroke.points.count >= strokeHandler.minPointsForCurve {
-//        strokeHandler.completedStrokes.append(stroke)
-//      }
-//      strokeHandler.activeStrokes.removeValue(forKey: touchId)
-//    }
-//  }
+  //  public func processTouches() {
+  //
+  //    guard isInTouchMode else {
+  //      print("No need to process touches, not in touch mode.")
+  //      return
+  //    }
+  //
+  //    if isDebugMode { print("Processing touches. Touch count: \(touches.count)") }
+  //    /// Process each touch to update strokes
+  //    for touch in touches {
+  //      let touchId = touch.id
+  //      let touchPosition = touchPosition(touch)
+  //
+  //      /// Calculate width based on velocity
+  //      let width = strokeHandler.strokeWidth.calculateStrokeWidth(for: touch)
+  //
+  //      /// Update or create stroke for this touch
+  //      if var stroke = strokeHandler.activeStrokes[touchId] {
+  //        if isDebugMode {
+  //          print("There are active strokes for touch \(touchId). Count: \(stroke.points.count)")
+  //          print("Point count for stroke BEFORE: \(stroke.points.count)")
+  //        }
+  //
+  //        if let last = stroke.points.last {
+  //          let distance = hypot(touchPosition.x - last.x, touchPosition.y - last.y)
+  //          let shouldAddPoint = distance > minDistanceThreshold || touch.speed < minSpeedForSparseSampling
+  //          if shouldAddPoint {
+  //            stroke.addPoint(touchPosition, width: width)
+  //          }
+  //        }
+  //
+  //
+  ////        stroke.addPoint(touchPosition, width: width)
+  //        strokeHandler.activeStrokes[touchId] = stroke
+  //
+  //      } else {
+  //        /// New touch, create a new stroke
+  //        if isDebugMode { print("Creating a new stroke for touch \(touchId)") }
+  //
+  //        let stroke = TouchStroke(
+  //          points: [touchPosition],
+  //          widths: [2],
+  //          color: .purple
+  //        )
+  //        strokeHandler.activeStrokes[touchId] = stroke
+  //      }
+  //    }
+  //
+  //    /// Check for ended touches
+  //    let currentIds = Set(touches.map { $0.id })
+  //    let activeIds = Set(strokeHandler.activeStrokes.keys)
+  //    let endedIds = activeIds.subtracting(currentIds)
+  //
+  //    /// Finalize ended strokes
+  //    for touchId in endedIds {
+  //      if let stroke = strokeHandler.activeStrokes[touchId], stroke.points.count >= strokeHandler.minPointsForCurve {
+  //        strokeHandler.completedStrokes.append(stroke)
+  //      }
+  //      strokeHandler.activeStrokes.removeValue(forKey: touchId)
+  //    }
+  //  }
 
   // MARK: - Strokes
 
