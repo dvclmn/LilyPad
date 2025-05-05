@@ -8,6 +8,17 @@
 import MemberwiseInit
 import SwiftUI
 
+public struct RawTouches: Identifiable, Equatable, Hashable {
+  
+  public typealias ID = TouchStroke.ID
+  public let id: ID
+  public let touches: [TrackpadTouch]
+  
+  public func getTouchesForID(_ id: ID) -> [TrackpadTouch] {
+    
+  }
+}
+
 /// Represents a touch stroke with a series of points and widths
 @MemberwiseInit(.public)
 public struct TouchStroke: Identifiable {
@@ -17,7 +28,7 @@ public struct TouchStroke: Identifiable {
 
   /// These are the *original* points recieved, before filtering.
   /// Used for debugging only
-  public var rawTouchPoints: [TrackpadTouch] = []
+//  public var rawTouchPoints: [TrackpadTouch] = []
 
   /// Add a point to the stroke with a specified width
   public mutating func addPoint(
@@ -28,7 +39,8 @@ public struct TouchStroke: Identifiable {
         points.append(newPoints)
 
       case .rawTouchPoint(let newTouches):
-        rawTouchPoints.append(newTouches)
+        fatalError("Raw touches no longer supported here")
+//        rawTouchPoints.append(newTouches)
     }
   }
 
@@ -36,9 +48,9 @@ public struct TouchStroke: Identifiable {
     return points.map(\.position)
   }
   
-  public mutating func clearRawTouches() {
-    rawTouchPoints.removeAll()
-  }
+//  public mutating func clearRawTouches() {
+//    rawTouchPoints.removeAll()
+//  }
 
   public subscript(pointAtIndex index: Int) -> CGPoint {
     let result = points[index].position
@@ -46,12 +58,12 @@ public struct TouchStroke: Identifiable {
   }
 }
 
-extension Array where Element == TouchStroke {
-  public var rawTouches: [TrackpadTouch] {
-    let rawTouches: [TrackpadTouch] = self.flatMap(\.rawTouchPoints)
-    return rawTouches
-  }
-}
+//extension Array where Element == TouchStroke {
+//  public var rawTouches: [TrackpadTouch] {
+//    let rawTouches: [TrackpadTouch] = self.flatMap(\.rawTouchPoints)
+//    return rawTouches
+//  }
+//}
 
 public enum StrokePointType {
   case strokePoint(StrokePoint)
