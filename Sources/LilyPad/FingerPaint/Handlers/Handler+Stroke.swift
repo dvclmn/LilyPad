@@ -36,7 +36,6 @@ public struct StrokeHandler {
   
   public init() {
   }
-  
 }
 
 extension StrokeHandler {
