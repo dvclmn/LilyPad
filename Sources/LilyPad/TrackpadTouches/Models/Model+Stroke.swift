@@ -27,15 +27,15 @@ public struct TouchStroke: Identifiable {
   public var cgPoints: [CGPoint] {
     return points.map(\.position)
   }
-  
-  public subscript (widthAtPoint point: CGPoint) -> CGFloat? {
+
+  public func getWidthAtPoint(_ point: CGPoint, model: StrokeWidthHandler) -> CGFloat? {
     let targetStrokePoint = points.first { strokePoint in
       strokePoint.position == point
     }
-    let width = targetStrokePoint?.width(using: <#T##StrokeEngine#>)
+    let width = targetStrokePoint?.width(using: model)
+    
+    return width
   }
-  
-  
   
   public subscript (pointAtIndex index: Int) -> CGPoint {
     let result = points[index].position
