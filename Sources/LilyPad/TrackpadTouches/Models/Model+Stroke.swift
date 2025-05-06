@@ -13,11 +13,12 @@ import BaseStyles
 @MemberwiseInit(.public)
 public struct TouchStroke: Identifiable, Codable, Equatable {
   public let id: UUID
-  public var points: [TouchPoint]
+//  public var points: [TouchPoint]
   public var colour: Swatch
   
   /// These are the *original* points recieved, before filtering.
   /// Used for debugging only
+  #warning("APPEND POINTS TO THIS")
   public var pointsOriginal: [TouchPoint] = []
 
   /// Add a point to the stroke with a specified width
@@ -26,24 +27,32 @@ public struct TouchStroke: Identifiable, Codable, Equatable {
 //  }
   
   public mutating func addPoint(
-    kind: StrokePointType
+    _ point: TouchPoint
+//    kind: StrokePointType
   ) {
-    switch kind {
-      case .pointsFiltered(let newPoints):
-        points.append(newPoints)
-        
-      case .pointsOriginal(let newPoints):
-        pointsOriginal.append(newPoints)
-    }
+    pointsOriginal.append(point)
+//    switch kind {
+//      case .pointsFiltered(let newPoints):
+//        points.append(newPoints)
+//        
+//      case .pointsOriginal(let newPoints):
+//        pointsOriginal.append(newPoints)
+//    }
   }
 
   public var cgPoints: [CGPoint] {
-    return points.map(\.position)
+    return pointsOriginal.map(\.position)
   }
 
-  public subscript(pointAtIndex index: Int) -> CGPoint {
-    let result = points[index].position
-    return result
+//  public subscript(pointAtIndex index: Int) -> CGPoint {
+//    let result = points[index].position
+//    return result
+//  }
+}
+
+extension TouchStroke {
+  public func filteredPoints(using config: PointConfig, engine: StrokeEngine) -> [TouchPoint] {
+    engine.filterPoints(from: pointsOriginal, pointConfig: config)
   }
 }
 

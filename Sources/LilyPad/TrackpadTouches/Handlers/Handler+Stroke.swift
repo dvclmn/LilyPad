@@ -39,14 +39,6 @@ public struct StrokeHandler {
   /// it becomes
   public var activeStrokes: [Int: TouchStroke] = [:]
 
-  /// Completed strokes
-  
-  
-//  public var completedRawTouches: [TouchStroke.ID: [TrackpadTouch]] = [:]
-//  public var completedRawTouches: [RawTouches] = []
-  
-  
-
   /// Minimum number of points required to create a smooth curve
   let minPointsForCurve = 3
 
@@ -79,42 +71,6 @@ extension StrokeHandler {
     return Array(activeStrokes.values) + artwork.completedStrokes
   }
   
-//  public mutating func processTouchesIntoStrokesDebugVersion() {
-//    
-//    guard canvasSize != .zero else {
-//      print("Canvas size cannot be zero, skipping touch processing.")
-//      return
-//    }
-//    
-//    /// I don't need touches, only need the saved stuff, right?
-//    
-//    
-////    guard !touches.isEmpty else {
-////      print("No touches to process.")
-////      return
-////    }
-////    
-////    for touch in touches {
-////      handleTouch(touch, isDebugMode: isDebugMode)
-////    }
-////    
-////    /// Finalize ended strokes
-////    /// Get the ID's for every `TrackpadTouch` in `touches`
-////    let currentIds = Set(touches.map { $0.id })
-////    
-////    /// Active `TouchStroke`s are keyed by their ID (`Int`)
-////    let activeIds = Set(activeStrokes.keys)
-////    
-////    let endedIds = activeIds.subtracting(currentIds)
-////    
-////    for touchId in endedIds {
-////      if let stroke = activeStrokes[touchId], stroke.points.count >= minPointsForCurve {
-////        completedStrokes.append(stroke)
-////      }
-////      activeStrokes.removeValue(forKey: touchId)
-////    }
-//  }
-
   /// Process touch updates and update strokes
   public mutating func processTouchesIntoStrokes(
     isDebugMode: Bool = false,
@@ -125,25 +81,6 @@ extension StrokeHandler {
       print("Canvas size cannot be zero, skipping touch processing.")
       return
     }
-    
-    if isDebugMode {
-      let savedTouches = artwork.completedStrokes.flatMap { stroke in
-        stroke.pointsOriginal
-      }
-      let touchesSet: Set<TouchPoint> = Set(savedTouches)
-      touches = touchesSet
-      
-      for touch in touches {
-        handleTouch(touch, isDebugMode: isDebugMode, pointConfig: pointConfig)
-      }
-      
-      return
-    }
-//
-//    guard !touches.isEmpty else {
-//      print("No touches to process.")
-//      return
-//    }
 
     for touch in touches {
       handleTouch(touch, isDebugMode: isDebugMode, pointConfig: pointConfig)

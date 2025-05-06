@@ -63,7 +63,6 @@ public struct StrokeWidthHandler {
     } else {
       pressurePart = strokeConfig.maxWidth
     }
-    
     rawWidth = velocityPart * (1 - pressureWeight) + pressurePart * pressureWeight
     
     return rawWidth
