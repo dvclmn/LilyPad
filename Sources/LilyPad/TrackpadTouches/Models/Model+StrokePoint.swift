@@ -26,19 +26,6 @@ public struct StrokePoint: Identifiable, Codable {
     _width = value
   }
 
-  /// Note: currently used by `StrokeRenderer`
-//  public func width(using model: StrokeWidthHandler) -> CGFloat? {
-//
-//    guard let speed = velocity?.speed else {
-//      print("Couldn't get velocity for StrokePoint with ID: `\(id)` and position: `\(position)`.")
-//      return nil
-//    }
-//
-//    guard let cachedWidth = _width else {
-//      return model.calculateStrokeWidth(for: speed)
-//    }
-//    return cachedWidth
-//  }
   public func width(using model: StrokeWidthHandler, strokeConfig: StrokeConfig) -> CGFloat? {
     if let cachedWidth = _width {
       return cachedWidth
@@ -47,9 +34,6 @@ public struct StrokePoint: Identifiable, Codable {
     return result
   }
 }
-//extension StrokePoint {
-//  let exampleStroke
-//}
 
 extension StrokePoint: CustomStringConvertible {
   public var description: String {

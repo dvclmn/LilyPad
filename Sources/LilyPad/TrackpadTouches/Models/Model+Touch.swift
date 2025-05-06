@@ -12,7 +12,6 @@ public struct TrackpadTouch: Identifiable, Hashable, Codable {
   public let id: Int
   public let position: CGPoint
   public let timestamp: TimeInterval
-//  public let pressure: CGFloat?
   public var velocity: CGVector
   
   /// Initializer from an NSTouch, capturing its state at a specific moment
@@ -21,15 +20,12 @@ public struct TrackpadTouch: Identifiable, Hashable, Codable {
     position: CGPoint,
     timestamp: TimeInterval,
     velocity: CGVector?,
-//    pressure: CGFloat?,
-//    previousTouch: TrackpadTouch? = nil
   ) {
     self.id = id
     self.position = position
     self.timestamp = timestamp
     #warning("Not sure if falling back to zero velocity is correct, need to look into this")
     self.velocity = velocity ?? .zero
-//    self.pressure = pressure
   }
 
   /// The direction of movement in radians
@@ -37,9 +33,3 @@ public struct TrackpadTouch: Identifiable, Hashable, Codable {
     return atan2(velocity.dy, velocity.dx)
   }
 }
-
-//@MemberwiseInit(.public)
-//public struct TouchPressure: Hashable {
-//  public var behaviour: NSEvent.PressureBehavior
-//  public var value: CGFloat?
-//}
