@@ -101,7 +101,7 @@ extension StrokeEngine {
     t: CGFloat
   ) -> CGFloat {
     func width(for p: StrokePoint) -> CGFloat {
-      p.width(using: strokeWidthHandler) ?? strokeWidthHandler.calculateStrokeWidth(for: 0)
+      p.width(using: strokeWidthHandler) ?? strokeWidthHandler.calculateStrokeWidth(speed: 0, pressure: 0)
     }
     
     let w0 = width(for: p0)

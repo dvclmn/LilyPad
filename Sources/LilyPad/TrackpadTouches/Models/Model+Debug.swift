@@ -17,6 +17,7 @@ public enum TouchDebugItem: String, Identifiable, CaseIterable {
   case touchModeActive
   case pointerLocked
   case clickedDown
+  case pressure
   
   public var id: String { self.rawValue }
   
@@ -31,6 +32,7 @@ public enum TouchDebugItem: String, Identifiable, CaseIterable {
       case .touchModeActive: "Touch Mode Active"
       case .pointerLocked: "Pointer Locked"
       case .clickedDown: "Clicked Down"
+      case .pressure: "Pressure"
     }
   }
 }

@@ -24,7 +24,8 @@ public class TrackpadTouchManager {
   public func processTouches(
     _ touches: Set<NSTouch>,
     timestamp: TimeInterval,
-    pressureData: TouchPressure?,
+//    pressure: CGFloat?,
+//    pressureData: TouchPressure?,
     in view: NSView
   ) -> Set<TrackpadTouch> {
 
@@ -37,7 +38,7 @@ public class TrackpadTouchManager {
       let newTouch = makeTouch(
         from: touch,
         timestamp: timestamp,
-        pressureData: pressureData,
+//        pressure: pressure,
         previous: previousTouch
       )
 
@@ -67,7 +68,7 @@ public class TrackpadTouchManager {
   func makeTouch(
     from nsTouch: NSTouch,
     timestamp: TimeInterval,
-    pressureData: TouchPressure?,
+//    pressure: CGFloat?,
     previous: TrackpadTouch?
   ) -> TrackpadTouch {
     let now = timestamp
@@ -87,7 +88,8 @@ public class TrackpadTouchManager {
       position: position,
       timestamp: timestamp,
       velocity: velocity,
-      pressureData: pressureData,
+//      pressure: pressure,
+//      pressureData: pressureData,
       previousTouch: previous
     )
   }

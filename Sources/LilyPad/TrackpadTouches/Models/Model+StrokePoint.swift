@@ -18,6 +18,7 @@ public struct StrokePoint: Identifiable {
   public let position: CGPoint
   public let timestamp: TimeInterval
   public let velocity: CGVector?
+  public let pressure: CGFloat?
 
   @Init(.ignore) private var _width: CGFloat? = nil
 
@@ -26,17 +27,24 @@ public struct StrokePoint: Identifiable {
   }
 
   /// Note: currently used by `StrokeRenderer`
+//  public func width(using model: StrokeWidthHandler) -> CGFloat? {
+//
+//    guard let speed = velocity?.speed else {
+//      print("Couldn't get velocity for StrokePoint with ID: `\(id)` and position: `\(position)`.")
+//      return nil
+//    }
+//
+//    guard let cachedWidth = _width else {
+//      return model.calculateStrokeWidth(for: speed)
+//    }
+//    return cachedWidth
+//  }
   public func width(using model: StrokeWidthHandler) -> CGFloat? {
-
-    guard let speed = velocity?.speed else {
-      print("Couldn't get velocity for StrokePoint with ID: `\(id)` and position: `\(position)`.")
-      return nil
+    if let cachedWidth = _width {
+      return cachedWidth
     }
-
-    guard let cachedWidth = _width else {
-      return model.calculateStrokeWidth(for: speed)
-    }
-    return cachedWidth
+    let result = model.calculateStrokeWidth(speed: velocity?.speed, pressure: pressure)
+    return result
   }
 }
 //extension StrokePoint {

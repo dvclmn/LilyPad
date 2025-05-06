@@ -14,11 +14,13 @@ public protocol TrackpadTouchesDelegate: AnyObject {
   /// Called when the set of touches changes
   func touchesView(
     _ view: TrackpadTouchesNSView,
-    didUpdateTouches touches: Set<TrackpadTouch>
+    didUpdateTouches touches: Set<TrackpadTouch>,
+    didUpdatePressure pressure: CGFloat
   )
 }
 
 public typealias TouchUpdates = (Set<TrackpadTouch>) -> Void
+public typealias PressureUpdates = (CGFloat) -> Void
 
 // MARK: - SwiftUI Representable
 /// SwiftUI wrapper for the trackpad touches view
@@ -26,9 +28,14 @@ public struct TrackpadTouchesView: NSViewRepresentable {
 
   /// Callback for touch updates
   private var onTouchesUpdate: TouchUpdates?
+  private var onPressureUpdate: PressureUpdates?
 
-  public init(onTouchesUpdate: TouchUpdates? = nil) {
+  public init(
+    onTouchesUpdate: TouchUpdates? = nil,
+    onPressureUpdate: PressureUpdates? = nil,
+  ) {
     self.onTouchesUpdate = onTouchesUpdate
+    self.onPressureUpdate = onPressureUpdate
   }
 
   public func makeNSView(context: Context) -> TrackpadTouchesNSView {
@@ -50,9 +57,14 @@ public struct TrackpadTouchesView: NSViewRepresentable {
       self.parent = parent
     }
 
-    public func touchesView(_ view: TrackpadTouchesNSView, didUpdateTouches touches: Set<TrackpadTouch>) {
+    public func touchesView(
+      _ view: TrackpadTouchesNSView,
+      didUpdateTouches touches: Set<TrackpadTouch>,
+      didUpdatePressure pressure: CGFloat
+    ) {
       DispatchQueue.main.async {
         self.parent.onTouchesUpdate?(touches)
+        self.parent.onPressureUpdate?(pressure)
       }
     }
   }

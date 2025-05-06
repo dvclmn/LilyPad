@@ -18,6 +18,8 @@ public struct StrokeHandler {
   /// Inadvertant touches may be made by a palm etc as well.
   public var touches: Set<TrackpadTouch> = []
   
+  public var currentPressure: CGFloat?
+  
   private var canvasSize: CGSize
 
   /// Active strokes being drawn, keyed by touch ID
@@ -56,6 +58,11 @@ public struct StrokeHandler {
 }
 
 extension StrokeHandler {
+  
+//  public var currentPressure: CGFloat? {
+//    guard let firstTouch = touches.first else { return nil }
+//    return firstTouch.pressure
+//  }
 
   /// This property allows the Canvas view to draw not only completed/captured
   /// strokes, but those being *actively drawn* in real time as well.
@@ -160,7 +167,8 @@ extension StrokeHandler {
     let strokePointPosition = StrokePoint(
       position: touchPosition,
       timestamp: timeStamp,
-      velocity: touch.velocity
+      velocity: touch.velocity,
+      pressure: currentPressure
     )
 
     /// When first running the app, or after clearing `activeStrokes` will be empty

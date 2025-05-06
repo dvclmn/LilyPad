@@ -38,48 +38,53 @@ public class TrackpadTouchesNSView: NSView {
     print("Current `gestureRecognizers`: \(gestureRecognizers)")
     
   }
+  
+  private func processPressure(_ pressure: Float) {
+    let pressureAmount = CGFloat(pressure)
+    
+    print("Received pressure change event: \(pressureAmount)")
+    
+    delegate?.touchesView(self, didUpdateTouches: [], didUpdatePressure: pressureAmount)
+  }
 
   private func processTouches(with event: NSEvent) {
     /// Get all touching touches. `touching` matches the `began`, `moved`,
     /// or `stationary` phases of a touch.
     /// Note: Using `end` sems to break things, so don't use that
+    
+    guard event.type != .pressure else {
+      print("Pressure should be handled elsewhere, exiting early. Event details: \(event)")
+      return
+    }
+
     let touches = event.touches(matching: [.touching], in: self)
-    
-//    let pressureBehaviour = event.pressureBehavior
-//    let pressureAmount = event.pressure
-    
-//    let pressureData = TouchPressure(
-//      behaviour: pressureBehaviour,
-//      value: CGFloat(pressureAmount)
-//    )
 
     /// Convert to data model
     let trackpadTouches = touchManager.processTouches(
       touches,
       timestamp: event.timestamp,
-      pressureData: nil,
       in: self
     )
 
     /// Forward via delegate
-    delegate?.touchesView(self, didUpdateTouches: trackpadTouches)
+    delegate?.touchesView(self, didUpdateTouches: trackpadTouches, didUpdatePressure: .zero)
   }
   
   // Inside your NSView subclass
-  func makeWindowIgnoreMouseEvents(_ shouldIgnore: Bool) {
-    // Access the window that contains this view
-    guard let window = self.window else {
-      print("View is not in a window")
-      return
-    }
-    
-    // Set the ignoresMouseEvents property
-//    window.ignoresMouseEvents = shouldIgnore
-//    window.titlebarAppearsTransparent = true
-    window.acceptsMouseMovedEvents = true
-//    window.hasTitleBar = false
-//    window.mouseLocationOutsideOfEventStream
-  }
+//  func makeWindowIgnoreMouseEvents(_ shouldIgnore: Bool) {
+//    // Access the window that contains this view
+//    guard let window = self.window else {
+//      print("View is not in a window")
+//      return
+//    }
+//    
+//    // Set the ignoresMouseEvents property
+////    window.ignoresMouseEvents = shouldIgnore
+////    window.titlebarAppearsTransparent = true
+////    window.acceptsMouseMovedEvents = true
+////    window.hasTitleBar = false
+////    window.mouseLocationOutsideOfEventStream
+//  }
 
   // MARK: - Touch Event Handlers
   public override func touchesBegan(with event: NSEvent) {
@@ -93,8 +98,7 @@ public class TrackpadTouchesNSView: NSView {
   }
   
   public override func pressureChange(with event: NSEvent) {
-//    print("Received pressure change event: \(event.pressure)")
-    processTouches(with: event)
+    processPressure(event.pressure)
   }
   
   /// This didn't do anything (that I could see)
@@ -122,10 +126,10 @@ public class TrackpadTouchesNSView: NSView {
 //    print("Mouse is Dragging. \nPressure: \(event.pressure). \nPosition X:\(event.absoluteX), \nY:\(event.absoluteY).")
 //  }
   
-  public override func viewDidMoveToWindow() {
-    super.viewDidMoveToWindow()
-    print("View moved to window")
-    makeWindowIgnoreMouseEvents(true)
-  }
+//  public override func viewDidMoveToWindow() {
+//    super.viewDidMoveToWindow()
+//    print("View moved to window")
+//    makeWindowIgnoreMouseEvents(true)
+//  }
 
 }
