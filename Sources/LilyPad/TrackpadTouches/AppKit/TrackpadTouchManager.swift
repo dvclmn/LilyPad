@@ -15,7 +15,7 @@ public class TrackpadTouchManager {
   private var lastTouches: [Int: TouchPoint] = [:]
 
   /// Maximum number of touch points to keep in history per stroke
-  private let maxHistoryLength = 4
+  private let maxHistoryLength = 3
 
   /// Dictionary to store touch history for each touch ID
   private var touchHistories: [Int: [TouchPoint]] = [:]
@@ -36,7 +36,6 @@ public class TrackpadTouchManager {
       let newTouch = makeTouch(
         from: touch,
         timestamp: timestamp,
-//        pressure: pressure,
         previous: previousTouch
       )
 

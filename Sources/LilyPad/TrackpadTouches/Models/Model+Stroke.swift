@@ -11,7 +11,7 @@ import BaseStyles
 
 /// Represents a touch stroke with a series of points and widths
 @MemberwiseInit(.public)
-public struct TouchStroke: Identifiable, Codable {
+public struct TouchStroke: Identifiable, Codable, Equatable {
   public let id: UUID
   public var points: [TouchPoint]
   public var colour: Swatch

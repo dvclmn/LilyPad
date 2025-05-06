@@ -11,7 +11,7 @@ import MemberwiseInit
 import BaseStyles
 
 @MemberwiseInit(.public)
-public struct Artwork: Codable {
+public struct Artwork: Codable, Equatable {
   public var canvasSize: CGSize = .init(width: 700, height: 438)
   public var completedStrokes: [TouchStroke] = []
   

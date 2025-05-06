@@ -10,19 +10,7 @@ import SwiftUI
 public struct StrokeEngine {
   
   public var strokeWidthHandler = StrokeWidthHandler()
-//  public var splineResolution: Int = 8
-  
   private var strokeConfig: StrokeConfig
-  
-  /// Minimum distance between sampled points
-//  public var minDistance: CGFloat = 20
-  
-  /// Speed threshold below which we sample more points (in points/second)
-  /// Lower values mean more points during slow movements
-//  public var minSpeedForDenseSampling: CGFloat = 500.0
-  
-//  /// Forces inclusion of points during slow movement
-//  public var minSpeedForSparseSampling: CGFloat = 1.0
   
   public init(strokeConfig: StrokeConfig = .init()) {
     print("`StrokeEngine` created at \(Date.now.format(.timeDetailed))")
@@ -42,24 +30,17 @@ public struct StrokeEngine {
     from last: CGPoint,
     to current: TouchPoint,
     pointConfig: PointConfig
-//    speed: CGFloat
   ) -> Bool {
-//    let distance = hypot(current.x - last.x, current.y - last.y)
-//    let doesNeedPoint: Bool = distance > minDistance || speed < minSpeedForSparseSampling
-//    
-////    print("Assessing if need to add a Point. Distance: \(distance), Speed: \(speed). Need Point?: \(doesNeedPoint)")
-//    
-//    return doesNeedPoint
-    
+
     let distance = hypot(current.position.x - last.x, current.position.y - last.y)
     
-    // Always add point if we exceed distance threshold
+    /// Always add point if we exceed distance threshold
     guard distance < pointConfig.minDistance else { return true }
     
-    // Use the touch event's pre-calculated velocity
+    /// Use the touch event's pre-calculated velocity
     let speed = current.velocity.speed
     
-    // Add point if moving slowly
+    /// Add point if moving slowly
     return speed < pointConfig.minSpeedForDenseSampling
   }
   
@@ -68,7 +49,7 @@ public struct StrokeEngine {
 extension StrokeEngine {
   public func drawStroke(
     _ stroke: TouchStroke,
-    splineResolution: Int,
+    pointDensity: Int,
     in context: GraphicsContext
   ) {
     guard stroke.points.count >= 4 else { return }
@@ -82,8 +63,8 @@ extension StrokeEngine {
       let p2 = controlPoints[i + 1]
       let p3 = controlPoints[i + 2]
       
-      for j in 0..<splineResolution {
-        let t = CGFloat(j) / CGFloat(splineResolution)
+      for j in 0..<pointDensity {
+        let t = CGFloat(j) / CGFloat(pointDensity)
         let position = catmullRom(p0.position, p1.position, p2.position, p3.position, t)
         
         let width = interpolatedWidth(p0: p0, p1: p1, p2: p2, p3: p3, t: t)
@@ -105,7 +86,13 @@ extension StrokeEngine {
     path.addEllipse(in: rect)
   }
   
-  func catmullRom(_ p0: CGPoint, _ p1: CGPoint, _ p2: CGPoint, _ p3: CGPoint, _ t: CGFloat) -> CGPoint {
+  func catmullRom(
+    _ p0: CGPoint,
+    _ p1: CGPoint,
+    _ p2: CGPoint,
+    _ p3: CGPoint,
+    _ t: CGFloat
+  ) -> CGPoint {
     let t2 = t * t
     let t3 = t2 * t
     
@@ -129,13 +116,9 @@ extension StrokeEngine {
     p3: TouchPoint,
     t: CGFloat
   ) -> CGFloat {
-    func width(for p: TouchPoint) -> CGFloat {
-      p.width(
+    func width(for point: TouchPoint) -> CGFloat {
+      point.width(
         using: strokeWidthHandler,
-        strokeConfig: strokeConfig
-      ) ?? strokeWidthHandler.calculateStrokeWidth(
-        speed: 0,
-        pressure: 0,
         strokeConfig: strokeConfig
       )
     }
