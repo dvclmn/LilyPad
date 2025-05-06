@@ -33,12 +33,9 @@ public class TrackpadTouchesNSView: NSView {
     allowedTouchTypes = [.indirect]
     /// Include stationary touches in the updates
     wantsRestingTouches = false
-    
-//    let pressureConfig = NSPressureConfiguration(pressureBehavior: .primaryDefault)
-//    pressureConfiguration = pressureConfig
-    
+
     /// Let's see what recognisers are here, and add/remove as neccesary
-//    print("Current `gestureRecognizers`: \(gestureRecognizers)")
+    print("Current `gestureRecognizers`: \(gestureRecognizers)")
     
   }
 
@@ -67,6 +64,22 @@ public class TrackpadTouchesNSView: NSView {
     /// Forward via delegate
     delegate?.touchesView(self, didUpdateTouches: trackpadTouches)
   }
+  
+  // Inside your NSView subclass
+  func makeWindowIgnoreMouseEvents(_ shouldIgnore: Bool) {
+    // Access the window that contains this view
+    guard let window = self.window else {
+      print("View is not in a window")
+      return
+    }
+    
+    // Set the ignoresMouseEvents property
+//    window.ignoresMouseEvents = shouldIgnore
+//    window.titlebarAppearsTransparent = true
+    window.acceptsMouseMovedEvents = true
+//    window.hasTitleBar = false
+//    window.mouseLocationOutsideOfEventStream
+  }
 
   // MARK: - Touch Event Handlers
   public override func touchesBegan(with event: NSEvent) {
@@ -79,7 +92,40 @@ public class TrackpadTouchesNSView: NSView {
     processTouches(with: event)
   }
   
-//  public override func pressureChange(with event: NSEvent) {
-//    processTouches(with: event)
+  public override func pressureChange(with event: NSEvent) {
+//    print("Received pressure change event: \(event.pressure)")
+    processTouches(with: event)
+  }
+  
+  /// This didn't do anything (that I could see)
+//  public override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
+//    return false
 //  }
+  
+//  public override func beginGesture(with event: NSEvent) {
+//    <#code#>
+//  }
+  
+//  public override func dataWithEPS(inside rect: NSRect) -> Data {
+//    
+//  }
+  
+//  public override func mouseDown(with event: NSEvent) {
+//    print("Mouse clicked down")
+//  }
+//  
+//  public override func mouseMoved(with event: NSEvent) {
+//    print("Mouse is Moving. \nPressure: \(event.pressure). \nPosition X:\(event.absoluteX), \nY:\(event.absoluteY).")
+//  }
+//  
+//  public override func mouseDragged(with event: NSEvent) {
+//    print("Mouse is Dragging. \nPressure: \(event.pressure). \nPosition X:\(event.absoluteX), \nY:\(event.absoluteY).")
+//  }
+  
+  public override func viewDidMoveToWindow() {
+    super.viewDidMoveToWindow()
+    print("View moved to window")
+    makeWindowIgnoreMouseEvents(true)
+  }
+
 }

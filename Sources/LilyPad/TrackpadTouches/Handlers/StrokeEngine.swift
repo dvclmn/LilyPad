@@ -30,7 +30,7 @@ public struct StrokeEngine {
     let distance = hypot(current.x - last.x, current.y - last.y)
     let doesNeedPoint: Bool = distance > minDistance || speed < minSpeedForSparseSampling
     
-    print("Assessing if need to add a Point. Distance: \(distance), Speed: \(speed). Need Point?: \(doesNeedPoint)")
+//    print("Assessing if need to add a Point. Distance: \(distance), Speed: \(speed). Need Point?: \(doesNeedPoint)")
     
     return doesNeedPoint
   }
