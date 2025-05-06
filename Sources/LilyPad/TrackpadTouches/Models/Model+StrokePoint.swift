@@ -13,11 +13,11 @@ import MemberwiseInit
 /// `velocity`: How fast the touch was moving when it arrived at `position`
 
 @MemberwiseInit(.public)
-public struct StrokePoint: Identifiable, Codable {
-  public let id: UUID
+public struct TouchPoint: Identifiable, Hashable, Codable {
+  public let id: Int
   public let position: CGPoint
   public let timestamp: TimeInterval
-  public let velocity: CGVector?
+  public let velocity: CGVector
   public let pressure: CGFloat?
 
   @Init(.ignore) private var _width: CGFloat? = nil
@@ -30,13 +30,21 @@ public struct StrokePoint: Identifiable, Codable {
     if let cachedWidth = _width {
       return cachedWidth
     }
-    let result = model.calculateStrokeWidth(speed: velocity?.speed, pressure: pressure, strokeConfig: strokeConfig)
+    let result = model.calculateStrokeWidth(
+      speed: velocity.speed,
+      pressure: pressure,
+      strokeConfig: strokeConfig
+    )
     return result
   }
+  
+  public var direction: CGFloat {
+        return atan2(velocity.dy, velocity.dx)
+      }
 }
 
-extension StrokePoint: CustomStringConvertible {
+extension TouchPoint: CustomStringConvertible {
   public var description: String {
-    "StrokePoint(position: \(position), timestamp: \(timestamp), velocity: \(velocity ?? .zero)),"
+    "TouchPoint(position: \(position), timestamp: \(timestamp), velocity: \(velocity)),"
   }
 }

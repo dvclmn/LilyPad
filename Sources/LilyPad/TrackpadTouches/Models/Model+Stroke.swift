@@ -13,12 +13,12 @@ import BaseStyles
 @MemberwiseInit(.public)
 public struct TouchStroke: Identifiable, Codable {
   public let id: UUID
-  public var points: [StrokePoint]
+  public var points: [TouchPoint]
   public var colour: Swatch
   
   /// These are the *original* points recieved, before filtering.
   /// Used for debugging only
-  public var rawTouchPoints: [TrackpadTouch] = []
+  public var pointsOriginal: [TouchPoint] = []
 
   /// Add a point to the stroke with a specified width
 //  public mutating func addPoint(_ point: StrokePoint) {
@@ -29,11 +29,11 @@ public struct TouchStroke: Identifiable, Codable {
     kind: StrokePointType
   ) {
     switch kind {
-      case .strokePoint(let newPoints):
+      case .pointsFiltered(let newPoints):
         points.append(newPoints)
         
-      case .rawTouchPoint(let newTouches):
-        rawTouchPoints.append(newTouches)
+      case .pointsOriginal(let newPoints):
+        pointsOriginal.append(newPoints)
     }
   }
 
@@ -56,8 +56,8 @@ public struct TouchStroke: Identifiable, Codable {
 //}
 
 public enum StrokePointType {
-  case strokePoint(StrokePoint)
-  case rawTouchPoint(TrackpadTouch)
+  case pointsFiltered(TouchPoint)
+  case pointsOriginal(TouchPoint)
 }
 
 enum StrokeState {

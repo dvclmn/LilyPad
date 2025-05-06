@@ -14,12 +14,12 @@ public protocol TrackpadTouchesDelegate: AnyObject {
   /// Called when the set of touches changes
   func touchesView(
     _ view: TrackpadTouchesNSView,
-    didUpdateTouches touches: Set<TrackpadTouch>,
+    didUpdateTouches touches: Set<TouchPoint>,
     didUpdatePressure pressure: CGFloat
   )
 }
 
-public typealias TouchUpdates = (Set<TrackpadTouch>) -> Void
+public typealias TouchUpdates = (Set<TouchPoint>) -> Void
 public typealias PressureUpdates = (CGFloat) -> Void
 
 // MARK: - SwiftUI Representable
@@ -59,7 +59,7 @@ public struct TrackpadTouchesView: NSViewRepresentable {
 
     public func touchesView(
       _ view: TrackpadTouchesNSView,
-      didUpdateTouches touches: Set<TrackpadTouch>,
+      didUpdateTouches touches: Set<TouchPoint>,
       didUpdatePressure pressure: CGFloat
     ) {
       DispatchQueue.main.async {

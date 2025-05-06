@@ -11,9 +11,11 @@ import MemberwiseInit
 import BaseStyles
 
 @MemberwiseInit(.public)
-public struct Artwork: Decodable {
+public struct Artwork: Codable {
   public var canvasSize: CGSize = .init(width: 700, height: 438)
   public var completedStrokes: [TouchStroke] = []
+  
+  public static let `default` = Artwork()
 }
 
 
@@ -25,7 +27,7 @@ public struct StrokeHandler {
   
   /// The number of fingers touching the trackpad
   /// Inadvertant touches may be made by a palm etc as well.
-  public var touches: Set<TrackpadTouch> = []
+  public var touches: Set<TouchPoint> = []
   
   public var currentPressure: CGFloat?
   
@@ -126,9 +128,9 @@ extension StrokeHandler {
     
     if isDebugMode {
       let savedTouches = artwork.completedStrokes.flatMap { stroke in
-        stroke.rawTouchPoints
+        stroke.pointsOriginal
       }
-      let touchesSet: Set<TrackpadTouch> = Set(savedTouches)
+      let touchesSet: Set<TouchPoint> = Set(savedTouches)
       touches = touchesSet
       
       for touch in touches {
@@ -165,7 +167,7 @@ extension StrokeHandler {
   }
 
   mutating func handleTouch(
-    _ touch: TrackpadTouch,
+    _ touch: TouchPoint,
     isDebugMode: Bool,
     pointConfig: PointConfig
   ) {
@@ -178,8 +180,8 @@ extension StrokeHandler {
 
     /// Width is not yet considered at this stage.
     /// It is later calculated based on velocity etc.
-    let strokePointPosition = StrokePoint(
-      id: UUID(),
+    let strokePointPosition = TouchPoint(
+      id: touchId,
       position: touchPosition,
       timestamp: timeStamp,
       velocity: touch.velocity,
@@ -209,13 +211,13 @@ extension StrokeHandler {
       )
 
       if shouldAdd {
-        stroke.addPoint(kind: .strokePoint(strokePointPosition))
+        stroke.addPoint(kind: .pointsFiltered(strokePointPosition))
       }
     }
     /// Let's also add to our backup of raw touches
     if !isDebugMode {
       
-      stroke.addPoint(kind: .rawTouchPoint(touch))
+      stroke.addPoint(kind: .pointsOriginal(touch))
       
 //      completedRawTouches[stroke.id]?.append(touch)
     }

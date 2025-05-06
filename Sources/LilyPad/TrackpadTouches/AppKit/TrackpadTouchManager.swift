@@ -12,22 +12,22 @@ import Foundation
 public class TrackpadTouchManager {
 
   /// Dictionary to store the last known touch for each touch ID
-  private var lastTouches: [Int: TrackpadTouch] = [:]
+  private var lastTouches: [Int: TouchPoint] = [:]
 
   /// Maximum number of touch points to keep in history per stroke
   private let maxHistoryLength = 4
 
   /// Dictionary to store touch history for each touch ID
-  private var touchHistories: [Int: [TrackpadTouch]] = [:]
+  private var touchHistories: [Int: [TouchPoint]] = [:]
 
   /// Process new touches and calculate velocity based on history
   public func processTouches(
     _ touches: Set<NSTouch>,
     timestamp: TimeInterval,
     in view: NSView
-  ) -> Set<TrackpadTouch> {
+  ) -> Set<TouchPoint> {
 
-    var updatedTouches = Set<TrackpadTouch>()
+    var updatedTouches = Set<TouchPoint>()
 
     for touch in touches {
       let touchId = touch.identity.hash
@@ -66,8 +66,8 @@ public class TrackpadTouchManager {
   func makeTouch(
     from nsTouch: NSTouch,
     timestamp: TimeInterval,
-    previous: TrackpadTouch?
-  ) -> TrackpadTouch {
+    previous: TouchPoint?
+  ) -> TouchPoint {
     let now = timestamp
     let position = CGPoint(
       x: nsTouch.normalizedPosition.x,
@@ -80,16 +80,17 @@ public class TrackpadTouchManager {
       return CGVector.between(prev.position, position, dt: now - prev.timestamp)
     }()
 
-    return TrackpadTouch(
+    return TouchPoint(
       id: nsTouch.identity.hash,
       position: position,
       timestamp: timestamp,
-      velocity: velocity,
+      velocity: velocity ?? .zero,
+      pressure: nil
     )
   }
 
   /// Updates the history for a specific touch ID
-  private func updateHistory(for touchId: Int, with touch: TrackpadTouch) {
+  private func updateHistory(for touchId: Int, with touch: TouchPoint) {
     var history = touchHistories[touchId] ?? []
     history.append(touch)
 
@@ -102,7 +103,7 @@ public class TrackpadTouchManager {
   }
 
   /// Get the touch history for a specific ID
-  public func history(for touchId: Int) -> [TrackpadTouch]? {
+  public func history(for touchId: Int) -> [TouchPoint]? {
     return touchHistories[touchId]
   }
 

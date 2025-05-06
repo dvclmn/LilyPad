@@ -40,7 +40,7 @@ public struct StrokeEngine {
   /// - Returns: true if the point should be added to the stroke
   public func shouldAddPoint(
     from last: CGPoint,
-    to current: TrackpadTouch,
+    to current: TouchPoint,
     pointConfig: PointConfig
 //    speed: CGFloat
   ) -> Bool {
@@ -123,13 +123,13 @@ extension StrokeEngine {
   }
   
   func interpolatedWidth(
-    p0: StrokePoint,
-    p1: StrokePoint,
-    p2: StrokePoint,
-    p3: StrokePoint,
+    p0: TouchPoint,
+    p1: TouchPoint,
+    p2: TouchPoint,
+    p3: TouchPoint,
     t: CGFloat
   ) -> CGFloat {
-    func width(for p: StrokePoint) -> CGFloat {
+    func width(for p: TouchPoint) -> CGFloat {
       p.width(
         using: strokeWidthHandler,
         strokeConfig: strokeConfig
