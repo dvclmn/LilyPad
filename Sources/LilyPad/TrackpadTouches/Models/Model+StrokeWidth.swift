@@ -27,21 +27,10 @@ public struct StrokeConfig: Codable, Equatable {
 
 @MemberwiseInit(.public)
 public struct StrokeWidthHandler {
-  
-  /// Note: This may need to be clamped, i.e.
-  /// `self.sensitivity = min(max(sensitivity, 0), 1)`
-  
-  
   /// Maximum allowed change in width between consecutive points (as percentage of current width)
   /// Set to nil to disable width smoothing
   public var maxWidthChangePercentage: CGFloat? = 0.2 // 20% max change
-  
-  /// Previous width for smoothing calculations
-//  @Init(.ignore) private var previousWidth: CGFloat?
-//  @Init(.ignore) private var widthSamples: [CGFloat] = []
-//  @Init(.ignore) private let maxSamples = 3
-  
-  
+
   /// 0 = ignore pressure, 1 = pressure-only
   public var pressureWeight: CGFloat = 0.5
   
@@ -78,22 +67,6 @@ public struct StrokeWidthHandler {
     rawWidth = velocityPart * (1 - pressureWeight) + pressurePart * pressureWeight
     
     return rawWidth
-    
-    /// Apply width smoothing if enabled
-//    guard let maxChange = maxWidthChangePercentage, maxChange > 0 else {
-//      previousWidth = rawWidth
-//      return max(0.001, rawWidth)
-//    }
-//    
-//    if let previous = previousWidth {
-//      let minAllowed = previous * (1 - maxChange)
-//      let maxAllowed = previous * (1 + maxChange)
-//      let smoothedWidth = min(max(rawWidth, minAllowed), maxAllowed)
-//      previousWidth = smoothedWidth
-//      return max(0.001, smoothedWidth)
-//    } else {
-//      previousWidth = rawWidth
-//      return max(0.001, rawWidth)
-//    }
+
   }
 }
