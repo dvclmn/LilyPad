@@ -39,11 +39,11 @@ public struct StrokePoint: Identifiable {
 //    }
 //    return cachedWidth
 //  }
-  public func width(using model: inout StrokeWidthHandler) -> CGFloat? {
+  public func width(using model: StrokeWidthHandler, strokeConfig: StrokeConfig) -> CGFloat? {
     if let cachedWidth = _width {
       return cachedWidth
     }
-    let result = model.calculateStrokeWidth(speed: velocity?.speed, pressure: pressure)
+    let result = model.calculateStrokeWidth(speed: velocity?.speed, pressure: pressure, strokeConfig: strokeConfig)
     return result
   }
 }

@@ -107,7 +107,10 @@ extension StrokeHandler {
 //  }
 
   /// Process touch updates and update strokes
-  public mutating func processTouchesIntoStrokes(isDebugMode: Bool = false) {
+  public mutating func processTouchesIntoStrokes(
+    isDebugMode: Bool = false,
+    pointConfig: PointConfig
+  ) {
 
     guard canvasSize != .zero else {
       print("Canvas size cannot be zero, skipping touch processing.")
@@ -122,7 +125,7 @@ extension StrokeHandler {
       touches = touchesSet
       
       for touch in touches {
-        handleTouch(touch, isDebugMode: isDebugMode)
+        handleTouch(touch, isDebugMode: isDebugMode, pointConfig: pointConfig)
       }
       
       return
@@ -134,7 +137,7 @@ extension StrokeHandler {
 //    }
 
     for touch in touches {
-      handleTouch(touch, isDebugMode: isDebugMode)
+      handleTouch(touch, isDebugMode: isDebugMode, pointConfig: pointConfig)
     }
 
     /// Finalize ended strokes
@@ -154,13 +157,17 @@ extension StrokeHandler {
     }
   }
 
-  mutating func handleTouch(_ touch: TrackpadTouch, isDebugMode: Bool) {
+  mutating func handleTouch(
+    _ touch: TrackpadTouch,
+    isDebugMode: Bool,
+    pointConfig: PointConfig
+  ) {
 
     /// Set up some convenient constants
     let touchId = touch.id
     let touchPosition = touch.position.convertNormalisedToConcrete(in: canvasSize)
     let timeStamp = touch.timestamp
-    let touchSpeed = touch.velocity.speed
+//    let touchSpeed = touch.velocity.speed
 
     /// Width is not yet considered at this stage.
     /// It is later calculated based on velocity etc.
@@ -189,6 +196,7 @@ extension StrokeHandler {
       let shouldAdd = engine.shouldAddPoint(
         from: last.position,
         to: touch,
+        pointConfig: pointConfig
 //        speed: touchSpeed
       )
 

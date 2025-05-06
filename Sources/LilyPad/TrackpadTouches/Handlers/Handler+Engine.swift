@@ -10,20 +10,27 @@ import SwiftUI
 public struct StrokeEngine {
   
   public var strokeWidthHandler = StrokeWidthHandler()
-  public var splineResolution: Int = 8
+//  public var splineResolution: Int = 8
+  
+  private var strokeConfig: StrokeConfig
   
   /// Minimum distance between sampled points
-  public var minDistance: CGFloat = 20
+//  public var minDistance: CGFloat = 20
   
   /// Speed threshold below which we sample more points (in points/second)
   /// Lower values mean more points during slow movements
-  public var minSpeedForDenseSampling: CGFloat = 500.0
+//  public var minSpeedForDenseSampling: CGFloat = 500.0
   
 //  /// Forces inclusion of points during slow movement
 //  public var minSpeedForSparseSampling: CGFloat = 1.0
   
-  public init() {
+  public init(strokeConfig: StrokeConfig = .init()) {
     print("`StrokeEngine` created at \(Date.now.format(.timeDetailed))")
+    self.strokeConfig = strokeConfig
+  }
+  
+  public mutating func updateConfig(newConfig: StrokeConfig) {
+    self.strokeConfig = newConfig
   }
   
   /// Determines whether to add a new point to the stroke
@@ -34,6 +41,7 @@ public struct StrokeEngine {
   public func shouldAddPoint(
     from last: CGPoint,
     to current: TrackpadTouch,
+    pointConfig: PointConfig
 //    speed: CGFloat
   ) -> Bool {
 //    let distance = hypot(current.x - last.x, current.y - last.y)
@@ -46,20 +54,21 @@ public struct StrokeEngine {
     let distance = hypot(current.position.x - last.x, current.position.y - last.y)
     
     // Always add point if we exceed distance threshold
-    guard distance < minDistance else { return true }
+    guard distance < pointConfig.minDistance else { return true }
     
     // Use the touch event's pre-calculated velocity
     let speed = current.velocity.speed
     
     // Add point if moving slowly
-    return speed < minSpeedForDenseSampling
+    return speed < pointConfig.minSpeedForDenseSampling
   }
   
 }
 
 extension StrokeEngine {
-  public mutating func drawStroke(
+  public func drawStroke(
     _ stroke: TouchStroke,
+    splineResolution: Int,
     in context: GraphicsContext
   ) {
     guard stroke.points.count >= 4 else { return }
@@ -113,7 +122,7 @@ extension StrokeEngine {
     return CGPoint(x: x, y: y)
   }
   
-  mutating func interpolatedWidth(
+  func interpolatedWidth(
     p0: StrokePoint,
     p1: StrokePoint,
     p2: StrokePoint,
@@ -121,7 +130,14 @@ extension StrokeEngine {
     t: CGFloat
   ) -> CGFloat {
     func width(for p: StrokePoint) -> CGFloat {
-      p.width(using: &strokeWidthHandler) ?? strokeWidthHandler.calculateStrokeWidth(speed: 0, pressure: 0)
+      p.width(
+        using: strokeWidthHandler,
+        strokeConfig: strokeConfig
+      ) ?? strokeWidthHandler.calculateStrokeWidth(
+        speed: 0,
+        pressure: 0,
+        strokeConfig: strokeConfig
+      )
     }
     
     let w0 = width(for: p0)
