@@ -38,5 +38,13 @@ public struct StrokePoint: Identifiable {
     }
     return cachedWidth
   }
+}
+//extension StrokePoint {
+//  let exampleStroke
+//}
 
+extension StrokePoint: CustomStringConvertible {
+  public var description: String {
+    "StrokePoint(position: \(position), timestamp: \(timestamp), velocity: \(velocity ?? .zero)),"
+  }
 }

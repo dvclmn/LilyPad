@@ -113,12 +113,18 @@ extension StrokeHandler {
       }
       let touchesSet: Set<TrackpadTouch> = Set(savedTouches)
       touches = touchesSet
-    }
-
-    guard !touches.isEmpty else {
-      print("No touches to process.")
+      
+      for touch in touches {
+        handleTouch(touch, isDebugMode: isDebugMode)
+      }
+      
       return
     }
+//
+//    guard !touches.isEmpty else {
+//      print("No touches to process.")
+//      return
+//    }
 
     for touch in touches {
       handleTouch(touch, isDebugMode: isDebugMode)
@@ -132,7 +138,7 @@ extension StrokeHandler {
     let activeIds = Set(activeStrokes.keys)
 
     let endedIds = activeIds.subtracting(currentIds)
-
+    
     for touchId in endedIds {
       if let stroke = activeStrokes[touchId], stroke.points.count >= minPointsForCurve {
         completedStrokes.append(stroke)

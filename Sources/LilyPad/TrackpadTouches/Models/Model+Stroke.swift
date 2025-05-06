@@ -46,6 +46,14 @@ public struct TouchStroke: Identifiable {
   }
 }
 
+extension TouchStroke {
+  static let example = TouchStroke(
+    points: [StrokePoint(position: CGPoint(x: 100, y: 200), timestamp: 5.6, velocity: CGVector(dx: 3, dy: 6))],
+    colour: .orange,
+    rawTouchPoints: [TrackpadTouch(id: 2, position: CGPoint(x: 100, y: 200), timestamp: 5.6, velocity: CGVector(dx: 3, dy: 6), pressureData: nil)]
+  )
+}
+
 public enum StrokePointType {
   case strokePoint(StrokePoint)
   case rawTouchPoint(TrackpadTouch)
