@@ -58,7 +58,7 @@ public struct StrokeEngine {
 }
 
 extension StrokeEngine {
-  public func drawStroke(
+  public mutating func drawStroke(
     _ stroke: TouchStroke,
     in context: GraphicsContext
   ) {
@@ -113,7 +113,7 @@ extension StrokeEngine {
     return CGPoint(x: x, y: y)
   }
   
-  func interpolatedWidth(
+  mutating func interpolatedWidth(
     p0: StrokePoint,
     p1: StrokePoint,
     p2: StrokePoint,
@@ -121,7 +121,7 @@ extension StrokeEngine {
     t: CGFloat
   ) -> CGFloat {
     func width(for p: StrokePoint) -> CGFloat {
-      p.width(using: strokeWidthHandler) ?? strokeWidthHandler.calculateStrokeWidth(speed: 0, pressure: 0)
+      p.width(using: &strokeWidthHandler) ?? strokeWidthHandler.calculateStrokeWidth(speed: 0, pressure: 0)
     }
     
     let w0 = width(for: p0)

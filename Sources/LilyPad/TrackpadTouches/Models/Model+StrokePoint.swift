@@ -39,7 +39,7 @@ public struct StrokePoint: Identifiable {
 //    }
 //    return cachedWidth
 //  }
-  public func width(using model: StrokeWidthHandler) -> CGFloat? {
+  public func width(using model: inout StrokeWidthHandler) -> CGFloat? {
     if let cachedWidth = _width {
       return cachedWidth
     }
