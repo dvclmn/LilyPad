@@ -22,7 +22,6 @@ public struct StrokeEngine {
     self.strokeConfig = newConfig
   }
 
-
   public func filterPoints(
     from rawPoints: [TouchPoint],
     pointConfig: PointConfig
@@ -75,23 +74,26 @@ public struct StrokeEngine {
 extension StrokeEngine {
   public func drawStroke(
     _ stroke: TouchStroke,
+    pointConfig: PointConfig,
     pointDensity: Int,
     in context: GraphicsContext
   ) {
+    
+    let filteredPoints = filterPoints(from: stroke.points, pointConfig: pointConfig)
 
-    guard stroke.points.count >= 4 else { return }
+//    guard stroke.pointsOriginal.count >= 4 else { return }
+    guard filteredPoints.count >= 4 else { return }
 
     var leftEdge: [CGPoint] = []
     var rightEdge: [CGPoint] = []
 
-    let controlPoints = stroke.points
     var previousPos: CGPoint?
 
-    for i in 1..<controlPoints.count - 2 {
-      let p0 = controlPoints[i - 1]
-      let p1 = controlPoints[i]
-      let p2 = controlPoints[i + 1]
-      let p3 = controlPoints[i + 2]
+    for i in 1..<filteredPoints.count - 2 {
+      let p0 = filteredPoints[i - 1]
+      let p1 = filteredPoints[i]
+      let p2 = filteredPoints[i + 1]
+      let p3 = filteredPoints[i + 2]
 
       for j in 0..<pointDensity {
         let t = CGFloat(j) / CGFloat(pointDensity)

@@ -14,34 +14,24 @@ import BaseStyles
 public struct TouchStroke: Identifiable, Codable, Equatable {
   public let id: UUID
 //  public var points: [TouchPoint]
+  
+  /// This should be *all* points that come from AppKit
+  public var points: [TouchPoint] = []
   public var colour: Swatch
   
   /// These are the *original* points recieved, before filtering.
-  /// Used for debugging only
-  #warning("APPEND POINTS TO THIS")
-  public var pointsOriginal: [TouchPoint] = []
 
   /// Add a point to the stroke with a specified width
 //  public mutating func addPoint(_ point: StrokePoint) {
 //    points.append(point)
 //  }
   
-  public mutating func addPoint(
-    _ point: TouchPoint
-//    kind: StrokePointType
-  ) {
-    pointsOriginal.append(point)
-//    switch kind {
-//      case .pointsFiltered(let newPoints):
-//        points.append(newPoints)
-//        
-//      case .pointsOriginal(let newPoints):
-//        pointsOriginal.append(newPoints)
-//    }
+  public mutating func addPoint(_ point: TouchPoint) {
+    points.append(point)
   }
 
   public var cgPoints: [CGPoint] {
-    return pointsOriginal.map(\.position)
+    return points.map(\.position)
   }
 
 //  public subscript(pointAtIndex index: Int) -> CGPoint {
@@ -51,18 +41,15 @@ public struct TouchStroke: Identifiable, Codable, Equatable {
 }
 
 extension TouchStroke {
-  public func filteredPoints(using config: PointConfig, engine: StrokeEngine) -> [TouchPoint] {
-    engine.filterPoints(from: pointsOriginal, pointConfig: config)
+  
+  public func filteredPoints(
+    using config: PointConfig,
+    engine: StrokeEngine
+  ) -> [TouchPoint] {
+    engine.filterPoints(from: points, pointConfig: config)
   }
 }
 
-//extension TouchStroke {
-//  static let example = TouchStroke(
-//    points: [StrokePoint(position: CGPoint(x: 100, y: 200), timestamp: 5.6, velocity: CGVector(dx: 3, dy: 6))],
-//    colour: .orange,
-//    rawTouchPoints: [TrackpadTouch(id: 2, position: CGPoint(x: 100, y: 200), timestamp: 5.6, velocity: CGVector(dx: 3, dy: 6), pressure: nil)]
-//  )
-//}
 
 public enum StrokePointType {
   case pointsFiltered(TouchPoint)
