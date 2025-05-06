@@ -8,7 +8,7 @@
 import AppKit
 import MemberwiseInit
 
-public struct TrackpadTouch: Identifiable, Hashable {
+public struct TrackpadTouch: Identifiable, Hashable, Codable {
   public let id: Int
   public let position: CGPoint
   public let timestamp: TimeInterval
@@ -22,7 +22,7 @@ public struct TrackpadTouch: Identifiable, Hashable {
     timestamp: TimeInterval,
     velocity: CGVector?,
 //    pressure: CGFloat?,
-    previousTouch: TrackpadTouch? = nil
+//    previousTouch: TrackpadTouch? = nil
   ) {
     self.id = id
     self.position = position

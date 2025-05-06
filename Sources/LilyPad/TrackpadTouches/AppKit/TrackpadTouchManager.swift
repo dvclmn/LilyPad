@@ -90,7 +90,7 @@ public class TrackpadTouchManager {
       velocity: velocity,
 //      pressure: pressure,
 //      pressureData: pressureData,
-      previousTouch: previous
+//      previousTouch: previous
     )
   }
 

@@ -7,21 +7,28 @@
 
 import BaseHelpers
 import SwiftUI
+import MemberwiseInit
+import BaseStyles
 
+@MemberwiseInit(.public)
+public struct Artwork: Decodable {
+  public var canvasSize: CGSize = .init(width: 700, height: 438)
+  public var completedStrokes: [TouchStroke] = []
+}
 
 
 public struct StrokeHandler {
 
   public var engine = StrokeEngine()
 
+  public var artwork = Artwork()
+  
   /// The number of fingers touching the trackpad
   /// Inadvertant touches may be made by a palm etc as well.
   public var touches: Set<TrackpadTouch> = []
   
   public var currentPressure: CGFloat?
   
-  private var canvasSize: CGSize
-
   /// Active strokes being drawn, keyed by touch ID
   /// As I understand it, the item count for this is always
   /// going to match the number of `touches`.
@@ -31,7 +38,7 @@ public struct StrokeHandler {
   public var activeStrokes: [Int: TouchStroke] = [:]
 
   /// Completed strokes
-  public var completedStrokes: [TouchStroke] = []
+  
   
 //  public var completedRawTouches: [TouchStroke.ID: [TrackpadTouch]] = [:]
 //  public var completedRawTouches: [RawTouches] = []
@@ -44,16 +51,16 @@ public struct StrokeHandler {
   /// Clear all strokes
   public mutating func clearStrokes() {
     activeStrokes.removeAll()
-    completedStrokes.removeAll()
+    artwork.completedStrokes.removeAll()
   }
 
   public mutating func updatecanvasSize(_ size: CGSize) {
-    canvasSize = size
+    artwork.canvasSize = size
   }
 
   public init(canvasSize: CGSize) {
     print("`StrokeHandler` created at \(Date.now.format(.timeDetailed))")
-    self.canvasSize = canvasSize
+    artwork.canvasSize = canvasSize
   }
 }
 
@@ -67,7 +74,7 @@ extension StrokeHandler {
   /// This property allows the Canvas view to draw not only completed/captured
   /// strokes, but those being *actively drawn* in real time as well.
   public var allStrokes: [TouchStroke] {
-    return Array(activeStrokes.values) + completedStrokes
+    return Array(activeStrokes.values) + artwork.completedStrokes
   }
   
 //  public mutating func processTouchesIntoStrokesDebugVersion() {
@@ -112,13 +119,13 @@ extension StrokeHandler {
     pointConfig: PointConfig
   ) {
 
-    guard canvasSize != .zero else {
+    guard artwork.canvasSize != .zero else {
       print("Canvas size cannot be zero, skipping touch processing.")
       return
     }
     
     if isDebugMode {
-      let savedTouches = completedStrokes.flatMap { stroke in
+      let savedTouches = artwork.completedStrokes.flatMap { stroke in
         stroke.rawTouchPoints
       }
       let touchesSet: Set<TrackpadTouch> = Set(savedTouches)
@@ -151,7 +158,7 @@ extension StrokeHandler {
     
     for touchId in endedIds {
       if let stroke = activeStrokes[touchId], stroke.points.count >= minPointsForCurve {
-        completedStrokes.append(stroke)
+        artwork.completedStrokes.append(stroke)
       }
       activeStrokes.removeValue(forKey: touchId)
     }
@@ -165,13 +172,14 @@ extension StrokeHandler {
 
     /// Set up some convenient constants
     let touchId = touch.id
-    let touchPosition = touch.position.convertNormalisedToConcrete(in: canvasSize)
+    let touchPosition = touch.position.convertNormalisedToConcrete(in: artwork.canvasSize)
     let timeStamp = touch.timestamp
 //    let touchSpeed = touch.velocity.speed
 
     /// Width is not yet considered at this stage.
     /// It is later calculated based on velocity etc.
     let strokePointPosition = StrokePoint(
+      id: UUID(),
       position: touchPosition,
       timestamp: timeStamp,
       velocity: touch.velocity,
@@ -181,7 +189,7 @@ extension StrokeHandler {
     /// When first running the app, or after clearing `activeStrokes` will be empty
     guard var stroke = activeStrokes[touchId] else {
       /// First point for new stroke
-      let newStroke = TouchStroke(points: [strokePointPosition], colour: .purple)
+      let newStroke = TouchStroke(id: UUID(), points: [strokePointPosition], colour: .asciiPurple)
       activeStrokes[touchId] = newStroke
       return  // Move to next touch in the loop
     }

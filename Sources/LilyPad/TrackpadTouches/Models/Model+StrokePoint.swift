@@ -13,8 +13,8 @@ import MemberwiseInit
 /// `velocity`: How fast the touch was moving when it arrived at `position`
 
 @MemberwiseInit(.public)
-public struct StrokePoint: Identifiable {
-  public let id: UUID = UUID()
+public struct StrokePoint: Identifiable, Codable {
+  public let id: UUID
   public let position: CGPoint
   public let timestamp: TimeInterval
   public let velocity: CGVector?

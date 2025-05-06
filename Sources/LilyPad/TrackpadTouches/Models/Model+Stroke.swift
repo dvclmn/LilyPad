@@ -7,13 +7,14 @@
 
 import MemberwiseInit
 import SwiftUI
+import BaseStyles
 
 /// Represents a touch stroke with a series of points and widths
 @MemberwiseInit(.public)
-public struct TouchStroke: Identifiable {
-  public let id: UUID = UUID()
+public struct TouchStroke: Identifiable, Codable {
+  public let id: UUID
   public var points: [StrokePoint]
-  public var colour: Color
+  public var colour: Swatch
   
   /// These are the *original* points recieved, before filtering.
   /// Used for debugging only
