@@ -188,8 +188,8 @@ extension StrokeHandler {
       /// Set up the boolean, to determine if we add this point or not
       let shouldAdd = engine.shouldAddPoint(
         from: last.position,
-        to: touchPosition,
-        speed: touchSpeed
+        to: touch,
+//        speed: touchSpeed
       )
 
       if shouldAdd {

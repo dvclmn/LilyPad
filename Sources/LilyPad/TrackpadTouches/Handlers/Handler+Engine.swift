@@ -12,27 +12,47 @@ public struct StrokeEngine {
   public var strokeWidthHandler = StrokeWidthHandler()
   public var splineResolution: Int = 8
   
-  /// Skips nearby points during fast movement
+  /// Minimum distance between sampled points
   public var minDistance: CGFloat = 20
   
-  /// Forces inclusion of points during slow movement
-  public var minSpeedForSparseSampling: CGFloat = 1.0
+  /// Speed threshold below which we sample more points (in points/second)
+  /// Lower values mean more points during slow movements
+  public var minSpeedForDenseSampling: CGFloat = 500.0
+  
+//  /// Forces inclusion of points during slow movement
+//  public var minSpeedForSparseSampling: CGFloat = 1.0
   
   public init() {
     print("`StrokeEngine` created at \(Date.now.format(.timeDetailed))")
   }
   
+  /// Determines whether to add a new point to the stroke
+  /// - Parameters:
+  ///   - last: The previous point in the stroke
+  ///   - current: The new touch event
+  /// - Returns: true if the point should be added to the stroke
   public func shouldAddPoint(
     from last: CGPoint,
-    to current: CGPoint,
-    speed: CGFloat
+    to current: TrackpadTouch,
+//    speed: CGFloat
   ) -> Bool {
-    let distance = hypot(current.x - last.x, current.y - last.y)
-    let doesNeedPoint: Bool = distance > minDistance || speed < minSpeedForSparseSampling
+//    let distance = hypot(current.x - last.x, current.y - last.y)
+//    let doesNeedPoint: Bool = distance > minDistance || speed < minSpeedForSparseSampling
+//    
+////    print("Assessing if need to add a Point. Distance: \(distance), Speed: \(speed). Need Point?: \(doesNeedPoint)")
+//    
+//    return doesNeedPoint
     
-//    print("Assessing if need to add a Point. Distance: \(distance), Speed: \(speed). Need Point?: \(doesNeedPoint)")
+    let distance = hypot(current.position.x - last.x, current.position.y - last.y)
     
-    return doesNeedPoint
+    // Always add point if we exceed distance threshold
+    guard distance < minDistance else { return true }
+    
+    // Use the touch event's pre-calculated velocity
+    let speed = current.velocity.speed
+    
+    // Add point if moving slowly
+    return speed < minSpeedForDenseSampling
   }
   
 }
@@ -63,7 +83,7 @@ extension StrokeEngine {
       }
     }
     
-    context.stroke(path, with: .color(.black), lineWidth: 1)
+    context.stroke(path, with: .color(.black), lineWidth: 3)
   }
   
   func drawPoint(_ position: CGPoint, width: CGFloat, in path: inout Path) {
