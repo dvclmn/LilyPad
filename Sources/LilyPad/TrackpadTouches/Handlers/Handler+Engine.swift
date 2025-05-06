@@ -30,7 +30,6 @@ public struct StrokeEngine {
     guard rawPoints.count > 1,
       let firstPoint = rawPoints.first
     else {
-      print("Raw points array has less than 2 points. Returning as-is, no filtering performed.")
       return rawPoints
     }
     var filtered: [TouchPoint] = [firstPoint]
