@@ -47,6 +47,16 @@ public struct TouchPoint: Identifiable, Hashable, Codable {
   }
 }
 
+//extension TouchPoint {
+//  public static let exampleTouch = TouchPoint(
+//    id: 3,
+//    position: CGPoint(x: 10, y: 20),
+//    timestamp: TimeInterval(3),
+//    velocity: .zero,
+//    pressure: nil
+//  )
+//}
+
 extension TouchPoint: CustomStringConvertible {
   public var description: String {
     "TouchPoint(position: \(position), timestamp: \(timestamp), velocity: \(velocity)),"

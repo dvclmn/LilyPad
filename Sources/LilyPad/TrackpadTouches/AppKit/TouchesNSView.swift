@@ -42,7 +42,7 @@ public class TrackpadTouchesNSView: NSView {
   private func processPressure(_ pressure: Float) {
     let pressureAmount = CGFloat(pressure)
     
-    print("Received pressure change event: \(pressureAmount)")
+//    print("Received pressure change event: \(pressureAmount)")
     
     delegate?.touchesView(self, didUpdateTouches: [], didUpdatePressure: pressureAmount)
   }

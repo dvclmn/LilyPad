@@ -6,6 +6,9 @@
 //
 
 import SwiftUI
+import BaseHelpers
+import BaseComponents
+import BaseStyles
 
 public struct TouchIndicatorsView: View {
 
@@ -17,6 +20,14 @@ public struct TouchIndicatorsView: View {
       Circle()
         .fill(Color.blue.opacity(0.7))
         .frame(width: 40, height: 40)
+        .overlay(alignment: .top) {
+          Text(touch.position.string)
+            .monospaced()
+            .roundedBackground(Styles.sizeNano, colour: AnyShapeStyle(.black.opacity(0.6)))
+            .offset(y: -22)
+            .font(.caption2)
+            .fixedSize()
+        }
         .position(touch.position.convertNormalisedToConcrete(in: canvasSize))
     }
     .frame(
@@ -29,6 +40,9 @@ public struct TouchIndicatorsView: View {
 #if DEBUG
 @available(macOS 15, iOS 18, *)
 #Preview(traits: .size(.normal)) {
-  TouchIndicatorsView(touches: [], canvasSize: .init(width: 700, height: 600))
+  TouchIndicatorsView(
+    touches: [],
+    canvasSize: .init(width: 700, height: 600)
+  )
 }
 #endif

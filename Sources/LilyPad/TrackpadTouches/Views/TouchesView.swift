@@ -27,13 +27,10 @@ public struct TrackpadTouchesModifier: ViewModifier {
       content
       if showIndicators {
         TouchIndicatorsView(touches: localTouches, canvasSize: canvasSize)
-          
       }
       TrackpadTouchesView { touches, pressure in
         self.localTouches = touches
         touchUpdates(touches, pressure)
-        //        if let touchUpdates {
-        //        }
       }
     }
   }
