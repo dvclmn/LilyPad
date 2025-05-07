@@ -18,9 +18,6 @@ public struct TouchPoint: Identifiable, Hashable, Codable {
   
   /// This is normalised, comes from `NSTouch.normalizedPosition`
   public let position: CGPoint
-  
-//  @available(*, unavailable, message: "This API is under development and not yet ready for use")
-//  public let positionAbsolute: CGPoint
   public let timestamp: TimeInterval
   public let velocity: CGVector
   public let pressure: CGFloat?
