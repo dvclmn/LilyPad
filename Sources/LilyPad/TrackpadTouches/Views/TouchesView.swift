@@ -41,7 +41,6 @@ public struct TrackpadTouchesModifier: ViewModifier {
 extension View {
   public func touches(
     showIndicators: Bool = true,
-    isMapped: Bool = false,
     mapToSize: CGSize,
     touchUpdates: @escaping TouchUpdates
   ) -> some View {

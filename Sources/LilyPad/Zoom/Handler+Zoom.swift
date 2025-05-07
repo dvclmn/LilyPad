@@ -54,10 +54,16 @@ struct TouchPositions {
     let touch01 = touchesArray[0]
     let touch02 = touchesArray[1]
     
+    print("Touch positions before mapping: \(touch01.position.displayString), \(touch02.position.displayString)")
+    
     let p1Mapped: CGPoint = touch01.position.mapped(to: destinationRect)
     let p2Mapped: CGPoint = touch02.position.mapped(to: destinationRect)
+    
+    print("Touch positions AFTER mapping: \(p1Mapped.displayString), \(p2Mapped.displayString)")
 
     self.init(p1: p1Mapped, p2: p2Mapped, destinationRect: destinationRect)
+    
+    print("Final `TouchPositions`: \(self)")
   }
   var midPoint: CGPoint {
     CGPoint.midPoint(p1: p1, p2: p2)
@@ -99,5 +105,19 @@ struct TouchPositions {
   func angleDelta(from other: TouchPositions) -> CGFloat {
     let delta = angle - other.angle
     return atan2(sin(delta), cos(delta)) // Normalize
+  }
+}
+
+extension TouchPositions: CustomStringConvertible {
+  public var description: String {
+    """
+    TouchPositions
+      - p1: \(p1.displayString)
+      - p2: \(p2.displayString)
+      - Destination rect: \(destinationRect)
+      - Mid point: \(midPoint.displayString)
+      - Angle: \(angle.displayString)
+      - Distance: \(distanceBetween.displayString)
+    """
   }
 }

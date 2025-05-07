@@ -66,6 +66,13 @@ public struct TouchPoint: Identifiable, Hashable, Codable {
 
 extension TouchPoint: CustomStringConvertible {
   public var description: String {
-    "TouchPoint(position: \(position), timestamp: \(timestamp), velocity: \(velocity)),"
+    """
+    TouchPoint
+      - ID: \(id)
+      - Position: \(position.displayString)
+      - Timestamp: \(timestamp.displayString)
+      - Velocity: \(velocity.displayString)
+      - Pressure: \(pressure?.displayString ?? "—")
+    """
   }
 }

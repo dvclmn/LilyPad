@@ -6,8 +6,8 @@
 //
 
 import BaseHelpers
-import SwiftUI
 import BaseStyles
+import SwiftUI
 
 public struct ZoomView<Content: View>: View {
 
@@ -15,8 +15,8 @@ public struct ZoomView<Content: View>: View {
 
   @State private var firstPositionPair: TouchPositions?
   @State private var currentPositionPair: TouchPositions?
-  
-  let scaleThesholdDistance: CGFloat = 10
+
+  let scaleThresholdDistance: CGFloat = 10
 
   let canvasSize: CGSize
   let touchUpdates: TouchUpdates
@@ -39,8 +39,8 @@ public struct ZoomView<Content: View>: View {
     GeometryReader { proxy in
 
       content
-//      Rectangle()
-//        .fill(.white.opacity(0.1))
+        //      Rectangle()
+        //        .fill(.white.opacity(0.1))
         .midpointIndicator()
         .frame(width: store.canvasSize.width, height: store.canvasSize.height)
         .position(store.canvasPosition)
@@ -50,17 +50,26 @@ public struct ZoomView<Content: View>: View {
         }
     }
     .midpointIndicator()
+    .mouseLock(store.touches.count == 2)
     .touches(mapToSize: store.viewportSize) { touches, pressure in
       if touches.count == 2 {
-        //        store.touches = touches
-        roughScale(touches: touches)
+        panAmount(touches: touches)
       }
+      store.touches = touches
 
       /// Pass the touches through to the recieving view
       touchUpdates(touches, pressure)
 
     }
     .toolbar {
+      HStack {
+        LabeledContent("Viewport", value: store.viewportSize.displayString(decimalPlaces: 0))
+        Divider()
+        LabeledContent("Pan", value: store.offset.displayString(style: .full))
+      }
+      .foregroundStyle(.tertiary)
+      .font(.callout)
+      .monospacedDigit()
       Button {
         store.offset = .zero
       } label: {
@@ -74,21 +83,21 @@ public struct ZoomView<Content: View>: View {
 }
 extension ZoomView {
 
-//  func roughPan(touches: Set<TouchPoint>) {
-//    let newPositions = TouchPositions(touches: touches)
-//    initialisePositionsIfNeeded(newPositions)
-//
-//
-//
-//  }
+  //  func roughPan(touches: Set<TouchPoint>) {
+  //    let newPositions = TouchPositions(touches: touches)
+  //    initialisePositionsIfNeeded(newPositions)
+  //
+  //
+  //
+  //  }
 
-  func roughScale(touches: Set<TouchPoint>) {
+  func panAmount(touches: Set<TouchPoint>) {
     guard touches.count == 2 else {
       return
     }
-    
+
     let newPositionPair = TouchPositions(touches: touches, destinationRect: store.viewportSize.toCGRect)
-    
+
     if firstPositionPair == nil {
       firstPositionPair = newPositionPair
     }
@@ -96,31 +105,16 @@ extension ZoomView {
 
 
     if let firstPair = firstPositionPair, let currentPair = currentPositionPair {
-      
-      let delta = currentPair.midPoint - firstPair.midPoint
-      
-      let scale = currentPair.distanceBetween / firstPair.distanceBetween
-//      let scaledStartMid = firstPair.mid * scale
-//      let offset = currentPair.mid - scaledStartMid
-      
-      store.offset = store.offset + delta
-//          if newPositions.p1.distance(to: newPositions.p2) >= scaleThesholdDistance {
-      //      roughPan(touches: touches)
-      //      return
-//          } else {
-//          }
 
+      let delta = currentPair.midPoint - firstPair.midPoint
+      let scale = currentPair.distanceBetween / firstPair.distanceBetween
+      
+      print("first")
+
+      store.offset = delta
       store.scale = scale
-//      store.offset = offset
     }
   }
-  
-//  func initialisePositionsIfNeeded(_ positions: TouchPositions) {
-//
-//    
-//  }
-
-
 }
 
 #if DEBUG
