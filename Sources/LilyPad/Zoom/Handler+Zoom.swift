@@ -37,6 +37,24 @@ struct TouchPositions {
   var p01A: CGPoint
   var p02B: CGPoint
   
+  init(p01A: CGPoint, p02B: CGPoint) {
+    self.p01A = p01A
+    self.p02B = p02B
+  }
+  
+  init(touches: Set<TouchPoint>) {
+    let touchesArray = Array(touches)
+    
+    let touch01 = touchesArray[0]
+    let touch02 = touchesArray[1]
+    
+    let p1 = touch01.position
+    let p2 = touch02.position
+    
+    self.init(p01A: p1, p02B: p2)
+    
+  }
+  
   var mid: CGPoint {
     CGPoint.midPoint(p1: p01A, p2: p02B)
   }

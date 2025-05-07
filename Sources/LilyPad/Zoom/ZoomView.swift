@@ -8,11 +8,10 @@
 import BaseHelpers
 import SwiftUI
 
-
 public struct ZoomView<Content: View>: View {
 
   @State private var store = ZoomHandler()
-  
+
   @State private var firstPosition: TouchPositions?
   @State private var currentPosition: TouchPositions?
 
@@ -41,7 +40,7 @@ public struct ZoomView<Content: View>: View {
         .midpointIndicator()
         .frame(width: store.canvasSize.width, height: store.canvasSize.height)
         .position(store.canvasPosition)
-      
+
         .task(id: proxy.size) {
           store.viewportSize = proxy.size
         }
@@ -49,13 +48,13 @@ public struct ZoomView<Content: View>: View {
     .midpointIndicator()
     .touches(canvasSize: canvasSize) { touches, pressure in
       if touches.count == 2 {
-//        store.touches = touches
+        //        store.touches = touches
         roughScale(touches: touches)
       }
-      
+
       /// Pass the touches through to the recieving view
       touchUpdates(touches, pressure)
-      
+
     }
     .task(id: canvasSize) {
       store.canvasSize = canvasSize
@@ -69,44 +68,40 @@ extension ZoomView {
     guard touchesArray.count == 2 else {
       return
     }
-    
-    
+
+
   }
-  
+
   func roughScale(touches: Set<TouchPoint>) {
-    
-    let touchesArray = Array(touches)
-    guard touchesArray.count == 2 else {
+    guard touches.count == 2 else {
       return
     }
-    
-    let touch01 = touchesArray[0]
-    let touch02 = touchesArray[1]
-    
-    let p1 = touch01.position
-    let p2 = touch02.position
-    
-    guard 
-    
-    let newPosition = TouchPositions(p01A: p1, p02B: p2)
-    
+    let scaleThesholdDistance: CGFloat = 10
+
+    let newPosition = TouchPositions(touches: touches)
+
     if firstPosition == nil {
       firstPosition = newPosition
     }
-    
+
     currentPosition = newPosition
-    
+
+    guard p1.distance(to: p2) >= scaleThesholdDistance else {
+
+      return
+    }
+
     if let first = firstPosition, let current = currentPosition {
       let scale = current.distance / first.distance
       let scaledStartMid = first.mid * scale
       let offset = current.mid - scaledStartMid
-      
+
       store.scale = scale
       store.offset = offset
     }
-
-    
   }
+
+
 }
 
 #if DEBUG
@@ -119,7 +114,7 @@ extension ZoomView {
       .padding(40)
       .background(.purple.quinary)
       .frame(width: 400)
-    
+
   }
   .frame(width: 600, height: 700)
   .background(.black.opacity(0.6))
