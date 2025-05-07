@@ -12,11 +12,14 @@ public struct ZoomView<Content: View>: View {
   
   @State private var store = ZoomHandler()
   
+  let canvasSize: CGSize
   let content: Content
   
   public init(
+    canvasSize: CGSize,
     @ViewBuilder content: @escaping () -> Content
   ) {
+    self.canvasSize = canvasSize
     self.content = content()
   }
   
@@ -25,9 +28,13 @@ public struct ZoomView<Content: View>: View {
     ZStack {
     
       content
-      TrackpadTouchesView { touches in
+        .touches(canvasSize: canvasSize) { touches, pressure in
+          return print(touches)
+        }
+      
+//      TrackpadTouchesView { touches, pressure in
         
-        store.touches = touches
+//        store.touches = touches
 //        guard store.isInTouchMode else { return }
 //        
 //        if store.strokeHandler.touches != touches {
@@ -35,9 +42,7 @@ public struct ZoomView<Content: View>: View {
 //          store.strokeHandler.processTouchesIntoStrokes(config: store.preferences.strokeConfig)
 //        }
         
-      } onPressureUpdate: { pressure in
-        //
-      }
+//      }
     }
     
     
@@ -46,7 +51,7 @@ public struct ZoomView<Content: View>: View {
 #if DEBUG
 @available(macOS 15, iOS 18, *)
 #Preview(traits: .size(.narrow)) {
-  ZoomView {
+  ZoomView(canvasSize: CGSize.init(width: 400, height: 300)) {
     Text(TestStrings.paragraphs[5])
   }
   .padding(40)
