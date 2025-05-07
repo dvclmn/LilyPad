@@ -8,22 +8,24 @@
 import Foundation
 import MemberwiseInit
 
-@MemberwiseInit(.public)
-public struct PointConfig: Codable, Equatable {
-  public var minDistance: CGFloat = 2
-  public var minSpeedForDenseSampling: CGFloat = 10
-}
+//@MemberwiseInit(.public)
+//public struct PointConfig: Codable, Equatable {
+//  public var minDistance: CGFloat = 2
+//  public var minSpeedForDenseSampling: CGFloat = 10
+//}
+//
+//@MemberwiseInit(.public)
+//public struct StrokeConfig: Codable, Equatable {
+//  public var velocitySensitivity: CGFloat = 0.5
+//  public var minWidth: CGFloat = 1.0
+//  public var maxWidth: CGFloat = 100
+//  
+//  /// Speed at which the stroke is fully thinned
+//  /// Directly ties the speed input to the visual outcome (width thinning)
+//  public var maxThinningSpeed: CGFloat = 3.0
+//}
 
-@MemberwiseInit(.public)
-public struct StrokeConfig: Codable, Equatable {
-  public var velocitySensitivity: CGFloat = 0.5
-  public var minWidth: CGFloat = 1.0
-  public var maxWidth: CGFloat = 100
-  
-  /// Speed at which the stroke is fully thinned
-  /// Directly ties the speed input to the visual outcome (width thinning)
-  public var maxThinningSpeed: CGFloat = 3.0
-}
+
 
 @MemberwiseInit(.public)
 public struct StrokeWidthHandler {

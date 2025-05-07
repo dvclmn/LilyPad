@@ -11,20 +11,20 @@ import SwiftUI
 public struct StrokeEngine {
 
   public var strokeWidthHandler = StrokeWidthHandler()
-  private var strokeConfig: StrokeConfig
+//  private var strokeConfig: StrokeConfig
 
-  public init(strokeConfig: StrokeConfig = .init()) {
+  public init() {
     print("`StrokeEngine` created at \(Date.now.format(.timeDetailed))")
-    self.strokeConfig = strokeConfig
+//    self.strokeConfig = strokeConfig
   }
 
-  public mutating func updateConfig(newConfig: StrokeConfig) {
-    self.strokeConfig = newConfig
-  }
+//  public mutating func updateConfig(newConfig: StrokeConfig) {
+//    self.strokeConfig = newConfig
+//  }
 
   public func filterPoints(
     from rawPoints: [TouchPoint],
-    pointConfig: PointConfig
+    config: StrokeConfiguration
   ) -> [TouchPoint] {
 
     guard rawPoints.count > 1,
@@ -37,7 +37,7 @@ public struct StrokeEngine {
       guard let lastPoint = filtered.last else { continue }
       let lastPosition = lastPoint.position
       let current = rawPoints[i]
-      if shouldAddPoint(from: lastPosition, to: current, pointConfig: pointConfig) {
+      if shouldAddPoint(from: lastPosition, to: current, config: config) {
         filtered.append(current)
       }
     }
@@ -53,19 +53,19 @@ public struct StrokeEngine {
   private func shouldAddPoint(
     from last: CGPoint,
     to current: TouchPoint,
-    pointConfig: PointConfig
+    config: StrokeConfiguration
   ) -> Bool {
 
     let distance = hypot(current.position.x - last.x, current.position.y - last.y)
 
     /// Always add point if we exceed distance threshold
-    guard distance < pointConfig.minDistance else { return true }
+    guard distance < config.minDistance else { return true }
 
     /// Use the touch event's pre-calculated velocity
     let speed = current.velocity.speed
 
     /// Add point if moving slowly
-    return speed < pointConfig.minSpeedForDenseSampling
+    return speed < config.minSpeedForDenseSampling
   }
 
 }
@@ -73,21 +73,24 @@ public struct StrokeEngine {
 extension StrokeEngine {
   public func drawStroke(
     _ stroke: TouchStroke,
-    pointConfig: PointConfig,
+    config: StrokeConfiguration,
     pointDensity: Int,
+    isShowingPoints: Bool = false,
     in context: GraphicsContext
   ) {
     
-    let filteredPoints = filterPoints(from: stroke.points, pointConfig: pointConfig)
+    let filteredPoints = filterPoints(
+      from: stroke.points,
+      config: config
+    )
 
-//    guard stroke.pointsOriginal.count >= 4 else { return }
     guard filteredPoints.count >= 4 else { return }
 
     var leftEdge: [CGPoint] = []
     var rightEdge: [CGPoint] = []
 
     var previousPos: CGPoint?
-
+    var pointIndicatorPath = Path()
     for i in 1..<filteredPoints.count - 2 {
       let p0 = filteredPoints[i - 1]
       let p1 = filteredPoints[i]
@@ -99,6 +102,10 @@ extension StrokeEngine {
         let pos = catmullRom(p0.position, p1.position, p2.position, p3.position, t)
         let width = interpolatedWidth(p0: p0, p1: p1, p2: p2, p3: p3, t: t)
 
+        if isShowingPoints {
+          drawPoint(pos, width: width, in: &pointIndicatorPath)
+        }
+        
         if let prev = previousPos {
           let dir = CGPoint(x: pos.x - prev.x, y: pos.y - prev.y)
           let normal = CGPoint(x: -dir.y, y: dir.x).normalised
@@ -110,6 +117,7 @@ extension StrokeEngine {
 
         previousPos = pos
       }
+      context.fill(pointIndicatorPath, with: .color(.purple))
     }
 
     // Build closed path from left edge forward, right edge backward
