@@ -15,6 +15,10 @@ public struct ZoomView<Content: View>: View {
 
   @State private var firstPositionPair: TouchPositions?
   @State private var currentPositionPair: TouchPositions?
+  
+  @State private var gestureStartPositions: TouchPositions?
+  @State private var lastPanAmount: CGPoint = .zero
+  @State private var lastScale: CGFloat = 1.0
 
   let scaleThresholdDistance: CGFloat = 10
 
@@ -44,7 +48,7 @@ public struct ZoomView<Content: View>: View {
         .midpointIndicator()
         .frame(width: store.canvasSize.width, height: store.canvasSize.height)
         .position(store.canvasPosition)
-        .scaleEffect(store.scale)
+//        .scaleEffect(store.scale)
         .drawingGroup()
         .task(id: proxy.size) {
           store.viewportSize = proxy.size
@@ -83,14 +87,6 @@ public struct ZoomView<Content: View>: View {
   }
 }
 extension ZoomView {
-
-  //  func roughPan(touches: Set<TouchPoint>) {
-  //    let newPositions = TouchPositions(touches: touches)
-  //    initialisePositionsIfNeeded(newPositions)
-  //
-  //
-  //
-  //  }
 
   func panAmount(touches: Set<TouchPoint>) {
     guard touches.count == 2 else {
