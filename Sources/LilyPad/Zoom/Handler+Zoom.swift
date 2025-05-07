@@ -38,33 +38,57 @@ struct TouchPositions {
   
   var destinationRect: CGRect
   
-  init(p1: CGPoint, p2: CGPoint, destinationRect: CGRect) {
-    
-    let p1Mapped: CGPoint = p1.mapped(to: destinationRect)
-    let p2Mapped: CGPoint = p2.mapped(to: destinationRect)
-    
-    self.p1 = p1Mapped
-    self.p2 = p2Mapped
+  init(mappedP1: CGPoint, mappedP2: CGPoint, destinationRect: CGRect) {
+    self.p1 = mappedP1
+    self.p2 = mappedP2
     self.destinationRect = destinationRect
   }
   
-  init(touches: Set<TouchPoint>, destinationRect: CGRect) {
+//  init(p1: CGPoint, p2: CGPoint, destinationRect: CGRect) {
+//    
+//    let p1Mapped: CGPoint = p1.mapped(to: destinationRect)
+//    let p2Mapped: CGPoint = p2.mapped(to: destinationRect)
+//    
+//    self.p1 = p1Mapped
+//    self.p2 = p2Mapped
+//    self.destinationRect = destinationRect
+//  }
+  
+//  init(touches: Set<TouchPoint>, destinationRect: CGRect) {
+//    let touchesArray = Array(touches)
+//    
+//    let touch01 = touchesArray[0]
+//    let touch02 = touchesArray[1]
+//    
+//    print("Touch positions before mapping: \(touch01.position.displayString), \(touch02.position.displayString)")
+//    
+//    let p1Mapped: CGPoint = touch01.position.mapped(to: destinationRect)
+//    let p2Mapped: CGPoint = touch02.position.mapped(to: destinationRect)
+//    
+//    print("Touch positions AFTER mapping: \(p1Mapped.displayString), \(p2Mapped.displayString)")
+//
+//    self.init(p1: p1Mapped, p2: p2Mapped, destinationRect: destinationRect)
+//    
+//    print("Final `TouchPositions`: \(self)")
+//  }
+  
+//  static func mapped(from touches: Set<TouchPoint>, to rect: CGRect) -> TouchPositions {
+//    let touchesArray = Array(touches)
+//    let p1 = touchesArray[0].position.mapped(to: rect)
+//    let p2 = touchesArray[1].position.mapped(to: rect)
+//    return TouchPositions(p1: p1, p2: p2, destinationRect: rect)
+//  }
+  
+  static func mapped(from touches: Set<TouchPoint>, to destinationRect: CGRect) -> TouchPositions {
     let touchesArray = Array(touches)
+    precondition(touchesArray.count == 2, "Exactly 2 touches required")
     
-    let touch01 = touchesArray[0]
-    let touch02 = touchesArray[1]
+    let p1 = touchesArray[0].position.mapped(to: destinationRect)
+    let p2 = touchesArray[1].position.mapped(to: destinationRect)
     
-    print("Touch positions before mapping: \(touch01.position.displayString), \(touch02.position.displayString)")
-    
-    let p1Mapped: CGPoint = touch01.position.mapped(to: destinationRect)
-    let p2Mapped: CGPoint = touch02.position.mapped(to: destinationRect)
-    
-    print("Touch positions AFTER mapping: \(p1Mapped.displayString), \(p2Mapped.displayString)")
-
-    self.init(p1: p1Mapped, p2: p2Mapped, destinationRect: destinationRect)
-    
-    print("Final `TouchPositions`: \(self)")
+    return TouchPositions(mappedP1: p1, mappedP2: p2, destinationRect: destinationRect)
   }
+  
   var midPoint: CGPoint {
     CGPoint.midPoint(p1: p1, p2: p2)
   }

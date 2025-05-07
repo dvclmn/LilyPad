@@ -44,7 +44,8 @@ public struct ZoomView<Content: View>: View {
         .midpointIndicator()
         .frame(width: store.canvasSize.width, height: store.canvasSize.height)
         .position(store.canvasPosition)
-
+        .scaleEffect(store.scale)
+        .drawingGroup()
         .task(id: proxy.size) {
           store.viewportSize = proxy.size
         }
@@ -96,7 +97,8 @@ extension ZoomView {
       return
     }
 
-    let newPositionPair = TouchPositions(touches: touches, destinationRect: store.viewportSize.toCGRect)
+    let newPositionPair = TouchPositions.mapped(from: touches, to: store.viewportSize.toCGRect)
+//    let newPositionPair = TouchPositions(touches: touches, destinationRect: store.viewportSize.toCGRect)
 
     if firstPositionPair == nil {
       firstPositionPair = newPositionPair
@@ -109,7 +111,7 @@ extension ZoomView {
       let delta = currentPair.midPoint - firstPair.midPoint
       let scale = currentPair.distanceBetween / firstPair.distanceBetween
       
-      print("first")
+//      print("first")
 
       store.offset = delta
       store.scale = scale
