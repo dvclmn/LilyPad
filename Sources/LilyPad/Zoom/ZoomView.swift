@@ -8,18 +8,6 @@
 import BaseHelpers
 import SwiftUI
 
-struct TouchPositions {
-  var p01A: CGPoint
-  var p02B: CGPoint
-  
-  var mid: CGPoint {
-    CGPoint.midPoint(p1: p01A, p2: p02B)
-  }
-  
-  var distance: CGFloat {
-    hypot(p02B.x - p01A.x, p02B.y - p01A.y)
-  }
-}
 
 public struct ZoomView<Content: View>: View {
 
@@ -44,23 +32,47 @@ public struct ZoomView<Content: View>: View {
 
   public var body: some View {
 
-    ZStack {
+    /// Using `GeometryReader` to kind 'reset' everything to be full width,
+    /// full height, and top leading.
+    GeometryReader { proxy in
 
-      content
-        .scaleEffect(store.scale)
-        .offset(store.offset.toCGSize)
+      Rectangle()
+        .fill(.white.opacity(0.1))
+        .midpointIndicator()
+        .frame(width: store.canvasSize.width, height: store.canvasSize.height)
+        .position(store.canvasPosition)
+      
+        .task(id: proxy.size) {
+          store.viewportSize = proxy.size
+        }
     }
+    .midpointIndicator()
     .touches(canvasSize: canvasSize) { touches, pressure in
       if touches.count == 2 {
 //        store.touches = touches
         roughScale(touches: touches)
       }
+      
+      /// Pass the touches through to the recieving view
       touchUpdates(touches, pressure)
       
+    }
+    .task(id: canvasSize) {
+      store.canvasSize = canvasSize
     }
   }
 }
 extension ZoomView {
+
+  func roughPan(touches: Set<TouchPoint>) {
+    let touchesArray = Array(touches)
+    guard touchesArray.count == 2 else {
+      return
+    }
+    
+    
+  }
+  
   func roughScale(touches: Set<TouchPoint>) {
     
     let touchesArray = Array(touches)
@@ -68,8 +80,14 @@ extension ZoomView {
       return
     }
     
-    let p1 = touchesArray[0].position
-    let p2 = touchesArray[1].position
+    let touch01 = touchesArray[0]
+    let touch02 = touchesArray[1]
+    
+    let p1 = touch01.position
+    let p2 = touch02.position
+    
+    guard 
+    
     let newPosition = TouchPositions(p01A: p1, p02B: p2)
     
     if firstPosition == nil {
@@ -86,25 +104,7 @@ extension ZoomView {
       store.scale = scale
       store.offset = offset
     }
-    
-//    guard firstPosition != nil else {
-//      firstPosition =
-//    }
-//    
-//    let touchesArray = Array(touches)
-//    guard touchesArray.count == 2
-//    else {
-//      return 1.0  // Default scale value
-//    }
-//    
-//    let p01 = touchesArray[0].position
-//    let p02 = touchesArray[1].position
-//    
-//    let firstPoint = TouchPositions(p01A: p01, p02B: p02)
-//    
-//    
-//    
-//    self.firstPosition = firstPoint
+
     
   }
 }
@@ -116,9 +116,11 @@ extension ZoomView {
     //
   } content: {
     Text(TestStrings.paragraphs[5])
+      .padding(40)
+      .background(.purple.quinary)
+      .frame(width: 400)
     
   }
-  .padding(40)
   .frame(width: 600, height: 700)
   .background(.black.opacity(0.6))
 }
