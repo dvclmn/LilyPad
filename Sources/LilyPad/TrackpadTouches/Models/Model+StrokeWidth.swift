@@ -28,27 +28,74 @@ public struct StrokeWidthHandler {
     let rawWidth: CGFloat
     
     /// Calculate raw width (existing logic)
-    let velocityPart: CGFloat
-    if let s = speed {
-      let clampedSpeed = min(max(s, 0), config.maxThinningSpeed)
-      let t = clampedSpeed / config.maxThinningSpeed
-      let adjustedT = pow(t, config.velocitySensitivity * 2)
-      velocityPart = config.maxWidth - (config.maxWidth - config.minWidth) * adjustedT
-    } else {
-      velocityPart = config.maxWidth
-    }
+//    let velocityPart: CGFloat
+//    if let s = speed {
+//      let clampedSpeed = min(max(s, 0), config.maxThinningSpeed)
+//      let t = clampedSpeed / config.maxThinningSpeed
+//      let adjustedT = pow(t, config.velocitySensitivity * 2)
+//      velocityPart = config.maxStrokeWidth - (config.maxStrokeWidth - config.minStrokeWidth) * adjustedT
+//    } else {
+//      velocityPart = config.maxStrokeWidth
+//    }
+//    
+//    let pressurePart: CGFloat
+//    if let p = pressure {
+//      let clamped = max(0, min(p, 1))
+//      let adjustedP = pow(clamped, pressureExponent)
+//      pressurePart = config.minStrokeWidth + (config.maxStrokeWidth - config.minStrokeWidth) * adjustedP
+//    } else {
+//      pressurePart = config.maxStrokeWidth
+//    }
     
-    let pressurePart: CGFloat
-    if let p = pressure {
-      let clamped = max(0, min(p, 1))
-      let adjustedP = pow(clamped, pressureExponent)
-      pressurePart = config.minWidth + (config.maxWidth - config.minWidth) * adjustedP
-    } else {
-      pressurePart = config.maxWidth
-    }
+    // Calculate velocity and pressure components using the helper
+    let velocityPart = calculateWidthComponent(
+      value: speed,
+      minValue: 0,
+      maxValue: config.maxThinningSpeed,
+      exponent: config.velocitySensitivity * 2,
+      inverse: true,
+      config: config
+    )
+    
+    let pressurePart = calculateWidthComponent(
+      value: pressure,
+      minValue: 0,
+      maxValue: 1,
+      exponent: pressureExponent,
+      inverse: false,
+      config: config
+    )
     rawWidth = velocityPart * (1 - pressureWeight) + pressurePart * pressureWeight
     
     return rawWidth
 
   }
+  
+  /// Calculate width based on input factor
+  func calculateWidthComponent(
+    value: CGFloat?,
+    minValue: CGFloat,
+    maxValue: CGFloat,
+    exponent: CGFloat,
+    inverse: Bool = false,
+    config: StrokeConfiguration
+  ) -> CGFloat {
+    guard let value = value else {
+      return config.maxStrokeWidth
+    }
+    
+    let clamped = min(max(value, minValue), maxValue)
+    let normalized = (clamped - minValue) / (maxValue - minValue)
+    let adjusted = pow(normalized, exponent)
+    
+    if inverse {
+      // For velocity: higher value means thinner stroke
+      return config.maxStrokeWidth - (config.maxStrokeWidth - config.minStrokeWidth) * adjusted
+    } else {
+      // For pressure: higher value means thicker stroke
+      return config.minStrokeWidth + (config.maxStrokeWidth - config.minStrokeWidth) * adjusted
+    }
+  }
+  
+  
 }

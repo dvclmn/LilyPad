@@ -65,10 +65,10 @@ public struct StrokeEngine {
 }
 
 extension StrokeEngine {
+  
   public func drawStroke(
     _ stroke: TouchStroke,
     config: StrokeConfiguration,
-    pointDensity: Int,
     isShowingPoints: Bool = false,
     in context: GraphicsContext
   ) {
@@ -91,9 +91,20 @@ extension StrokeEngine {
       let p2 = filteredPoints[i + 1]
       let p3 = filteredPoints[i + 2]
 
-      for j in 0..<pointDensity {
-        let t = CGFloat(j) / CGFloat(pointDensity)
-        let pos = catmullRom(p0.position, p1.position, p2.position, p3.position, t)
+      for j in 0..<config.pointDensity {
+        let t = CGFloat(j) / CGFloat(config.pointDensity)
+        
+        let pos = catmullRom(
+          p0.position,
+          p1.position,
+          p2.position,
+          p3.position,
+          t,
+          type: config.curveType
+        )
+        
+        
+//        let pos = catmullRom(p0.position, p1.position, p2.position, p3.position, t)
         let width = interpolatedWidth(p0: p0, p1: p1, p2: p2, p3: p3, t: t, config: config)
 
         if isShowingPoints {
@@ -141,28 +152,28 @@ extension StrokeEngine {
     path.addEllipse(in: rect)
   }
 
-  func catmullRom(
-    _ p0: CGPoint,
-    _ p1: CGPoint,
-    _ p2: CGPoint,
-    _ p3: CGPoint,
-    _ t: CGFloat
-  ) -> CGPoint {
-    let t2 = t * t
-    let t3 = t2 * t
-
-    let x =
-      0.5
-      * (2 * p1.x + (p2.x - p0.x) * t + (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2
-        + (3 * p1.x - p0.x - 3 * p2.x + p3.x) * t3)
-
-    let y =
-      0.5
-      * (2 * p1.y + (p2.y - p0.y) * t + (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2
-        + (3 * p1.y - p0.y - 3 * p2.y + p3.y) * t3)
-
-    return CGPoint(x: x, y: y)
-  }
+//  func catmullRom(
+//    _ p0: CGPoint,
+//    _ p1: CGPoint,
+//    _ p2: CGPoint,
+//    _ p3: CGPoint,
+//    _ t: CGFloat
+//  ) -> CGPoint {
+//    let t2 = t * t
+//    let t3 = t2 * t
+//
+//    let x =
+//      0.5
+//      * (2 * p1.x + (p2.x - p0.x) * t + (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2
+//        + (3 * p1.x - p0.x - 3 * p2.x + p3.x) * t3)
+//
+//    let y =
+//      0.5
+//      * (2 * p1.y + (p2.y - p0.y) * t + (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2
+//        + (3 * p1.y - p0.y - 3 * p2.y + p3.y) * t3)
+//
+//    return CGPoint(x: x, y: y)
+//  }
 
   func interpolatedWidth(
     p0: TouchPoint,
@@ -189,6 +200,58 @@ extension StrokeEngine {
 
     return 0.5 * (2 * w1 + (w2 - w0) * t + (2 * w0 - 5 * w1 + 4 * w2 - w3) * t2 + (3 * w1 - w0 - 3 * w2 + w3) * t3)
   }
+  
+  func catmullRom(
+    _ p0: CGPoint,
+    _ p1: CGPoint,
+    _ p2: CGPoint,
+    _ p3: CGPoint,
+    _ t: CGFloat,
+    type: CatmullRomType = .uniform
+  ) -> CGPoint {
+    let alpha: CGFloat
+    switch type {
+      case .uniform: alpha = 0.0
+      case .chordal: alpha = 1.0
+      case .centripetal: alpha = 0.5
+    }
+    
+    func tj(_ ti: CGFloat, _ pi: CGPoint, _ pj: CGPoint) -> CGFloat {
+      let dx = pj.x - pi.x
+      let dy = pj.y - pi.y
+      return pow(dx * dx + dy * dy, alpha * 0.5) + ti
+    }
+    
+    let t0: CGFloat = 0
+    let t1 = tj(t0, p0, p1)
+    let t2 = tj(t1, p1, p2)
+    let t3 = tj(t2, p2, p3)
+    
+    /// Map t in [0, 1] to τ in [t1, t2]
+    let tau = t1 + (t2 - t1) * t
+    
+    /// Perform the recursive interpolation (De Casteljau-like)
+    let A1 = interpolate(p0, p1, (tau - t0) / (t1 - t0))
+    let A2 = interpolate(p1, p2, (tau - t1) / (t2 - t1))
+    let A3 = interpolate(p2, p3, (tau - t2) / (t3 - t2))
+    
+    let B1 = interpolate(A1, A2, (tau - t1) / (t2 - t1))
+    let B2 = interpolate(A2, A3, (tau - t2) / (t3 - t2))
+    
+    return interpolate(B1, B2, (tau - t2) / (t3 - t2))
+  }
+  
+  func interpolate(_ p0: CGPoint, _ p1: CGPoint, _ t: CGFloat) -> CGPoint {
+    CGPoint(
+      x: p0.x + (p1.x - p0.x) * t,
+      y: p0.y + (p1.y - p0.y) * t
+    )
+  }
 }
 
+public enum CatmullRomType: String, Codable {
+  case uniform
+  case chordal
+  case centripetal
+}
 

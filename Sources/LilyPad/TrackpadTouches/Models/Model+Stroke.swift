@@ -43,10 +43,10 @@ public struct TouchStroke: Identifiable, Codable, Equatable {
 extension TouchStroke {
   
   public func filteredPoints(
-    using config: PointConfig,
+    using config: StrokeConfiguration,
     engine: StrokeEngine
   ) -> [TouchPoint] {
-    engine.filterPoints(from: points, pointConfig: config)
+    engine.filterPoints(from: points, config: config)
   }
 }
 
