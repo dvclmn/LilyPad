@@ -11,16 +11,10 @@ import SwiftUI
 public struct StrokeEngine {
 
   public var strokeWidthHandler = StrokeWidthHandler()
-//  private var strokeConfig: StrokeConfig
 
   public init() {
     print("`StrokeEngine` created at \(Date.now.format(.timeDetailed))")
-//    self.strokeConfig = strokeConfig
   }
-
-//  public mutating func updateConfig(newConfig: StrokeConfig) {
-//    self.strokeConfig = newConfig
-//  }
 
   public func filterPoints(
     from rawPoints: [TouchPoint],
@@ -100,7 +94,7 @@ extension StrokeEngine {
       for j in 0..<pointDensity {
         let t = CGFloat(j) / CGFloat(pointDensity)
         let pos = catmullRom(p0.position, p1.position, p2.position, p3.position, t)
-        let width = interpolatedWidth(p0: p0, p1: p1, p2: p2, p3: p3, t: t)
+        let width = interpolatedWidth(p0: p0, p1: p1, p2: p2, p3: p3, t: t, config: config)
 
         if isShowingPoints {
           drawPoint(pos, width: width, in: &pointIndicatorPath)
@@ -135,28 +129,6 @@ extension StrokeEngine {
 
     context.fill(path, with: .color(.black))
 
-    //    guard stroke.points.count >= 4 else { return }
-    //
-    //    var path = Path()
-    //
-    //    let controlPoints = stroke.points
-    //    for i in 1..<controlPoints.count - 2 {
-    //      let p0 = controlPoints[i - 1]
-    //      let p1 = controlPoints[i]
-    //      let p2 = controlPoints[i + 1]
-    //      let p3 = controlPoints[i + 2]
-    //
-    //      for j in 0..<pointDensity {
-    //        let t = CGFloat(j) / CGFloat(pointDensity)
-    //        let position = catmullRom(p0.position, p1.position, p2.position, p3.position, t)
-    //
-    //        let width = interpolatedWidth(p0: p0, p1: p1, p2: p2, p3: p3, t: t)
-    //
-    //        drawPoint(position, width: width, in: &path)
-    //      }
-    //    }
-    //
-    //    context.stroke(path, with: .color(.black), lineWidth: 3)
   }
 
   func drawPoint(_ position: CGPoint, width: CGFloat, in path: inout Path) {
@@ -197,12 +169,13 @@ extension StrokeEngine {
     p1: TouchPoint,
     p2: TouchPoint,
     p3: TouchPoint,
-    t: CGFloat
+    t: CGFloat,
+    config: StrokeConfiguration,
   ) -> CGFloat {
     func width(for point: TouchPoint) -> CGFloat {
       point.width(
         using: strokeWidthHandler,
-        strokeConfig: strokeConfig
+        config: config
       )
     }
 
@@ -217,3 +190,5 @@ extension StrokeEngine {
     return 0.5 * (2 * w1 + (w2 - w0) * t + (2 * w0 - 5 * w1 + 4 * w2 - w3) * t2 + (3 * w1 - w0 - 3 * w2 + w3) * t3)
   }
 }
+
+
