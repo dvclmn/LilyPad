@@ -79,7 +79,7 @@ extension ZoomView {
       return
     }
     
-    let newPositionPair = TouchPositions(touches: touches)
+    let newPositionPair = TouchPositions(touches: touches, positionType: .absolute)
     
     if firstPositionPair == nil {
       firstPositionPair = newPositionPair

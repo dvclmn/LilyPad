@@ -32,6 +32,11 @@ extension ZoomHandler {
   }
 }
 
+public enum PositionType {
+  case normalised
+  case absolute
+}
+
 
 struct TouchPositions {
   var p1: CGPoint
@@ -42,14 +47,25 @@ struct TouchPositions {
     self.p2 = p2
   }
   
-  init(touches: Set<TouchPoint>) {
+  init(touches: Set<TouchPoint>, positionType: PositionType = .normalised) {
     let touchesArray = Array(touches)
     
     let touch01 = touchesArray[0]
     let touch02 = touchesArray[1]
     
-    let p1 = touch01.position
-    let p2 = touch02.position
+    let p1: CGPoint
+    let p2: CGPoint
+    
+    switch positionType {
+      case .normalised:
+        p1 = touch01.position
+        p2 = touch02.position
+        
+      case .absolute:
+        fatalError("Still working on `positionAbsolute`, not yet ready")
+//        p1 = touch01.positionAbsolute
+//        p2 = touch02.positionAbsolute
+    }
     
     self.init(p1: p1, p2: p2)
     

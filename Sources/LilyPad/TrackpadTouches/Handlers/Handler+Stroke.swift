@@ -114,9 +114,11 @@ extension StrokeHandler {
     let touchId = touch.id
     let touchPosition = touch.position.convertNormalisedToConcrete(in: artwork.canvasSize)
     let timeStamp = touch.timestamp
+    
     let strokePointPosition = TouchPoint(
       id: touchId,
       position: touchPosition,
+//      positionAbsolute: touch.positionAbsolute,
       timestamp: timeStamp,
       velocity: touch.velocity,
       pressure: currentPressure

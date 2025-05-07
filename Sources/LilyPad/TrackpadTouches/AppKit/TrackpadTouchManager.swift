@@ -36,7 +36,8 @@ public class TrackpadTouchManager {
       let newTouch = makeTouch(
         from: touch,
         timestamp: timestamp,
-        previous: previousTouch
+        previous: previousTouch,
+        in: view
       )
 
       updatedTouches.insert(newTouch)
@@ -65,7 +66,8 @@ public class TrackpadTouchManager {
   func makeTouch(
     from nsTouch: NSTouch,
     timestamp: TimeInterval,
-    previous: TouchPoint?
+    previous: TouchPoint?,
+    in view: NSView,
   ) -> TouchPoint {
     let now = timestamp
     let position = CGPoint(
@@ -73,6 +75,11 @@ public class TrackpadTouchManager {
       /// Flip Y to match SwiftUI coordinate system
       y: 1.0 - nsTouch.normalizedPosition.y
     )
+
+//    let positionAbsolute = CGPoint(
+//      x: nsTouch.location(in: view).x,
+//      y: 1.0 - nsTouch.location(in: view).y
+//    )
 
     let velocity: CGVector? = {
       guard let prev = previous else { return nil }
@@ -82,6 +89,7 @@ public class TrackpadTouchManager {
     return TouchPoint(
       id: nsTouch.identity.hash,
       position: position,
+//      positionAbsolute: positionAbsolute,
       timestamp: timestamp,
       velocity: velocity ?? .zero,
       pressure: nil
