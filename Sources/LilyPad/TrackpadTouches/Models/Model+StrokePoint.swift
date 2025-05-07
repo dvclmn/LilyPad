@@ -26,7 +26,10 @@ public struct TouchPoint: Identifiable, Hashable, Codable {
     _width = value
   }
 
-  public func width(using model: StrokeWidthHandler, strokeConfig: StrokeConfig) -> CGFloat {
+  public func width(
+    using model: StrokeWidthHandler,
+    config: StrokeConfiguration
+  ) -> CGFloat {
     if let cachedWidth = _width {
       print("Used a cached width for this touch point.")
       return cachedWidth
@@ -34,7 +37,7 @@ public struct TouchPoint: Identifiable, Hashable, Codable {
     let result = model.calculateStrokeWidth(
       speed: velocity.speed,
       pressure: pressure,
-      strokeConfig: strokeConfig
+      config: config
     )
     return result
   }

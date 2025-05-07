@@ -120,7 +120,7 @@ extension StrokeEngine {
       context.fill(pointIndicatorPath, with: .color(.purple))
     }
 
-    // Build closed path from left edge forward, right edge backward
+    /// Build closed path from left edge forward, right edge backward
     var path = Path()
     guard let first = leftEdge.first else { return }
     path.move(to: first)

@@ -8,25 +8,6 @@
 import Foundation
 import MemberwiseInit
 
-//@MemberwiseInit(.public)
-//public struct PointConfig: Codable, Equatable {
-//  public var minDistance: CGFloat = 2
-//  public var minSpeedForDenseSampling: CGFloat = 10
-//}
-//
-//@MemberwiseInit(.public)
-//public struct StrokeConfig: Codable, Equatable {
-//  public var velocitySensitivity: CGFloat = 0.5
-//  public var minWidth: CGFloat = 1.0
-//  public var maxWidth: CGFloat = 100
-//  
-//  /// Speed at which the stroke is fully thinned
-//  /// Directly ties the speed input to the visual outcome (width thinning)
-//  public var maxThinningSpeed: CGFloat = 3.0
-//}
-
-
-
 @MemberwiseInit(.public)
 public struct StrokeWidthHandler {
   /// Maximum allowed change in width between consecutive points (as percentage of current width)
@@ -42,28 +23,28 @@ public struct StrokeWidthHandler {
   public func calculateStrokeWidth(
     speed: CGFloat?,
     pressure: CGFloat?,
-    strokeConfig: StrokeConfig,
+    config: StrokeConfiguration,
   ) -> CGFloat {
     let rawWidth: CGFloat
     
     /// Calculate raw width (existing logic)
     let velocityPart: CGFloat
     if let s = speed {
-      let clampedSpeed = min(max(s, 0), strokeConfig.maxThinningSpeed)
-      let t = clampedSpeed / strokeConfig.maxThinningSpeed
-      let adjustedT = pow(t, strokeConfig.velocitySensitivity * 2)
-      velocityPart = strokeConfig.maxWidth - (strokeConfig.maxWidth - strokeConfig.minWidth) * adjustedT
+      let clampedSpeed = min(max(s, 0), config.maxThinningSpeed)
+      let t = clampedSpeed / config.maxThinningSpeed
+      let adjustedT = pow(t, config.velocitySensitivity * 2)
+      velocityPart = config.maxWidth - (config.maxWidth - config.minWidth) * adjustedT
     } else {
-      velocityPart = strokeConfig.maxWidth
+      velocityPart = config.maxWidth
     }
     
     let pressurePart: CGFloat
     if let p = pressure {
       let clamped = max(0, min(p, 1))
       let adjustedP = pow(clamped, pressureExponent)
-      pressurePart = strokeConfig.minWidth + (strokeConfig.maxWidth - strokeConfig.minWidth) * adjustedP
+      pressurePart = config.minWidth + (config.maxWidth - config.minWidth) * adjustedP
     } else {
-      pressurePart = strokeConfig.maxWidth
+      pressurePart = config.maxWidth
     }
     rawWidth = velocityPart * (1 - pressureWeight) + pressurePart * pressureWeight
     

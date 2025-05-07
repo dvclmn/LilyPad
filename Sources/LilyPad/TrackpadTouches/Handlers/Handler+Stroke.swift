@@ -16,7 +16,11 @@ import BaseStyles
 public struct Artwork: Codable, Equatable {
   public var canvasSize: CGSize = .init(width: 700, height: 438)
   public var completedStrokes: [TouchStroke] = []
-  public var preferences: Preferences?
+  
+  /// Still not sure about this — aim is that the Artwork can either be
+  /// a) Unopinionated about the qualities/parameters of the stroke, so just the skeleton
+  /// b) Carry with it a little 'preset', so if desired, the visual intent can also be expressed
+  public var config: StrokeConfiguration? = nil
   
   public static let `default` = Artwork()
 }
@@ -41,9 +45,6 @@ public struct StrokeHandler {
   /// Once a stroke is complete (finger is lifted off the trackpad),
   /// it becomes
   public var activeStrokes: [Int: TouchStroke] = [:]
-
-  /// Minimum number of points required to create a smooth curve
-  let minPointsForCurve = 3
 
   /// Clear all strokes
   public mutating func clearStrokes() {
@@ -76,7 +77,7 @@ extension StrokeHandler {
   
   /// Process touch updates and update strokes
   public mutating func processTouchesIntoStrokes(
-    pointConfig: PointConfig
+    config: StrokeConfiguration
   ) {
 
     guard artwork.canvasSize != .zero else {
@@ -85,7 +86,7 @@ extension StrokeHandler {
     }
 
     for touch in touches {
-      handleTouch(touch, pointConfig: pointConfig)
+      handleTouch(touch, config: config)
     }
 
     /// Finalize ended strokes
@@ -107,7 +108,7 @@ extension StrokeHandler {
 
   mutating func handleTouch(
     _ touch: TouchPoint,
-    pointConfig: PointConfig
+    config: StrokeConfiguration
   ) {
     
     let touchId = touch.id
