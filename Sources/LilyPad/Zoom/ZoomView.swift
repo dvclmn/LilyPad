@@ -12,8 +12,10 @@ public struct ZoomView<Content: View>: View {
 
   @State private var store = ZoomHandler()
 
-  @State private var firstPosition: TouchPositions?
-  @State private var currentPosition: TouchPositions?
+  @State private var firstPositionPair: TouchPositions?
+  @State private var currentPositionPair: TouchPositions?
+  
+  let scaleThesholdDistance: CGFloat = 10
 
   let canvasSize: CGSize
   let touchUpdates: TouchUpdates
@@ -35,8 +37,9 @@ public struct ZoomView<Content: View>: View {
     /// full height, and top leading.
     GeometryReader { proxy in
 
-      Rectangle()
-        .fill(.white.opacity(0.1))
+      content
+//      Rectangle()
+//        .fill(.white.opacity(0.1))
         .midpointIndicator()
         .frame(width: store.canvasSize.width, height: store.canvasSize.height)
         .position(store.canvasPosition)
@@ -63,43 +66,51 @@ public struct ZoomView<Content: View>: View {
 }
 extension ZoomView {
 
-  func roughPan(touches: Set<TouchPoint>) {
-    let touchesArray = Array(touches)
-    guard touchesArray.count == 2 else {
-      return
-    }
-
-
-  }
+//  func roughPan(touches: Set<TouchPoint>) {
+//    let newPositions = TouchPositions(touches: touches)
+//    initialisePositionsIfNeeded(newPositions)
+//
+//
+//
+//  }
 
   func roughScale(touches: Set<TouchPoint>) {
     guard touches.count == 2 else {
       return
     }
-    let scaleThesholdDistance: CGFloat = 10
-
-    let newPosition = TouchPositions(touches: touches)
-
-    if firstPosition == nil {
-      firstPosition = newPosition
+    
+    let newPositionPair = TouchPositions(touches: touches)
+    
+    if firstPositionPair == nil {
+      firstPositionPair = newPositionPair
     }
+    currentPositionPair = newPositionPair
 
-    currentPosition = newPosition
 
-    guard p1.distance(to: p2) >= scaleThesholdDistance else {
-
-      return
-    }
-
-    if let first = firstPosition, let current = currentPosition {
-      let scale = current.distance / first.distance
-      let scaledStartMid = first.mid * scale
-      let offset = current.mid - scaledStartMid
+    if let firstPair = firstPositionPair, let currentPair = currentPositionPair {
+      
+      let delta = currentPair.mid - firstPair.mid
+      
+      let scale = currentPair.distance / firstPair.distance
+//      let scaledStartMid = firstPair.mid * scale
+//      let offset = currentPair.mid - scaledStartMid
+      
+      store.offset = store.offset + delta
+//          if newPositions.p1.distance(to: newPositions.p2) >= scaleThesholdDistance {
+      //      roughPan(touches: touches)
+      //      return
+//          } else {
+//          }
 
       store.scale = scale
-      store.offset = offset
+//      store.offset = offset
     }
   }
+  
+//  func initialisePositionsIfNeeded(_ positions: TouchPositions) {
+//
+//    
+//  }
 
 
 }

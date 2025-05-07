@@ -34,12 +34,12 @@ extension ZoomHandler {
 
 
 struct TouchPositions {
-  var p01A: CGPoint
-  var p02B: CGPoint
+  var p1: CGPoint
+  var p2: CGPoint
   
-  init(p01A: CGPoint, p02B: CGPoint) {
-    self.p01A = p01A
-    self.p02B = p02B
+  init(p1: CGPoint, p2: CGPoint) {
+    self.p1 = p1
+    self.p2 = p2
   }
   
   init(touches: Set<TouchPoint>) {
@@ -51,16 +51,16 @@ struct TouchPositions {
     let p1 = touch01.position
     let p2 = touch02.position
     
-    self.init(p01A: p1, p02B: p2)
+    self.init(p1: p1, p2: p2)
     
   }
   
   var mid: CGPoint {
-    CGPoint.midPoint(p1: p01A, p2: p02B)
+    CGPoint.midPoint(p1: p1, p2: p2)
   }
   
   var distance: CGFloat {
-    hypot(p02B.x - p01A.x, p02B.y - p01A.y)
+    hypot(p2.x - p1.x, p2.y - p1.y)
   }
   
   /// Using atan2(sin, cos) for Delta
@@ -86,9 +86,9 @@ struct TouchPositions {
   /// Then, for SwiftUI
   /// `content.rotationEffect(.radians(store.rotation))`
   ///
-  /// Angle in radians, from p01A to p02B, in range [-π, π]
+  /// Angle in radians, from p1 to p2, in range [-π, π]
   var angle: CGFloat {
-    atan2(p02B.y - p01A.y, p02B.x - p01A.x)
+    atan2(p2.y - p1.y, p2.x - p1.x)
   }
   
   /// Returns delta angle from another `TouchPositions`, normalized to [-π, π]
