@@ -50,7 +50,7 @@ public struct TouchPoint: Identifiable, Hashable, Codable {
   }
   
   public func mapPoint(to destination: CGRect) -> CGPoint {
-    return self.position.mapPoint(to: destination, mode: .fill)
+    return self.position.mapped(to: destination)
   }
 }
 

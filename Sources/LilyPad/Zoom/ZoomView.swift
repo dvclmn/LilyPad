@@ -7,6 +7,7 @@
 
 import BaseHelpers
 import SwiftUI
+import BaseStyles
 
 public struct ZoomView<Content: View>: View {
 
@@ -49,7 +50,7 @@ public struct ZoomView<Content: View>: View {
         }
     }
     .midpointIndicator()
-    .touches(canvasSize: canvasSize) { touches, pressure in
+    .touches(mapToSize: store.viewportSize) { touches, pressure in
       if touches.count == 2 {
         //        store.touches = touches
         roughScale(touches: touches)
@@ -58,6 +59,13 @@ public struct ZoomView<Content: View>: View {
       /// Pass the touches through to the recieving view
       touchUpdates(touches, pressure)
 
+    }
+    .toolbar {
+      Button {
+        store.offset = .zero
+      } label: {
+        Label("Reset pan", systemImage: "hand.draw")
+      }
     }
     .task(id: canvasSize) {
       store.canvasSize = canvasSize
@@ -79,7 +87,7 @@ extension ZoomView {
       return
     }
     
-    let newPositionPair = TouchPositions(touches: touches, destinationSpace: store.viewportSize.toCGRect)
+    let newPositionPair = TouchPositions(touches: touches, destinationRect: store.viewportSize.toCGRect)
     
     if firstPositionPair == nil {
       firstPositionPair = newPositionPair
@@ -89,9 +97,9 @@ extension ZoomView {
 
     if let firstPair = firstPositionPair, let currentPair = currentPositionPair {
       
-      let delta = currentPair.midPoint(mapped: true) - firstPair.midPoint(mapped: true)
+      let delta = currentPair.midPoint - firstPair.midPoint
       
-      let scale = currentPair.distanceBetween(mapped: true) / firstPair.distanceBetween(mapped: true)
+      let scale = currentPair.distanceBetween / firstPair.distanceBetween
 //      let scaledStartMid = firstPair.mid * scale
 //      let offset = currentPair.mid - scaledStartMid
       

@@ -42,7 +42,7 @@ extension View {
   public func touches(
     showIndicators: Bool = true,
     isMapped: Bool = false,
-    canvasSize: CGSize,
+    mapToSize: CGSize,
     touchUpdates: @escaping TouchUpdates
   ) -> some View {
     self.modifier(

@@ -36,58 +36,35 @@ struct TouchPositions {
   var p1: CGPoint
   var p2: CGPoint
   
-  var destinationSpace: CGRect? = nil
+  var destinationRect: CGRect
   
-  init(p1: CGPoint, p2: CGPoint) {
-    self.p1 = p1
-    self.p2 = p2
+  init(p1: CGPoint, p2: CGPoint, destinationRect: CGRect) {
+    
+    let p1Mapped: CGPoint = p1.mapped(to: destinationRect)
+    let p2Mapped: CGPoint = p2.mapped(to: destinationRect)
+    
+    self.p1 = p1Mapped
+    self.p2 = p2Mapped
+    self.destinationRect = destinationRect
   }
   
-  init(touches: Set<TouchPoint>, destinationSpace: CGRect? = nil) {
+  init(touches: Set<TouchPoint>, destinationRect: CGRect) {
     let touchesArray = Array(touches)
     
     let touch01 = touchesArray[0]
     let touch02 = touchesArray[1]
     
-    let p1: CGPoint = touch01.position
-    let p2: CGPoint = touch02.position
+    let p1Mapped: CGPoint = touch01.position.mapped(to: destinationRect)
+    let p2Mapped: CGPoint = touch02.position.mapped(to: destinationRect)
 
-    self.init(p1: p1, p2: p2)
-    self.destinationSpace = destinationSpace
-    
+    self.init(p1: p1Mapped, p2: p2Mapped, destinationRect: destinationRect)
+  }
+  var midPoint: CGPoint {
+    CGPoint.midPoint(p1: p1, p2: p2)
   }
   
-  var p1Mapped: CGPoint {
-    if let destinationSpace {
-      return p1.mapPoint(to: destinationSpace)
-    } else {
-      return p1
-    }
-  }
-  
-  var p2Mapped: CGPoint {
-    if let destinationSpace {
-      return p2.mapPoint(to: destinationSpace)
-    } else {
-      return p2
-    }
-  }
-  
-  func midPoint(mapped: Bool = false) -> CGPoint {
-    if mapped {
-      return CGPoint.midPoint(p1: p1Mapped, p2: p2Mapped)
-    } else {
-      return CGPoint.midPoint(p1: p1, p2: p2)
-    }
-  }
-  
-  func distanceBetween(mapped: Bool = false) -> CGFloat {
-    if mapped {
-      return hypot(p2Mapped.x - p1Mapped.x, p2Mapped.y - p1Mapped.y)
-    } else {
-      return hypot(p2.x - p1.x, p2.y - p1.y)
-    }
-    
+  var distanceBetween: CGFloat {
+    hypot(p2.x - p1.x, p2.y - p1.y)
   }
   
   /// Using atan2(sin, cos) for Delta

@@ -13,8 +13,7 @@ import BaseStyles
 public struct TouchIndicatorsView: View {
 
   let touches: Set<TouchPoint>
-  let isMapped: Bool
-  let canvasSize: CGSize
+  let mapToSize: CGSize
   
   public var body: some View {
 
@@ -30,21 +29,19 @@ public struct TouchIndicatorsView: View {
             .font(.caption2)
             .fixedSize()
         }
-        .position(touch.position.convertNormalisedToConcrete(in: canvasSize))
+        .position(touchPosition(touch))
     }
     .frame(
-      width: canvasSize.width,
-      height: canvasSize.height
+      width: mapToSize.width,
+      height: mapToSize.height
     )
 
   }
 }
 
 extension TouchIndicatorsView {
-  func touchPosition(touch: TouchPoint) -> CGPoint {
-    if isMapped {
-      return touch.position.mapPoint(to: <#T##CGRect#>)
-    }
+  func touchPosition(_ touch: TouchPoint) -> CGPoint {
+    touch.position.mapped(to: mapToSize.toCGRect)
   }
 }
 
@@ -53,8 +50,7 @@ extension TouchIndicatorsView {
 #Preview(traits: .size(.normal)) {
   TouchIndicatorsView(
     touches: [],
-    isMapped: true,
-    canvasSize: .init(width: 700, height: 600)
+    mapToSize: .init(width: 700, height: 600)
   )
 }
 #endif
