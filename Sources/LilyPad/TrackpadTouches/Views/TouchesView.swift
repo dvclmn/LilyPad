@@ -16,7 +16,7 @@ public struct TrackpadTouchesModifier: ViewModifier {
   public init(
     showIndicators: Bool,
     canvasSize: CGSize,
-    @ViewBuilder touchUpdates: @escaping TouchUpdates
+    touchUpdates: @escaping TouchUpdates
   ) {
     self.showIndicators = showIndicators
     self.canvasSize = canvasSize
@@ -27,10 +27,13 @@ public struct TrackpadTouchesModifier: ViewModifier {
       content
       if showIndicators {
         TouchIndicatorsView(touches: localTouches, canvasSize: canvasSize)
+          
       }
       TrackpadTouchesView { touches, pressure in
         self.localTouches = touches
         touchUpdates(touches, pressure)
+        //        if let touchUpdates {
+        //        }
       }
     }
   }
@@ -39,45 +42,44 @@ extension View {
   public func touches(
     showIndicators: Bool = true,
     canvasSize: CGSize,
-    @ViewBuilder touchUpdates: @escaping TouchUpdates
+    touchUpdates: @escaping TouchUpdates
   ) -> some View {
-    self.modifier(TrackpadTouchesModifier(
-      showIndicators: showIndicators,
-      canvasSize: canvasSize,
-      touchUpdates: touchUpdates
-    ))
+    self.modifier(
+      TrackpadTouchesModifier(
+        showIndicators: showIndicators,
+        canvasSize: canvasSize,
+        touchUpdates: touchUpdates
+      ))
   }
 }
 
-public struct TouchesView<Content: View>: View {
-  @State private var touches: Set<TouchPoint> = []
-
-  public typealias Touches = (Set<TouchPoint>) -> Content
-
-  let showIndicators: Bool
-  let canvasSize: CGSize
-  let content: Touches
-
-  public init(
-    showIndicators: Bool = true,
-    canvasSize: CGSize,
-    @ViewBuilder content: @escaping Touches,
-  ) {
-    self.showIndicators = showIndicators
-    self.canvasSize = canvasSize
-    self.content = content
-  }
-
-  public var body: some View {
-
-    ZStack {
-      content(touches)
-      TouchIndicatorsView(touches: touches, canvasSize: canvasSize)
-      TrackpadTouchesView { touches in
-        self.touches = touches
-      } onPressureUpdate: { pressure in
-        // Nothing for now
-      }
-    }
-  }
-}
+//public struct TouchesView<Content: View>: View {
+//  @State private var touches: Set<TouchPoint> = []
+//
+//  public typealias Touches = (Set<TouchPoint>) -> Content
+//
+//  let showIndicators: Bool
+//  let canvasSize: CGSize
+//  let content: Touches
+//
+//  public init(
+//    showIndicators: Bool = true,
+//    canvasSize: CGSize,
+//    @ViewBuilder content: @escaping Touches,
+//  ) {
+//    self.showIndicators = showIndicators
+//    self.canvasSize = canvasSize
+//    self.content = content
+//  }
+//
+//  public var body: some View {
+//
+//    ZStack {
+//      content(touches)
+//      TouchIndicatorsView(touches: touches, canvasSize: canvasSize)
+//      TrackpadTouchesView { touches, pressure in
+//        self.touches = touches
+//      }
+//    }
+//  }
+//}

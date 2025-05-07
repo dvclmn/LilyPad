@@ -19,7 +19,10 @@ public struct TouchIndicatorsView: View {
         .frame(width: 40, height: 40)
         .position(touch.position.convertNormalisedToConcrete(in: canvasSize))
     }
-
+    .frame(
+      width: canvasSize.width,
+      height: canvasSize.height
+    )
 
   }
 }

@@ -5,16 +5,16 @@
 //  Created by Dave Coleman on 7/5/2025.
 //
 
-import SwiftUI
 import BaseHelpers
+import SwiftUI
 
 public struct ZoomView<Content: View>: View {
-  
+
   @State private var store = ZoomHandler()
-  
+
   let canvasSize: CGSize
   let content: Content
-  
+
   public init(
     canvasSize: CGSize,
     @ViewBuilder content: @escaping () -> Content
@@ -22,30 +22,28 @@ public struct ZoomView<Content: View>: View {
     self.canvasSize = canvasSize
     self.content = content()
   }
-  
+
   public var body: some View {
-    
+
     ZStack {
-    
+
       content
         .touches(canvasSize: canvasSize) { touches, pressure in
           return print(touches)
         }
-      
-//      TrackpadTouchesView { touches, pressure in
-        
-//        store.touches = touches
-//        guard store.isInTouchMode else { return }
-//        
-//        if store.strokeHandler.touches != touches {
-//          store.strokeHandler.touches = touches
-//          store.strokeHandler.processTouchesIntoStrokes(config: store.preferences.strokeConfig)
+//        .overlay {
+//          Rectangle()
+//            .fill(.gray.opacity(0.2))
+//            .clipShape(.rect(cornerRadius: 20))
+//            .frame(
+//              width: canvasSize.width,
+//              height: canvasSize.height
+//            )
 //        }
-        
-//      }
+
     }
-    
-    
+
+
   }
 }
 #if DEBUG
@@ -59,4 +57,3 @@ public struct ZoomView<Content: View>: View {
   .background(.black.opacity(0.6))
 }
 #endif
-
