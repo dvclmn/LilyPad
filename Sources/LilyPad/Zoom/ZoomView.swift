@@ -79,7 +79,7 @@ extension ZoomView {
       return
     }
     
-    let newPositionPair = TouchPositions(touches: touches, positionType: .absolute)
+    let newPositionPair = TouchPositions(touches: touches, destinationSpace: store.viewportSize.toCGRect)
     
     if firstPositionPair == nil {
       firstPositionPair = newPositionPair
@@ -89,9 +89,9 @@ extension ZoomView {
 
     if let firstPair = firstPositionPair, let currentPair = currentPositionPair {
       
-      let delta = currentPair.mid - firstPair.mid
+      let delta = currentPair.midPoint(mapped: true) - firstPair.midPoint(mapped: true)
       
-      let scale = currentPair.distance / firstPair.distance
+      let scale = currentPair.distanceBetween(mapped: true) / firstPair.distanceBetween(mapped: true)
 //      let scaledStartMid = firstPair.mid * scale
 //      let offset = currentPair.mid - scaledStartMid
       

@@ -13,7 +13,9 @@ import BaseStyles
 public struct TouchIndicatorsView: View {
 
   let touches: Set<TouchPoint>
+  let isMapped: Bool
   let canvasSize: CGSize
+  
   public var body: some View {
 
     ForEach(Array(touches), id: \.id) { touch in
@@ -37,11 +39,21 @@ public struct TouchIndicatorsView: View {
 
   }
 }
+
+extension TouchIndicatorsView {
+  func touchPosition(touch: TouchPoint) -> CGPoint {
+    if isMapped {
+      return touch.position.mapPoint(to: <#T##CGRect#>)
+    }
+  }
+}
+
 #if DEBUG
 @available(macOS 15, iOS 18, *)
 #Preview(traits: .size(.normal)) {
   TouchIndicatorsView(
     touches: [],
+    isMapped: true,
     canvasSize: .init(width: 700, height: 600)
   )
 }

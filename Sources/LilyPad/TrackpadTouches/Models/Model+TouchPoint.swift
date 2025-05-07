@@ -7,6 +7,7 @@
 
 import Foundation
 import MemberwiseInit
+import BaseHelpers
 
 /// Velocity describes the motion between two sampled positions over time.
 /// We're storing a motion vector associated with a timestamped position sample.
@@ -46,6 +47,10 @@ public struct TouchPoint: Identifiable, Hashable, Codable {
 
   public var direction: CGFloat {
     return atan2(velocity.dy, velocity.dx)
+  }
+  
+  public func mapPoint(to destination: CGRect) -> CGPoint {
+    return self.position.mapPoint(to: destination, mode: .fill)
   }
 }
 

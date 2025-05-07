@@ -10,23 +10,26 @@ import SwiftUI
 public struct TrackpadTouchesModifier: ViewModifier {
   @State private var localTouches: Set<TouchPoint> = []
   let showIndicators: Bool
-  let canvasSize: CGSize
+  let mapToSize: CGSize
   let touchUpdates: TouchUpdates
 
   public init(
     showIndicators: Bool,
-    canvasSize: CGSize,
+    mapToSize: CGSize,
     touchUpdates: @escaping TouchUpdates
   ) {
     self.showIndicators = showIndicators
-    self.canvasSize = canvasSize
+    self.mapToSize = mapToSize
     self.touchUpdates = touchUpdates
   }
   public func body(content: Content) -> some View {
     ZStack {
       content
       if showIndicators {
-        TouchIndicatorsView(touches: localTouches, canvasSize: canvasSize)
+        TouchIndicatorsView(
+          touches: localTouches,
+          mapToSize: mapToSize
+        )
       }
       TrackpadTouchesView { touches, pressure in
         self.localTouches = touches
@@ -38,13 +41,14 @@ public struct TrackpadTouchesModifier: ViewModifier {
 extension View {
   public func touches(
     showIndicators: Bool = true,
+    isMapped: Bool = false,
     canvasSize: CGSize,
     touchUpdates: @escaping TouchUpdates
   ) -> some View {
     self.modifier(
       TrackpadTouchesModifier(
         showIndicators: showIndicators,
-        canvasSize: canvasSize,
+        mapToSize: mapToSize,
         touchUpdates: touchUpdates
       ))
   }
