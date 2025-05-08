@@ -12,16 +12,14 @@ import Foundation
 public class TrackpadTouchManager {
 
   var activeTouches: Set<NSTouch> = []
-  
+
   /// Dictionary to store the last known touch for each touch ID
   private var lastTouches: [Int: TouchPoint] = [:]
 
   var currentPressure: CGFloat = .zero
 
-  
   /// Process new touches and calculate velocity based on history
   public func processTouches(
-//    _ touches: Set<NSTouch>,
     timestamp: TimeInterval,
     in view: NSView
   ) -> Set<TouchPoint> {
@@ -53,7 +51,7 @@ public class TrackpadTouchManager {
     for endedId in endedIds {
       /// Clean up ended touches
       lastTouches.removeValue(forKey: endedId)
-//      touchHistories.removeValue(forKey: endedId)
+      //      touchHistories.removeValue(forKey: endedId)
     }
 
     return updatedTouches
@@ -87,26 +85,26 @@ public class TrackpadTouchManager {
   }
 
   /// Updates the history for a specific touch ID
-//  private func updateHistory(for touchId: Int, with touch: TouchPoint) {
-//    var history = touchHistories[touchId] ?? []
-//    history.append(touch)
-//
-//    /// Limit history length
-//    if history.count > maxHistoryLength {
-//      history.removeFirst()
-//    }
-//
-//    touchHistories[touchId] = history
-//  }
+  //  private func updateHistory(for touchId: Int, with touch: TouchPoint) {
+  //    var history = touchHistories[touchId] ?? []
+  //    history.append(touch)
+  //
+  //    /// Limit history length
+  //    if history.count > maxHistoryLength {
+  //      history.removeFirst()
+  //    }
+  //
+  //    touchHistories[touchId] = history
+  //  }
 
-//  /// Get the touch history for a specific ID
-//  public func history(for touchId: Int) -> [TouchPoint]? {
-//    return touchHistories[touchId]
-//  }
-//
-//  /// Clear all touch history
-//  public func clearHistory() {
-//    lastTouches.removeAll()
-//    touchHistories.removeAll()
-//  }
+  //  /// Get the touch history for a specific ID
+  //  public func history(for touchId: Int) -> [TouchPoint]? {
+  //    return touchHistories[touchId]
+  //  }
+  //
+  //  /// Clear all touch history
+  //  public func clearHistory() {
+  //    lastTouches.removeAll()
+  //    touchHistories.removeAll()
+  //  }
 }

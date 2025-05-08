@@ -22,14 +22,11 @@ public struct TrackpadTouchesView: NSViewRepresentable {
 
   /// Callback for touch updates
   private var onTouchesUpdate: TouchUpdates?
-//  private var onPressureUpdate: PressureUpdates?
 
   public init(
     onTouchesUpdate: TouchUpdates? = nil,
-//    onPressureUpdate: PressureUpdates? = nil,
   ) {
     self.onTouchesUpdate = onTouchesUpdate
-//    self.onPressureUpdate = onPressureUpdate
   }
 
   public func makeNSView(context: Context) -> TrackpadTouchesNSView {
@@ -53,16 +50,10 @@ public struct TrackpadTouchesView: NSViewRepresentable {
 
     public func touchesView(
       _ view: TrackpadTouchesNSView,
-      didUpdateTouches touches: Set<TouchPoint>,
-      didUpdatePhase phase: TrackpadGesturePhase,
-      didUpdatePressure pressure: CGFloat
+      didUpdate eventData: TouchEventData
     ) {
       DispatchQueue.main.async {
-        self.parent.onTouchesUpdate?(
-          touches,
-          phase,
-          pressure
-        )
+        self.parent.onTouchesUpdate?(eventData)
 //        self.parent.onPressureUpdate?(pressure)
       }
     }
