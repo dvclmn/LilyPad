@@ -37,10 +37,14 @@ public class TrackpadTouchesNSView: NSView {
   private func processPressure(_ pressure: Float) {
     let pressureAmount = CGFloat(pressure)
     
-    delegate?.touchesView(self, didUpdateTouches: [], didUpdatePressure: pressureAmount)
+    delegate?.touchesView(
+      self,
+      didUpdateTouches: [],
+      didUpdatePressure: pressureAmount
+    )
   }
 
-  private func processTouches(with event: NSEvent) {
+  private func processTouches(with event: NSEvent, phase: TrackpadGesturePhase) {
     
     /// Get all touching touches. `touching` matches the `began`, `moved`,
     /// or `stationary` phases of a touch.
@@ -65,13 +69,16 @@ public class TrackpadTouchesNSView: NSView {
 
   // MARK: - Touch Event Handlers
   public override func touchesBegan(with event: NSEvent) {
-    processTouches(with: event)
+    processTouches(with: event, phase: .began)
   }
   public override func touchesMoved(with event: NSEvent) {
-    processTouches(with: event)
+    processTouches(with: event, phase: .changed)
   }
   public override func touchesEnded(with event: NSEvent) {
-    processTouches(with: event)
+    processTouches(with: event, phase: .ended)
+  }
+  public override func touchesCancelled(with event: NSEvent) {
+    processTouches(with: event, phase: .cancelled)
   }
   
   public override func pressureChange(with event: NSEvent) {

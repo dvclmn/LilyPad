@@ -55,14 +55,14 @@ public struct ZoomView<Content: View>: View {
     }
     .midpointIndicator()
     .mouseLock(store.touches.count == 2)
-    .touches(mapToSize: store.viewportSize) { touches, pressure in
+    .touches { touches, pressure in
       
       store.touches = touches
       
       /// Pass the touches through to the recieving view
       touchUpdates(touches, pressure)
       
-      store.gestureState.update(touches: touches, phase: <#T##GesturePhase#>, in: <#T##CGRect#>)
+      store.gestureState.update(touches: touches, phase: TrackpadGesturePhase, in: <#T##CGRect#>)
       
 //      if touches.count == 2 {
 //        /// Gesture has just started
@@ -132,7 +132,7 @@ extension ZoomView {
 //  }
 }
 
-enum GesturePhase {
+public enum TrackpadGesturePhase {
   case began
   case changed
   case ended

@@ -21,7 +21,7 @@ struct PanGestureState: GestureTrackable {
   
   mutating func update(
     touches: Set<TouchPoint>,
-    phase: GesturePhase,
+    phase: TrackpadGesturePhase,
     in rect: CGRect,
   ) {
     

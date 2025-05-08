@@ -38,7 +38,7 @@ extension ZoomHandler {
     return offset + centred
   }
   
-  func panAmount(touches: Set<TouchPoint>, phase: GesturePhase) {
+  func panAmount(touches: Set<TouchPoint>, phase: TrackpadGesturePhase) {
     guard touches.count == 2 else {
       return
     }

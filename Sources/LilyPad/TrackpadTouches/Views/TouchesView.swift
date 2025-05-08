@@ -11,20 +11,15 @@ import BaseHelpers
 public struct TrackpadTouchesModifier: ViewModifier {
   @State private var viewSize: CGSize = .zero
   @State private var localTouches: Set<TouchPoint> = []
-  let showIndicators: Bool
   
-  /// Not sure if useful — this allowed the touch indicators to be mapped onto
-  /// specific dimensions, but wondering if this should be handled implicitly/consistently elswhere?
-//  let mapToSize: CGSize
+  let showIndicators: Bool
   let touchUpdates: TouchUpdates
 
   public init(
     showIndicators: Bool,
-//    mapToSize: CGSize,
     touchUpdates: @escaping TouchUpdates
   ) {
     self.showIndicators = showIndicators
-//    self.mapToSize = mapToSize
     self.touchUpdates = touchUpdates
   }
   public func body(content: Content) -> some View {

@@ -11,7 +11,7 @@ protocol GestureTrackable {
   var requiredTouchCount: Int { get }
   mutating func update(
     touches: Set<TouchPoint>,
-    phase: GesturePhase,
+    phase: TrackpadGesturePhase,
     in rect: CGRect,
   )
   var isActive: Bool { get }
@@ -35,7 +35,7 @@ struct TrackpadGestureState {
   
   mutating func update(
     touches: Set<TouchPoint>,
-    phase: GesturePhase,
+    phase: TrackpadGesturePhase,
     in rect: CGRect,
   ) {
     pan.update(
