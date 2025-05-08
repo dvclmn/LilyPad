@@ -41,7 +41,7 @@ struct PanGestureState: GestureTrackable {
         
         offset = lastPanAmount + delta
         
-      case .ended, .cancelled:
+      case .ended, .cancelled, .none:
         isActive = false
         startPositions = nil
     }

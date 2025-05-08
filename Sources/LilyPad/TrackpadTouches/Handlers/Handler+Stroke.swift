@@ -17,6 +17,7 @@ public struct StrokeHandler {
   public var mappingRect: CGRect = .zero
   public var eventData: TouchEventData = .initial
   
+  public var config = StrokeConfiguration()
   /// The number of fingers touching the trackpad
   /// Inadvertant touches may be made by a palm etc as well.
 //  public var touches: Set<TouchPoint> = []

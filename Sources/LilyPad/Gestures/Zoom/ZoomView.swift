@@ -73,8 +73,6 @@ ZoomToolbarView(store: store)
 @available(macOS 15, iOS 18, *)
 #Preview(traits: .size(.narrow)) {
   ZoomView(canvasSize: CGSize.init(width: 400, height: 300)) { event in
-    //
-  } content: {
     Text(TestStrings.paragraphs[5])
       .padding(40)
       .background(.purple.quinary)

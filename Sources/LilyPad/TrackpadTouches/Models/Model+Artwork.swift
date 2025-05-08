@@ -18,6 +18,5 @@ public struct Artwork: Codable, Equatable {
   /// a) Unopinionated about the qualities/parameters of the stroke, so just the skeleton
   /// b) Carry with it a little 'preset', so if desired, the visual intent can also be expressed
   public var config: StrokeConfiguration? = nil
-  
   public static let `default` = Artwork()
 }

@@ -9,12 +9,20 @@ import SwiftUI
 
 public struct DrawingView: View {
 //  @Environment(AppHandler.self) private var store
-  @State private var strokeHandler = StrokeHandler()
-  
+  @State private var store = StrokeHandler()
+    
   let eventData: TouchEventData
+  let canvasSize: CGSize
+  let config: StrokeConfiguration
   
-  public init(eventData: TouchEventData) {
+  public init(
+    eventData: TouchEventData,
+    canvasSize: CGSize,
+    config: StrokeConfiguration
+  ) {
     self.eventData = eventData
+    self.canvasSize = canvasSize
+    self.config = config
   }
   public var body: some View {
     
@@ -28,11 +36,11 @@ public struct DrawingView: View {
         
         /// Draw all strokes
         
-        for stroke in store.strokeHandler.allStrokes {
+        for stroke in store.allStrokes {
           
-          store.strokeHandler.engine.drawStroke(
+          store.engine.drawStroke(
             stroke,
-            config: store.preferences.strokeConfig,
+            config: store.config,
             in: context
           )
           
@@ -46,10 +54,13 @@ public struct DrawingView: View {
       .clipShape(.rect(cornerRadius: 20))
     }
     .frame(
-      width: AppHandler.trackPadSize.width,
-      height: AppHandler.trackPadSize.height
+      width: canvasSize.width,
+      height: canvasSize.height
     )
     .allowsHitTesting(false)
+    .task(id: config) {
+      store.config = config
+    }
     
     
     

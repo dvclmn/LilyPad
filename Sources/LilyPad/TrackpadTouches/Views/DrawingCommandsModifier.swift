@@ -35,7 +35,30 @@ public enum DrawingCommand {
   }
 }
 
-
+/// Example usage in a view:
+///
+/// ```
+/// struct DrawingView: View, DrawingCommandHandler {
+///     @StateObject private var viewModel = DrawingViewModel()
+///
+///     var body: some View {
+///         Canvas { context, size in
+///             // Drawing code
+///         }
+///         .drawingCommands(handler: self)
+///     }
+///
+///     // Implement the command handler protocol
+///     func handleCommand(_ command: DrawingCommand) {
+///         switch command {
+///         case .lockPointer:
+///             viewModel.isPointerLocked.toggle()
+///         case .clearCanvas:
+///             viewModel.clearStrokes()
+///         }
+///     }
+/// }
+/// ```
 public struct DrawingCommandsModifier: ViewModifier {
 
   let commandHandler: DrawingCommandHandler
@@ -58,22 +81,16 @@ public struct DrawingCommandsModifier: ViewModifier {
 }
 extension DrawingCommandsModifier {
   private func handleKeyPress(_ key: KeyEquivalent) -> KeyPress.Result {
-    switch key {
-      case "a":
-        store.isPointerLocked.toggle()
-        return .handled
-        
-      case "c":
-        store.clearStrokes()
-        return .handled
-        
-      default: return .ignored
+    if let command = DrawingCommand.fromKey(key) {
+      commandHandler.handleCommand(command)
+      return .handled
     }
+    return .ignored
   }
 }
 extension View {
-  public func drawingCommands() -> some View {
-    self.modifier(DrawingCommandsModifier())
+  public func drawingCommands(handler: DrawingCommandHandler) -> some View {
+    self.modifier(DrawingCommandsModifier(commandHandler: handler))
   }
 }
 

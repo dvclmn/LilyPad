@@ -82,7 +82,7 @@ extension TouchPoint: CustomStringConvertible {
       - Position: \(position.displayString)
       - Timestamp: \(timestamp.displayString)
       - Velocity: \(velocity.displayString)
-      - Pressure: \(pressure?.displayString ?? "—")
+      - Pressure: \(pressure.displayString)
     """
   }
 }

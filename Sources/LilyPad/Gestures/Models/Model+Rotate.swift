@@ -20,17 +20,17 @@ struct RotateGestureState: GestureTrackable {
     
     let currentAngle = positions.angle
     
-    switch phase {
+    switch event.phase {
       case .began:
         startAngle = currentAngle
         angle = 1.0
         isActive = true
         
-      case .changed:
+      case .moved:
         if let start = startAngle {
           angle = currentAngle / start
         }
-      case .ended, .cancelled:
+      case .ended, .cancelled, .none:
         isActive = false
         startAngle = nil
     }

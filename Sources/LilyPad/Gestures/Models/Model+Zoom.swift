@@ -20,16 +20,16 @@ struct ZoomGestureState: GestureTrackable {
     
     let currentDistance = positions.distanceBetween
     
-    switch phase {
+    switch event.phase {
       case .began:
         startDistance = currentDistance
         scale = 1.0
         isActive = true
-      case .changed:
+      case .moved:
         if let start = startDistance {
           scale = currentDistance / start
         }
-      case .ended, .cancelled:
+      case .ended, .cancelled, .none:
         isActive = false
         startDistance = nil
     }
