@@ -8,51 +8,50 @@
 import SwiftUI
 
 public struct DrawingView: View {
-//  @Environment(AppHandler.self) private var store
+  //  @Environment(AppHandler.self) private var store
   @State private var store = StrokeHandler()
-    
+
+  public typealias ArtworkUpdate = (Artwork) async -> Void
+
   let eventData: TouchEventData
   let canvasSize: CGSize
   let config: StrokeConfiguration
-  
+  var onArtworkUpdate: ArtworkUpdate
+
   public init(
     eventData: TouchEventData,
     canvasSize: CGSize,
-    config: StrokeConfiguration
+    config: StrokeConfiguration,
+    onArtworkUpdate: @escaping ArtworkUpdate
   ) {
     self.eventData = eventData
     self.canvasSize = canvasSize
     self.config = config
+    self.onArtworkUpdate = onArtworkUpdate
   }
   public var body: some View {
-    
-    ZStack {
-      
-      //      TouchIndicatorsView()
-      
-      Canvas {
-        context,
-        _ in
-        
-        /// Draw all strokes
-        
-        for stroke in store.allStrokes {
-          
-          store.engine.drawStroke(
-            stroke,
-            config: store.config,
-            in: context
-          )
-          
-          /// Shows location of points and handles
-          //          context.debugPath(path: basePath)
-          
-        }  // END stroke loop
-      }
-      .background(.gray.opacity(0.2))
-      
-      .clipShape(.rect(cornerRadius: 20))
+
+    Canvas {
+      context,
+      _ in
+
+      /// Draw all strokes
+
+      for stroke in store.allStrokes {
+
+        store.engine.drawStroke(
+          stroke,
+          config: store.config,
+          in: context
+        )
+
+        /// Shows location of points and handles
+        //          context.debugPath(path: basePath)
+
+      }  // END stroke loop
     }
+    .background(.gray.opacity(0.2))
+    .clipShape(.rect(cornerRadius: 20))
     .frame(
       width: canvasSize.width,
       height: canvasSize.height
@@ -62,15 +61,17 @@ public struct DrawingView: View {
       store.config = config
     }
     
-    
-    
-    
+    .task(id: store.artwork) {
+      onArtworkUpdate(store.artwork)
+    }
+
+
   }
 }
 
 extension DrawingView {
-  
-  
+
+
   //  func renderStrokes(
   //    points: [CGPoint],
   //    widths: inout [CGFloat],
@@ -136,23 +137,23 @@ extension DrawingView {
   //      context.fill(path, with: .color(.purple))
   //    }
   //  }
-  
-//  func renderBasicStrokes(
-//    points: [CGPoint],
-//    widths: [CGFloat],
-//    context: inout GraphicsContext
-//  ) {
-//    /// THIS WORKS
-//    for point in points {
-//      let debugCircle = Path(ellipseIn: CGRect(origin: point, size: CGSize(width: 2, height: 2)))
-//      context.fill(debugCircle, with: .color(.purple))
-//    }
-//  }
+
+  //  func renderBasicStrokes(
+  //    points: [CGPoint],
+  //    widths: [CGFloat],
+  //    context: inout GraphicsContext
+  //  ) {
+  //    /// THIS WORKS
+  //    for point in points {
+  //      let debugCircle = Path(ellipseIn: CGRect(origin: point, size: CGSize(width: 2, height: 2)))
+  //      context.fill(debugCircle, with: .color(.purple))
+  //    }
+  //  }
 }
 //#if DEBUG
 //@available(macOS 15, iOS 18, *)
 //#Preview(traits: .size(.normal)) {
-//  
+//
 //  CanvasView()
 //    .environment(AppHandler())
 //}
