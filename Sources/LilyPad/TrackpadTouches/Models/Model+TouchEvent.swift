@@ -20,3 +20,15 @@ public struct TouchEventData: Sendable, Equatable {
     timestamp: .zero
   )
 }
+extension TouchEventData: CustomStringConvertible {
+  public var description: String {
+    """
+    TouchEventData
+      - Touches: \(touches)
+      - Phase: \(phase.rawValue)
+      - Pressure: \(pressure.displayString)
+      - Timestamp: \(timestamp.displayString)
+    """
+  }
+}
+

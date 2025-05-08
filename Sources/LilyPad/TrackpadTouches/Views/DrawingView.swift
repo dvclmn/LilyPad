@@ -59,9 +59,14 @@ public struct DrawingView: View {
       )
       .allowsHitTesting(false)
       .task(id: eventData) {
-
         Task { @MainActor in
-          guard store.isInTouchMode else { return }
+          
+          guard store.isInTouchMode else {
+            print("Not in touch mode, not processing eventData, as it's not required for drawing.")
+            return
+          }
+          
+          print("Event Data received: \(eventData)")
           if store.strokeHandler.eventData != eventData {
             store.strokeHandler.eventData = eventData
             store.strokeHandler.processTouchesIntoStrokes()

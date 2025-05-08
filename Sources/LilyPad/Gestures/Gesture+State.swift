@@ -21,7 +21,7 @@ struct MappingSpaces {
   var viewport: CGRect
 }
 
-public enum TrackpadGesturePhase: Sendable, Equatable {
+public enum TrackpadGesturePhase: String, Sendable, Equatable {
   case none
   case began
   case moved
@@ -39,6 +39,7 @@ struct TrackpadGestureState {
   var mappingRect: CGRect = .zero
 
   mutating func update(event: TouchEventData, in rect: CGRect) {
+    print("Updated gesture state")
     pan.update(event: event, in: rect)
     zoom.update(event: event, in: rect)
     rotation.update(event: event, in: rect)

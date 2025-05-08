@@ -18,11 +18,11 @@ public struct ZoomView<Content: View>: View {
   let scaleThresholdDistance: CGFloat = 10
 
   let canvasSize: CGSize
-  let content: Output
+  let content: Output?
 
   public init(
     canvasSize: CGSize,
-    @ViewBuilder content: @escaping Output
+    @ViewBuilder content: Output?
   ) {
     self.canvasSize = canvasSize
     self.content = content
@@ -40,7 +40,7 @@ public struct ZoomView<Content: View>: View {
     GeometryReader { proxy in
       #warning("`.mouseLock(store.eventData.touches.count == 2)` will need to be based on better metrics than this")
 
-      content(store.eventData)
+      content( store.eventData)
         //      Rectangle()
         //        .fill(.white.opacity(0.1))
         .midpointIndicator()
@@ -56,10 +56,12 @@ public struct ZoomView<Content: View>: View {
 
     .mouseLock(store.eventData.touches.count == 2)
     
-    .touches(viewSize: store.viewportSize) { event in
-      store.eventData = event
+    .touches(viewSize: store.viewportSize) { eventData in
+      
+      print("Event Data received from `TrackpadTouchesModifier`: \(eventData)")
+      store.eventData = eventData
       store.gestureState.update(
-        event: event,
+        event: eventData,
         in: store.viewportSize.toCGRect
       )
     }
