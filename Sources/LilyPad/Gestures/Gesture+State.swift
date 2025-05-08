@@ -16,7 +16,7 @@ protocol GestureTrackable: Sendable, Equatable, Hashable {
   mutating func update(
     event: TouchEventData,
     in rect: CGRect,
-  ) -> GestureValue
+  )
 }
 
 

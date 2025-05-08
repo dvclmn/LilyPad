@@ -13,11 +13,11 @@ final class ZoomHandler {
 //  var touches: Set<TouchPoint> = []
   var eventData: TouchEventData = .initial
   
-  var panOffset: CGPoint = .zero
+//  var panOffset: CGPoint = .zero
 //  var zoomScale: CGFloat = 1.0
 //  var rotationAngle: CGFloat = .zero
 //  var gestureState = TrackpadGestureState()
-//  var panState = PanGestureState()
+  var panState = PanGestureState()
   
 //  var offset: CGPoint = .zero
   var startPositions: TouchPositions?
@@ -43,51 +43,10 @@ final class ZoomHandler {
 
 extension ZoomHandler {
   
-  func updatePan(event: TouchEventData, in rect: CGRect) {
+//  func updatePan(event: TouchEventData, in rect: CGRect) {
     
-    print("Let's update the pan")
-    guard event.touches.count == 2 else {
-      print("PanGesture requires exactly 2 touches")
-      return
-    }
-    let positions = TouchPositions.mapped(from: event.touches, to: rect)
-    
-    switch event.phase {
-      case .began:
-        print("Phase: `began`")
-        startPositions = positions
-        //        offset = .zero
-        isPanActive = true
-//        return lastPanAmount
-        
-      case .moved:
-        print("Phase: `moved`")
-        guard let start = startPositions else {
-          print("PanGesture: No value found for `startPositions`")
-          return
-        }
-        
-        let delta = positions.midPoint - start.midPoint
-        //        let deltaDistance = abs(positions.distanceBetween - start.distanceBetween)
-        
-        //        if deltaDistance > zoomThreshold {
-        //          let scaleChange = currentPair.distanceBetween / start.distanceBetween
-        //          store.scale = lastScale * scaleChange
-        //        } else {
-        //          // Don't update scale if zoom motion is below threshold
-        //          store.scale = lastScale
-        //        }
-        
-        let result = lastPanAmount + delta
-        panOffset = result
-        
-      case .ended, .cancelled, .none:
-        print("Phase: `ended`, `cancelled` or `none`")
-        lastPanAmount = panOffset
-        isPanActive = false
-        startPositions = nil
-    }
-  }
+   
+//  }
   
 //  func updateGesture(event: TouchEventData, in rect: CGRect) {
 //    print("Updated gesture state")
@@ -103,7 +62,8 @@ extension ZoomHandler {
 //    let canvasMidPoint = canvasSize.midpoint
     
     let centred = viewportMidPoint
-    return panOffset + centred
+    return panState.offset
+    + centred
   }
   
 //  func panAmount(touches: Set<TouchPoint>, phase: TrackpadGesturePhase) {

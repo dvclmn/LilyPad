@@ -17,7 +17,7 @@ public struct ZoomToolbarView: ToolbarContent {
       HStack {
         LabeledContent("Viewport", value: store.viewportSize.displayString(decimalPlaces: 0))
         Divider()
-        LabeledContent("Pan", value: store.panOffset.displayString(style: .full))
+        LabeledContent("Pan", value: store.panState.offset.displayString(style: .full))
 //        Divider()
 //        LabeledContent("Zoom", value: store.zoomScale.displayString)
       }
@@ -25,7 +25,7 @@ public struct ZoomToolbarView: ToolbarContent {
       .font(.callout)
       .monospacedDigit()
       Button {
-        store.panOffset = .zero
+        store.panState.offset = .zero
 //        store.offset = .zero
       } label: {
         Label("Reset pan", systemImage: "hand.draw")

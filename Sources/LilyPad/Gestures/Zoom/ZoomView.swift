@@ -69,7 +69,7 @@ public struct ZoomView<Content: View>: View {
       } else {
 //        print("Event Data (for Gesture purposes) received from `TrackpadTouchesModifier`: \(eventData)")
         store.eventData = eventData
-        store.updatePan(
+        store.panState.update(
           event: eventData,
           in: store.viewportSize.toCGRect
         )
