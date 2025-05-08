@@ -29,7 +29,6 @@ public struct Artwork: Codable, Equatable {
 public struct StrokeHandler {
 
   public var engine = StrokeEngine()
-
   public var artwork = Artwork()
   
   /// The number of fingers touching the trackpad

@@ -22,6 +22,7 @@ struct MappingSpaces {
 }
 
 public enum TrackpadGesturePhase {
+  case none
   case began
   case moved
   case ended

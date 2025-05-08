@@ -11,28 +11,24 @@ import SwiftUI
 
 public struct ZoomView<Content: View>: View {
 
+  public typealias Output = (TouchEventData) -> Content
+  
   @State private var store = ZoomHandler()
-
-//  @State private var firstPositionPair: TouchPositions?
-//  @State private var currentPositionPair: TouchPositions?
-  
-  
-
   let zoomThreshold: CGFloat = 40
   let scaleThresholdDistance: CGFloat = 10
 
   let canvasSize: CGSize
-  let touchUpdates: TouchUpdates
-  let content: Content
+//  let touchUpdates: TouchUpdates
+  let content: Output
 
   public init(
     canvasSize: CGSize,
-    touchUpdates: @escaping TouchUpdates,
-    @ViewBuilder content: @escaping () -> Content
+//    touchUpdates: @escaping TouchUpdates,
+    @ViewBuilder content: @escaping Output
   ) {
     self.canvasSize = canvasSize
-    self.touchUpdates = touchUpdates
-    self.content = content()
+//    self.touchUpdates = touchUpdates
+    self.content = content
   }
 
   public var body: some View {
@@ -40,8 +36,9 @@ public struct ZoomView<Content: View>: View {
     /// Using `GeometryReader` to kind 'reset' everything to be full width,
     /// full height, and top leading.
     GeometryReader { proxy in
+#warning("`.mouseLock(store.eventData.touches.count == 2)` will need to be based on better metrics than this")
 
-      content
+      content(store.eventData)
         //      Rectangle()
         //        .fill(.white.opacity(0.1))
         .midpointIndicator()
@@ -54,50 +51,17 @@ public struct ZoomView<Content: View>: View {
         }
     }
     .midpointIndicator()
-    .mouseLock(store.touches.count == 2)
+    
+    .mouseLock(store.eventData.touches.count == 2)
     .touches { event in
-      
-      store.touches = event.touches
-      
-      /// Pass the touches through to the recieving view
-      touchUpdates(event)
-      
+      store.eventData = event
       store.gestureState.update(
         event: event,
         in: store.viewportSize.toCGRect
       )
-      
-//      if touches.count == 2 {
-//        /// Gesture has just started
-//        if !panGestureInProgress {
-//          panGestureInProgress = true
-//          panAmount(touches: touches, phase: .began)
-//        } else {
-//          /// Gesture is ongoing
-//          panAmount(touches: touches, phase: .changed)
-//        }
-//      } else if panGestureInProgress {
-//        /// Gesture ended or cancelled (fingers lifted)
-//        panGestureInProgress = false
-//        panAmount(touches: touches, phase: .ended)
-//      }
-
-
     }
     .toolbar {
-      HStack {
-        LabeledContent("Viewport", value: store.viewportSize.displayString(decimalPlaces: 0))
-        Divider()
-        LabeledContent("Pan", value: store.offset.displayString(style: .full))
-      }
-      .foregroundStyle(.tertiary)
-      .font(.callout)
-      .monospacedDigit()
-      Button {
-        store.offset = .zero
-      } label: {
-        Label("Reset pan", systemImage: "hand.draw")
-      }
+
     }
     .task(id: canvasSize) {
       store.canvasSize = canvasSize
@@ -140,7 +104,7 @@ extension ZoomView {
 #if DEBUG
 @available(macOS 15, iOS 18, *)
 #Preview(traits: .size(.narrow)) {
-  ZoomView(canvasSize: CGSize.init(width: 400, height: 300)) { touches, pressure in
+  ZoomView(canvasSize: CGSize.init(width: 400, height: 300)) { event in
     //
   } content: {
     Text(TestStrings.paragraphs[5])

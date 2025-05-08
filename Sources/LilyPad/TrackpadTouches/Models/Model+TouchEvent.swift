@@ -12,4 +12,11 @@ public struct TouchEventData {
   let phase: TrackpadGesturePhase
   let pressure: CGFloat
   let timestamp: TimeInterval
+  
+  public static let initial = TouchEventData(
+    touches: [],
+    phase: .none,
+    pressure: .zero,
+    timestamp: .zero
+  )
 }
