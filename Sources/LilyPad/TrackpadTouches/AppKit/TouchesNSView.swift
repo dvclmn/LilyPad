@@ -34,25 +34,7 @@ public class TrackpadTouchesNSView: NSView {
 
   }
   
-  private func processPressure(_ pressure: Float) {
-    let pressureAmount = CGFloat(pressure)
-    
-    delegate?.touchesView(
-      self,
-      didUpdateTouches: [],
-      didUpdatePressure: pressureAmount
-    )
-  }
-
   private func processTouches(with event: NSEvent, phase: TrackpadGesturePhase) {
-    
-    /// Get all touching touches. `touching` matches the `began`, `moved`,
-    /// or `stationary` phases of a touch.
-    /// Note: Using `end` sems to break things, so don't use that
-    guard event.type != .pressure else {
-      print("Pressure should be handled elsewhere, exiting early. Event details: \(event)")
-      return
-    }
 
     let touches = event.touches(matching: [.touching], in: self)
 
@@ -64,8 +46,15 @@ public class TrackpadTouchesNSView: NSView {
     )
 
     /// Forward via delegate
-    delegate?.touchesView(self, didUpdateTouches: trackpadTouches, didUpdatePressure: .zero)
+    delegate?.touchesView(self, didUpdateTouches: trackpadTouches)
+    delegate?.touchesView(self, didUpdatePhase: phase)
   }
+  
+  private func processPressure(_ pressure: Float) {
+    let pressureAmount = CGFloat(pressure)
+    delegate?.touchesView(self, didUpdatePressure: pressureAmount)
+  }
+
 
   // MARK: - Touch Event Handlers
   public override func touchesBegan(with event: NSEvent) {

@@ -11,13 +11,9 @@ import SwiftUI
 // MARK: - Delegate Protocol
 /// Protocol for receiving touch updates
 public protocol TrackpadTouchesDelegate: AnyObject {
-  /// Called when the set of touches changes
-  func touchesView(
-    _ view: TrackpadTouchesNSView,
-    didUpdateTouches touches: Set<TouchPoint>,
-    didUpdatePhase phase: TrackpadGesturePhase,
-    didUpdatePressure pressure: CGFloat
-  )
+  func touchesView(_ view: TrackpadTouchesNSView, didUpdateTouches touches: Set<TouchPoint>)
+  func touchesView(_ view: TrackpadTouchesNSView, didUpdatePhase phase: TrackpadGesturePhase)
+  func touchesView(_ view: TrackpadTouchesNSView, didUpdatePressure pressure: CGFloat)
 }
 
 public typealias TouchUpdates = (
@@ -25,8 +21,6 @@ public typealias TouchUpdates = (
   _ phase: TrackpadGesturePhase,
   _ pressure: CGFloat
 ) -> Void
-//public typealias TouchUpdates = (Set<TouchPoint>, CGFloat) -> Void
-//public typealias PressureUpdates = (CGFloat) -> Void
 
 // MARK: - SwiftUI Representable
 /// SwiftUI wrapper for the trackpad touches view
@@ -66,8 +60,6 @@ public struct TrackpadTouchesView: NSViewRepresentable {
     public func touchesView(
       _ view: TrackpadTouchesNSView,
       didUpdateTouches touches: Set<TouchPoint>,
-      didUpdatePhase phase: TrackpadGesturePhase,
-      didUpdatePressure pressure: CGFloat
     ) {
       DispatchQueue.main.async {
         self.parent.onTouchesUpdate?(
@@ -76,6 +68,32 @@ public struct TrackpadTouchesView: NSViewRepresentable {
           pressure
         )
 //        self.parent.onPressureUpdate?(pressure)
+      }
+    }
+    public func touchesView(
+      _ view: TrackpadTouchesNSView,
+      didUpdatePhase phase: TrackpadGesturePhase,
+    ) {
+      DispatchQueue.main.async {
+        self.parent.onTouchesUpdate?(
+          touches,
+          phase,
+          pressure
+        )
+        //        self.parent.onPressureUpdate?(pressure)
+      }
+    }
+    public func touchesView(
+      _ view: TrackpadTouchesNSView,
+      didUpdatePressure pressure: CGFloat
+    ) {
+      DispatchQueue.main.async {
+        self.parent.onTouchesUpdate?(
+          touches,
+          phase,
+          pressure
+        )
+        //        self.parent.onPressureUpdate?(pressure)
       }
     }
   }
