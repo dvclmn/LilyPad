@@ -8,16 +8,20 @@
 import Foundation
 
 struct ZoomGestureState: GestureTrackable {
+  typealias GestureValue = CGFloat
+  
   var scale: CGFloat = 1.0
   var startDistance: CGFloat?
   var isActive = false
-  
+  var defaultValue: GestureValue { .zero }
   let requiredTouchCount: Int = 2
   
-  mutating func update(event: TouchEventData, in rect: CGRect) {
-    guard event.touches.count == requiredTouchCount else { return }
+  mutating func update(event: TouchEventData, in rect: CGRect) -> GestureValue {
+    guard event.touches.count == requiredTouchCount else {
+      print("ZoomGesture requires exactly \(requiredTouchCount) touches")
+      return defaultValue
+    }
     let positions = TouchPositions.mapped(from: event.touches, to: rect)
-    
     let currentDistance = positions.distanceBetween
     
     switch event.phase {
@@ -25,13 +29,20 @@ struct ZoomGestureState: GestureTrackable {
         startDistance = currentDistance
         scale = 1.0
         isActive = true
+        return currentDistance
+        
       case .moved:
-        if let start = startDistance {
-          scale = currentDistance / start
+        
+        guard let start = startDistance else {
+          print("Not sure if this is right either shrinbus")
+          return defaultValue
         }
+        return currentDistance / start
+        
       case .ended, .cancelled, .none:
         isActive = false
         startDistance = nil
+        return defaultValue
     }
   }
 }

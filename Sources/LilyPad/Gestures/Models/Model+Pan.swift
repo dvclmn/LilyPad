@@ -9,11 +9,16 @@ import Foundation
 import BaseHelpers
 
 struct PanGestureState: GestureTrackable {
+  
+  typealias GestureValue = CGPoint
+  
   var offset: CGPoint = .zero
   var startPositions: TouchPositions?
 //  var lastPositions: TouchPositions?
   var lastPanAmount: CGPoint = .zero
   var isActive = false
+  
+  var defaultValue: GestureValue { .zero }
   
   var requiredTouchCount: Int { return 2 }
   
@@ -21,9 +26,14 @@ struct PanGestureState: GestureTrackable {
   /// for inertia-based panning?
 //  var lastVelocity: CGPoint
   
-  mutating func update(event: TouchEventData, in rect: CGRect) {
+  mutating func update(event: TouchEventData, in rect: CGRect) -> GestureValue {
     
-    guard event.touches.count == requiredTouchCount else { return }
+//    var newState = self
+    
+    guard event.touches.count == requiredTouchCount else {
+      print("PanGesture requires exactly \(requiredTouchCount) touches")
+      return .zero
+    }
     let positions = TouchPositions.mapped(from: event.touches, to: rect)
     
     switch event.phase {
@@ -32,19 +42,34 @@ struct PanGestureState: GestureTrackable {
 //        offset = .zero
         lastPanAmount = offset
         isActive = true
+        return lastPanAmount
         
       case .moved:
-        guard let start = startPositions else { return }
+        guard let start = startPositions else {
+          print("Not sure if this is right")
+          return defaultValue
+        }
         
         let delta = positions.midPoint - start.midPoint
-        let deltaDistance = abs(positions.distanceBetween - start.distanceBetween)
+//        let deltaDistance = abs(positions.distanceBetween - start.distanceBetween)
         
-        offset = lastPanAmount + delta
+//        if deltaDistance > zoomThreshold {
+          //          let scaleChange = currentPair.distanceBetween / start.distanceBetween
+          //          store.scale = lastScale * scaleChange
+          //        } else {
+          //          // Don't update scale if zoom motion is below threshold
+          //          store.scale = lastScale
+          //        }
+        
+        let result = lastPanAmount + delta
+        return result
         
       case .ended, .cancelled, .none:
         isActive = false
         startPositions = nil
+        return defaultValue
     }
+    
   }
 }
 

@@ -8,13 +8,18 @@
 import Foundation
 
 protocol GestureTrackable: Sendable, Equatable, Hashable {
+  associatedtype GestureValue
   var requiredTouchCount: Int { get }
+  var defaultValue: GestureValue { get }
+  var isActive: Bool { get }
+  
   mutating func update(
     event: TouchEventData,
     in rect: CGRect,
-  )
-  var isActive: Bool { get }
+  ) -> GestureValue
 }
+
+
 
 struct MappingSpaces {
   var canvas: CGRect

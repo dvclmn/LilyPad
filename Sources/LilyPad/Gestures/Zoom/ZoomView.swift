@@ -49,7 +49,7 @@ public struct ZoomView<Content: View>: View {
         //        .fill(.white.opacity(0.1))
         .midpointIndicator()
         .frame(width: store.canvasSize.width, height: store.canvasSize.height)
-        .scaleEffect(store.zoom.scale)
+        .scaleEffect(store.zoomScale)
         .position(store.canvasPosition)
         .drawingGroup()
         .task(id: proxy.size) {
