@@ -10,7 +10,7 @@ import Foundation
 protocol GestureTrackable {
   var requiredTouchCount: Int { get }
   mutating func update(
-    eventData: TouchEventData,
+    event: TouchEventData,
     in rect: CGRect,
   )
   var isActive: Bool { get }
@@ -37,10 +37,10 @@ struct TrackpadGestureState {
   /// The space to which touch points are mapped (e.g., canvas or viewport)
   var mappingRect: CGRect = .zero
 
-  mutating func update(eventData: TouchEventData, in rect: CGRect) {
-    pan.update(eventData: eventData, in: rect)
-    zoom.update(eventData: eventData, in: rect)
-    rotation.update(eventData: eventData, in: rect)
-    drawing.update(eventData: eventData, in: rect)
+  mutating func update(event: TouchEventData, in rect: CGRect) {
+    pan.update(event: event, in: rect)
+    zoom.update(event: event, in: rect)
+    rotation.update(event: event, in: rect)
+    drawing.update(event: event, in: rect)
   }
 }

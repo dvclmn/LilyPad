@@ -18,13 +18,13 @@ struct DrawingGestureState: GestureTrackable {
   // Track the previous touch for interpolation
   private var previousTouch: TouchPoint?
   
-  mutating func update(eventData: TouchEventData, in rect: CGRect) {
-    let touches = eventData.touches
-    let phase = eventData.phase
-    let pressure = eventData.pressure
+  mutating func update(event: TouchEventData, in rect: CGRect) {
+    let touches = event.touches
+    let phase = event.phase
+    let pressure = event.pressure
     
-    guard eventData.touches.count == requiredTouchCount else { return }
-    let positions = TouchPositions.mapped(from: eventData.touches, to: rect)
+    guard event.touches.count == requiredTouchCount else { return }
+    let positions = TouchPositions.mapped(from: event.touches, to: rect)
     
     //    guard touches.count == 1, let touch = touches.first else {
     //      if phase == .ended || phase == .cancelled {
