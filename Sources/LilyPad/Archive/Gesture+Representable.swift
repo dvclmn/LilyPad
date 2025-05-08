@@ -5,7 +5,7 @@
 //  Created by Dave Coleman on 26/11/2024.
 //
 
-import SwiftUI
+//import SwiftUI
 //
 //public struct TrackpadGestureView: NSViewRepresentable {
 //  

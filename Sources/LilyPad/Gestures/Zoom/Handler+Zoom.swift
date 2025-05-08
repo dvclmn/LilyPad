@@ -19,7 +19,7 @@ final class ZoomHandler {
 //  var gestureState = TrackpadGestureState()
 //  var panState = PanGestureState()
   
-  var offset: CGPoint = .zero
+//  var offset: CGPoint = .zero
   var startPositions: TouchPositions?
   var lastPanAmount: CGPoint = .zero
   var isPanActive = false
@@ -54,13 +54,14 @@ extension ZoomHandler {
     
     switch event.phase {
       case .began:
+        print("Phase: `began`")
         startPositions = positions
         //        offset = .zero
-        lastPanAmount = offset
         isPanActive = true
 //        return lastPanAmount
         
       case .moved:
+        print("Phase: `moved`")
         guard let start = startPositions else {
           print("PanGesture: No value found for `startPositions`")
           return
@@ -81,6 +82,8 @@ extension ZoomHandler {
         panOffset = result
         
       case .ended, .cancelled, .none:
+        print("Phase: `ended`, `cancelled` or `none`")
+        lastPanAmount = panOffset
         isPanActive = false
         startPositions = nil
     }
