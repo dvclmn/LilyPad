@@ -63,6 +63,8 @@ extension StrokeHandler {
   /// Process touch updates and update strokes
   public mutating func processTouchesIntoStrokes() {
 
+    print("Running the `StrokeHandler/processTouchesIntoStrokes` method...")
+    
     guard artwork.canvasSize != .zero else {
       print("Canvas size cannot be zero, skipping touch processing.")
       return

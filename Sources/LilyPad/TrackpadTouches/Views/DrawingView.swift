@@ -16,13 +16,13 @@ public struct DrawingView: View {
   //  let eventData: TouchEventData
   let canvasSize: CGSize
   let config: StrokeConfiguration
-  var onArtworkUpdate: ArtworkUpdate
+  var onArtworkUpdate: ArtworkUpdate?
 
   public init(
     //    eventData: TouchEventData,
     canvasSize: CGSize,
     config: StrokeConfiguration,
-    onArtworkUpdate: @escaping ArtworkUpdate
+    onArtworkUpdate: ArtworkUpdate? = nil
   ) {
     //    self.eventData = eventData
     self.canvasSize = canvasSize
@@ -70,12 +70,18 @@ public struct DrawingView: View {
       }
     }  // END zoom view
     .drawingCommands(handler: store)
+    
+    .overlay(alignment: .bottom) {
+      DrawingInfoBarView(store: store)
+    }
     .task(id: config) {
       store.strokeHandler.config = config
     }
 
     .task(id: store.strokeHandler.artwork) {
-      await onArtworkUpdate(store.strokeHandler.artwork)
+      if let onArtworkUpdate {
+        await onArtworkUpdate(store.strokeHandler.artwork)
+      }
     }
 
 
@@ -167,7 +173,7 @@ extension DrawingView {
 //@available(macOS 15, iOS 18, *)
 //#Preview(traits: .size(.normal)) {
 //
-//  CanvasView()
-//    .environment(AppHandler())
+//  DrawingView(canvasSize: CGSize(width: 300, height: 400), config: .init())
+////    .environment(AppHandler())
 //}
 //#endif

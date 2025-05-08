@@ -7,7 +7,9 @@
 
 import Foundation
 import Persistable
+import MemberwiseInit
 
+//@MemberwiseInit(.public)
 @Persistable
 public struct StrokeConfiguration: Hashable {
   /// Both used in `StrokeEngine/shouldAddPoint`
@@ -23,5 +25,4 @@ public struct StrokeConfiguration: Hashable {
   public var maxStrokeWidth: CGFloat = 100
   public var maxThinningSpeed: CGFloat = 3.0
   public var curveType: CatmullRomType = .chordal
-  
 }

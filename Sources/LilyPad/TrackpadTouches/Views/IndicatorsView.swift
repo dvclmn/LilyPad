@@ -31,6 +31,7 @@ public struct TouchIndicatorsView: View {
         }
         .position(touchPosition(touch))
     }
+    
     .frame(
       width: mappingRect.width,
       height: mappingRect.height

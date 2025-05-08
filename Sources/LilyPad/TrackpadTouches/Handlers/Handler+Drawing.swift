@@ -35,8 +35,11 @@ extension DrawingHandler {
   public func handleCommand(_ command: DrawingCommand) {
     switch command {
       case .lockPointer:
+        print("Ran `lockPointer` command")
         isPointerLocked.toggle()
+        
       case .clearCanvas:
+        print("Ran `clearCanvas` command")
         clearStrokes()
     }
   }

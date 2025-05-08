@@ -45,7 +45,7 @@ public struct ZoomView<Content: View>: View {
         //        .fill(.white.opacity(0.1))
         .midpointIndicator()
         .frame(width: store.canvasSize.width, height: store.canvasSize.height)
-        .scaleEffect(store.scale)
+        .scaleEffect(store.gestureState.zoom.scale)
         .position(store.canvasPosition)
         .drawingGroup()
         .task(id: proxy.size) {
@@ -55,7 +55,8 @@ public struct ZoomView<Content: View>: View {
     .midpointIndicator()
 
     .mouseLock(store.eventData.touches.count == 2)
-    .touches { event in
+    
+    .touches(viewSize: store.viewportSize) { event in
       store.eventData = event
       store.gestureState.update(
         event: event,

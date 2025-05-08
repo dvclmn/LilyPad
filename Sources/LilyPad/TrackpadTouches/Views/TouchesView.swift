@@ -9,19 +9,12 @@ import SwiftUI
 import BaseHelpers
 
 public struct TrackpadTouchesModifier: ViewModifier {
-  @State private var viewSize: CGSize = .zero
   @State private var localTouches: Set<TouchPoint> = []
   
   let showIndicators: Bool
+  let viewSize: CGSize
   let touchUpdates: TouchUpdates
 
-  public init(
-    showIndicators: Bool,
-    touchUpdates: @escaping TouchUpdates
-  ) {
-    self.showIndicators = showIndicators
-    self.touchUpdates = touchUpdates
-  }
   public func body(content: Content) -> some View {
     ZStack {
       content
@@ -36,19 +29,19 @@ public struct TrackpadTouchesModifier: ViewModifier {
         touchUpdates(events)
       }
     }
-    .viewSize { size in
-      self.viewSize = size
-    }
+    
   }
 }
 extension View {
   public func touches(
     showIndicators: Bool = true,
+    viewSize: CGSize,
     touchUpdates: @escaping TouchUpdates
   ) -> some View {
     self.modifier(
       TrackpadTouchesModifier(
         showIndicators: showIndicators,
+        viewSize: viewSize,
         touchUpdates: touchUpdates
       ))
   }

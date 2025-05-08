@@ -59,7 +59,9 @@ public enum DebugCounts: String, CaseIterable, Identifiable {
   case touches
   case points
 //  case pointsFiltered
-  case strokesActive
+  
+  /// This is always the same as number of touches
+//  case strokesActive
   case strokesCompleted
   
   public var id: String { rawValue }
@@ -68,8 +70,8 @@ public enum DebugCounts: String, CaseIterable, Identifiable {
       case .touches: "Touches"
       case .points: "Points"
 //      case .pointsFiltered: "Points (Filtered)"
-      case .strokesActive: "Strokes (Active)"
-      case .strokesCompleted: "Touches (Completed)"
+//      case .strokesActive: "Strokes (Active)"
+      case .strokesCompleted: "Strokes"
     }
   }
   
