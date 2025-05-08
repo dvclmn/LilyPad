@@ -60,31 +60,7 @@ public struct TrackpadTouchesView: NSViewRepresentable {
     public func touchesView(
       _ view: TrackpadTouchesNSView,
       didUpdateTouches touches: Set<TouchPoint>,
-    ) {
-      DispatchQueue.main.async {
-        self.parent.onTouchesUpdate?(
-          touches,
-          phase,
-          pressure
-        )
-//        self.parent.onPressureUpdate?(pressure)
-      }
-    }
-    public func touchesView(
-      _ view: TrackpadTouchesNSView,
       didUpdatePhase phase: TrackpadGesturePhase,
-    ) {
-      DispatchQueue.main.async {
-        self.parent.onTouchesUpdate?(
-          touches,
-          phase,
-          pressure
-        )
-        //        self.parent.onPressureUpdate?(pressure)
-      }
-    }
-    public func touchesView(
-      _ view: TrackpadTouchesNSView,
       didUpdatePressure pressure: CGFloat
     ) {
       DispatchQueue.main.async {
@@ -93,7 +69,7 @@ public struct TrackpadTouchesView: NSViewRepresentable {
           phase,
           pressure
         )
-        //        self.parent.onPressureUpdate?(pressure)
+//        self.parent.onPressureUpdate?(pressure)
       }
     }
   }

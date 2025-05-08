@@ -11,22 +11,26 @@ struct TouchPositions {
   var p1: CGPoint
   var p2: CGPoint
   
-  var destinationRect: CGRect
+  var mappingRect: CGRect
   
-  init(mappedP1: CGPoint, mappedP2: CGPoint, destinationRect: CGRect) {
+  init(mappedP1: CGPoint, mappedP2: CGPoint, mappingRect: CGRect) {
     self.p1 = mappedP1
     self.p2 = mappedP2
-    self.destinationRect = destinationRect
+    self.mappingRect = mappingRect
   }
   
-  static func mapped(from touches: Set<TouchPoint>, to destinationRect: CGRect) -> TouchPositions {
+  static func mapped(from touches: Set<TouchPoint>, to mappingRect: CGRect) -> TouchPositions {
     let touchesArray = Array(touches)
     precondition(touchesArray.count == 2, "Exactly 2 touches required")
     
-    let p1 = touchesArray[0].position.mapped(to: destinationRect)
-    let p2 = touchesArray[1].position.mapped(to: destinationRect)
+    let p1 = touchesArray[0].position.mapped(to: mappingRect)
+    let p2 = touchesArray[1].position.mapped(to: mappingRect)
     
-    return TouchPositions(mappedP1: p1, mappedP2: p2, destinationRect: destinationRect)
+    return TouchPositions(
+      mappedP1: p1,
+      mappedP2: p2,
+      mappingRect: mappingRect
+    )
   }
   
   var midPoint: CGPoint {
@@ -78,7 +82,7 @@ extension TouchPositions: CustomStringConvertible {
     TouchPositions
       - p1: \(p1.displayString)
       - p2: \(p2.displayString)
-      - Destination rect: \(destinationRect)
+      - Mapping rect: \(mappingRect)
       - Mid point: \(midPoint.displayString)
       - Angle: \(angle.displayString)
       - Distance: \(distanceBetween.displayString)
