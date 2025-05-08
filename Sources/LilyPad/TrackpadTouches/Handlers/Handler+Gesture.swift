@@ -51,24 +51,23 @@ struct GestureStateHandler {
 #warning(
         "Should try a callback here, that asks the conforming type (e.g. Zoom) to provide *it's* own way to calculate a delta"
         )
-        let delta = touchPositions.midPoint - start.midPoint
+        let deltaPan = touchPositions.midPoint - start.midPoint
         let deltaDistance = abs(touchPositions.distanceBetween - start.distanceBetween)
         
         if deltaDistance > zoomThreshold {
           let scaleChange = touchPositions.distanceBetween / start.distanceBetween
           
-          store.scale = lastScale * scaleChange
+          zoom = lastZoom * scaleChange
         } else {
           // Don't update scale if zoom motion is below threshold
-          store.scale = lastScale
+          zoom = lastZoom
         }
         
-        let result = lastValue + delta
-        value = result
+        pan = lastPan + deltaPan
         
       case .ended, .cancelled, .none:
         //        print("Phase: `ended`, `cancelled` or `none`")
-        lastValue = value
+        lastPan = pan
         startTouchPositions = nil
     }
     
