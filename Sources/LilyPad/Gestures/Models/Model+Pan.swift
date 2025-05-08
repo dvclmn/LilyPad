@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import BaseHelpers
 
 struct PanGestureState: GestureTrackable {
   var offset: CGPoint = .zero
@@ -25,7 +26,7 @@ struct PanGestureState: GestureTrackable {
   ) {
     
     guard touches.count == requiredTouchCount else { return }
-    let positions = TouchPositions.mapped(from: touches, to: destinationRect)
+    let positions = TouchPositions.mapped(from: touches, to: rect)
     
     switch phase {
       case .began:
@@ -34,7 +35,7 @@ struct PanGestureState: GestureTrackable {
         isActive = true
       case .changed:
         if let start = startPositions {
-          offset = touches.averagePoint() - start.averagePoint()
+          offset = positions.midPoint - start.midPoint
         }
       case .ended, .cancelled:
         isActive = false

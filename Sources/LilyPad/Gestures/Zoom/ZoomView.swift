@@ -62,20 +62,22 @@ public struct ZoomView<Content: View>: View {
       /// Pass the touches through to the recieving view
       touchUpdates(touches, pressure)
       
-      if touches.count == 2 {
-        /// Gesture has just started
-        if !panGestureInProgress {
-          panGestureInProgress = true
-          panAmount(touches: touches, phase: .began)
-        } else {
-          /// Gesture is ongoing
-          panAmount(touches: touches, phase: .changed)
-        }
-      } else if panGestureInProgress {
-        /// Gesture ended or cancelled (fingers lifted)
-        panGestureInProgress = false
-        panAmount(touches: touches, phase: .ended)
-      }
+      store.gestureState.update(touches: touches, phase: <#T##GesturePhase#>, in: <#T##CGRect#>)
+      
+//      if touches.count == 2 {
+//        /// Gesture has just started
+//        if !panGestureInProgress {
+//          panGestureInProgress = true
+//          panAmount(touches: touches, phase: .began)
+//        } else {
+//          /// Gesture is ongoing
+//          panAmount(touches: touches, phase: .changed)
+//        }
+//      } else if panGestureInProgress {
+//        /// Gesture ended or cancelled (fingers lifted)
+//        panGestureInProgress = false
+//        panAmount(touches: touches, phase: .ended)
+//      }
 
 
     }

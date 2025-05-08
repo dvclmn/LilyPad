@@ -20,7 +20,7 @@ struct ZoomGestureState: GestureTrackable {
     in rect: CGRect,
   ) {
     guard touches.count == requiredTouchCount else { return }
-    let positions = TouchPositions.mapped(from: touches, to: destinationRect)
+    let positions = TouchPositions.mapped(from: touches, to: rect)
     
     let currentDistance = positions.distanceBetween
     

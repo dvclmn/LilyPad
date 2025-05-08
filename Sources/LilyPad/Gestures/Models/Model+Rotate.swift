@@ -21,13 +21,13 @@ struct RotateGestureState: GestureTrackable {
 //    spaces: MappingSpaces
   ) {
     guard touches.count == requiredTouchCount else { return }
-    let positions = TouchPositions.mapped(from: touches, to: destinationRect)
+    let positions = TouchPositions.mapped(from: touches, to: rect)
     
-    let currentAngle = touches.angle
+    let currentAngle = positions.angle
     
     switch phase {
       case .began:
-        startDistance = currentAngle
+        startAngle = currentAngle
         angle = 1.0
         isActive = true
         

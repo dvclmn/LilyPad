@@ -12,6 +12,8 @@ import BaseHelpers
 final class ZoomHandler {
   var touches: Set<TouchPoint> = []
   
+  var gestureState = TrackpadGestureState()
+  
   var scale: CGFloat = 1
   var offset: CGPoint = .zero
   var canvasSize: CGSize = .zero

@@ -6,20 +6,25 @@
 //
 
 import SwiftUI
+import BaseHelpers
 
 public struct TrackpadTouchesModifier: ViewModifier {
+  @State private var viewSize: CGSize = .zero
   @State private var localTouches: Set<TouchPoint> = []
   let showIndicators: Bool
-  let mapToSize: CGSize
+  
+  /// Not sure if useful — this allowed the touch indicators to be mapped onto
+  /// specific dimensions, but wondering if this should be handled implicitly/consistently elswhere?
+//  let mapToSize: CGSize
   let touchUpdates: TouchUpdates
 
   public init(
     showIndicators: Bool,
-    mapToSize: CGSize,
+//    mapToSize: CGSize,
     touchUpdates: @escaping TouchUpdates
   ) {
     self.showIndicators = showIndicators
-    self.mapToSize = mapToSize
+//    self.mapToSize = mapToSize
     self.touchUpdates = touchUpdates
   }
   public func body(content: Content) -> some View {
@@ -28,7 +33,7 @@ public struct TrackpadTouchesModifier: ViewModifier {
       if showIndicators {
         TouchIndicatorsView(
           touches: localTouches,
-          mapToSize: mapToSize
+          mapToSize: viewSize
         )
       }
       TrackpadTouchesView { touches, pressure in
@@ -36,18 +41,19 @@ public struct TrackpadTouchesModifier: ViewModifier {
         touchUpdates(touches, pressure)
       }
     }
+    .viewSize { size in
+      self.viewSize = size
+    }
   }
 }
 extension View {
   public func touches(
     showIndicators: Bool = true,
-    mapToSize: CGSize,
     touchUpdates: @escaping TouchUpdates
   ) -> some View {
     self.modifier(
       TrackpadTouchesModifier(
         showIndicators: showIndicators,
-        mapToSize: mapToSize,
         touchUpdates: touchUpdates
       ))
   }
