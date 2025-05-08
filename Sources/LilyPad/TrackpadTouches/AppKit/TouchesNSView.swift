@@ -38,7 +38,7 @@ public class TrackpadTouchesNSView: NSView {
   ) {
     let touches = event.touches(matching: [.touching], in: self)
     touchManager.activeTouches = touches
-    let eventData = processTouches(phase: .moved, timestamp: event.timestamp)
+    let eventData = processTouches(phase: phase, timestamp: event.timestamp)
     delegate?.touchesView(self, didUpdate: eventData)
   }
 
