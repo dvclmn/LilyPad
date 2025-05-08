@@ -16,8 +16,9 @@ final class ZoomHandler {
 //  var panOffset: CGPoint = .zero
 //  var zoomScale: CGFloat = 1.0
 //  var rotationAngle: CGFloat = .zero
-//  var gestureState = TrackpadGestureState()
-  var panState = PanGestureState()
+  var gestureState = TrackpadGestureState()
+//  var panState = PanGestureState()
+//  var zoomState = ZoomGestureState()
   
 //  var offset: CGPoint = .zero
   var startPositions: TouchPositions?
@@ -62,7 +63,7 @@ extension ZoomHandler {
 //    let canvasMidPoint = canvasSize.midpoint
     
     let centred = viewportMidPoint
-    return panState.offset
+    return gestureState.pan.offset
     + centred
   }
   
