@@ -14,7 +14,7 @@ import BaseHelpers
 /// `velocity`: How fast the touch was moving when it arrived at `position`
 
 @MemberwiseInit(.public)
-public struct TouchPoint: Identifiable, Hashable, Codable {
+public struct TouchPoint: Identifiable, Sendable, Hashable, Equatable, Codable {
   public let id: Int
   
   /// This is normalised, comes from `NSTouch.normalizedPosition`

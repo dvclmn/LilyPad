@@ -42,7 +42,7 @@ public struct StrokeHandler {
   }
 
   public init(canvasSize: CGSize = .init(width: 700, height: 438)) {
-//    print("`StrokeHandler` created at \(Date.now.format(.timeDetailed))")
+    print("`StrokeHandler` created at \(Date.now.format(.timeDetailed))")
     artwork.canvasSize = canvasSize
   }
 }
@@ -61,9 +61,7 @@ extension StrokeHandler {
   }
   
   /// Process touch updates and update strokes
-  public mutating func processTouchesIntoStrokes(
-    config: StrokeConfiguration
-  ) {
+  public mutating func processTouchesIntoStrokes() {
 
     guard artwork.canvasSize != .zero else {
       print("Canvas size cannot be zero, skipping touch processing.")

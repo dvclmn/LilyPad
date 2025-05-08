@@ -42,12 +42,12 @@ public struct DrawingView: View {
           config: config,
           in: context
         )
-
         /// Shows location of points and handles
         //          context.debugPath(path: basePath)
 
       }  // END stroke loop
     }
+    .drawingCommands(handler: store)
     .background(.gray.opacity(0.2))
     .clipShape(.rect(cornerRadius: 20))
     .frame(
@@ -58,9 +58,17 @@ public struct DrawingView: View {
     .task(id: config) {
       store.strokeHandler.config = config
     }
-    
+
     .task(id: store.strokeHandler.artwork) {
       await onArtworkUpdate(store.strokeHandler.artwork)
+    }
+    .task(id: eventData) {
+
+      guard store.isInTouchMode else { return }
+      if store.strokeHandler.eventData != eventData {
+        store.strokeHandler.eventData = eventData
+        store.strokeHandler.processTouchesIntoStrokes()
+      }
     }
 
 

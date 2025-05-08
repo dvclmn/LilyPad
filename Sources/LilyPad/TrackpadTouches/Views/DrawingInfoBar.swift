@@ -67,7 +67,7 @@ extension DrawingInfoBarView {
   private func countsValue(_ item: DebugCounts) -> Int {
     switch item {
       case .touches:
-        store.strokeHandler.touches.count
+        store.strokeHandler.eventData.touches.count
       case .points:
         pointCount
         

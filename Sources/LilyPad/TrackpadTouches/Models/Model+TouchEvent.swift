@@ -7,7 +7,7 @@
 
 import AppKit
 
-public struct TouchEventData {
+public struct TouchEventData: Sendable, Equatable {
   let touches: Set<TouchPoint>
   let phase: TrackpadGesturePhase
   let pressure: CGFloat

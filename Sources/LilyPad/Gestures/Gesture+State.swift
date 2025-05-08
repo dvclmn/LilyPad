@@ -21,7 +21,7 @@ struct MappingSpaces {
   var viewport: CGRect
 }
 
-public enum TrackpadGesturePhase {
+public enum TrackpadGesturePhase: Sendable, Equatable {
   case none
   case began
   case moved
@@ -33,7 +33,7 @@ struct TrackpadGestureState {
   var pan = PanGestureState()
   var zoom = ZoomGestureState()
   var rotation = RotateGestureState()
-  var drawing = DrawingGestureState()
+//  var drawing = DrawingGestureState()
   
   /// The space to which touch points are mapped (e.g., canvas or viewport)
   var mappingRect: CGRect = .zero
@@ -42,6 +42,6 @@ struct TrackpadGestureState {
     pan.update(event: event, in: rect)
     zoom.update(event: event, in: rect)
     rotation.update(event: event, in: rect)
-    drawing.update(event: event, in: rect)
+//    drawing.update(event: event, in: rect)
   }
 }
