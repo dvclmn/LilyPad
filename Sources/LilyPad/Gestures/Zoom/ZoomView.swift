@@ -18,20 +18,19 @@ public struct ZoomView<Content: View>: View {
   let scaleThresholdDistance: CGFloat = 10
 
   let canvasSize: CGSize
-//  let touchUpdates: TouchUpdates
   let content: Output
 
   public init(
     canvasSize: CGSize,
-//    touchUpdates: @escaping TouchUpdates,
     @ViewBuilder content: @escaping Output
   ) {
     self.canvasSize = canvasSize
-//    self.touchUpdates = touchUpdates
     self.content = content
   }
 
   public var body: some View {
+    
+    @Bindable var store = store
 
     /// Using `GeometryReader` to kind 'reset' everything to be full width,
     /// full height, and top leading.
@@ -61,44 +60,13 @@ public struct ZoomView<Content: View>: View {
       )
     }
     .toolbar {
-
+ZoomToolbarView(store: store)
     }
     .task(id: canvasSize) {
       store.canvasSize = canvasSize
     }
   }
 }
-extension ZoomView {
-  
-  
-  
-//  func panAmount(touches: Set<TouchPoint>) {
-//    guard touches.count == 2 else {
-//      return
-//    }
-//
-//    let newPositionPair = TouchPositions.mapped(from: touches, to: store.viewportSize.toCGRect)
-////    let newPositionPair = TouchPositions(touches: touches, destinationRect: store.viewportSize.toCGRect)
-//
-//    if firstPositionPair == nil {
-//      firstPositionPair = newPositionPair
-//    }
-//    currentPositionPair = newPositionPair
-//
-//
-//    if let firstPair = firstPositionPair, let currentPair = currentPositionPair {
-//
-//      let delta = currentPair.midPoint - firstPair.midPoint
-//      let scale = currentPair.distanceBetween / firstPair.distanceBetween
-//      
-////      print("first")
-//
-//      store.offset = delta
-//      store.scale = scale
-//    }
-//  }
-}
-
 
 
 #if DEBUG

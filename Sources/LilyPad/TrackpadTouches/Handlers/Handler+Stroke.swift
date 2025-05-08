@@ -10,32 +10,17 @@ import SwiftUI
 import MemberwiseInit
 import BaseStyles
 
-
-
-@MemberwiseInit(.public)
-public struct Artwork: Codable, Equatable {
-  public var canvasSize: CGSize = .init(width: 700, height: 438)
-  public var completedStrokes: [TouchStroke] = []
-  
-  /// Still not sure about this — aim is that the Artwork can either be
-  /// a) Unopinionated about the qualities/parameters of the stroke, so just the skeleton
-  /// b) Carry with it a little 'preset', so if desired, the visual intent can also be expressed
-  public var config: StrokeConfiguration? = nil
-  
-  public static let `default` = Artwork()
-}
-
-
 public struct StrokeHandler {
 
   public var engine = StrokeEngine()
   public var artwork = Artwork()
+  public var mappingRect: CGRect = .zero
+  public var eventData: TouchEventData = .initial
   
   /// The number of fingers touching the trackpad
   /// Inadvertant touches may be made by a palm etc as well.
-  public var touches: Set<TouchPoint> = []
-  
-  public var currentPressure: CGFloat?
+//  public var touches: Set<TouchPoint> = []
+//  public var currentPressure: CGFloat?
   
   /// Active strokes being drawn, keyed by touch ID
   /// As I understand it, the item count for this is always
@@ -55,8 +40,8 @@ public struct StrokeHandler {
     artwork.canvasSize = size
   }
 
-  public init(canvasSize: CGSize) {
-    print("`StrokeHandler` created at \(Date.now.format(.timeDetailed))")
+  public init(canvasSize: CGSize = .init(width: 700, height: 438)) {
+//    print("`StrokeHandler` created at \(Date.now.format(.timeDetailed))")
     artwork.canvasSize = canvasSize
   }
 }
@@ -84,6 +69,8 @@ extension StrokeHandler {
       return
     }
 
+    let touches = eventData.touches
+    
     for touch in touches {
       handleTouch(touch, config: config)
     }
@@ -111,7 +98,7 @@ extension StrokeHandler {
   ) {
     
     let touchId = touch.id
-    let touchPosition = touch.position.convertNormalisedToConcrete(in: artwork.canvasSize)
+    let touchPosition = touch.position.convertNormalisedToConcrete(in: mappingRect.toCGSize)
     let timeStamp = touch.timestamp
     
     let strokePointPosition = TouchPoint(
@@ -120,7 +107,7 @@ extension StrokeHandler {
 //      positionAbsolute: touch.positionAbsolute,
       timestamp: timeStamp,
       velocity: touch.velocity,
-      pressure: currentPressure
+      pressure: touch.pressure
     )
     
     

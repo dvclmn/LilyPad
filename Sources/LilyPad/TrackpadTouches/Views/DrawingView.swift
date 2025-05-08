@@ -7,11 +7,15 @@
 
 import SwiftUI
 
-public struct CanvasView: View {
-  @Environment(AppHandler.self) private var store
+public struct DrawingView: View {
+//  @Environment(AppHandler.self) private var store
+  @State private var strokeHandler = StrokeHandler()
   
   let eventData: TouchEventData
   
+  public init(eventData: TouchEventData) {
+    self.eventData = eventData
+  }
   public var body: some View {
     
     ZStack {
@@ -48,10 +52,12 @@ public struct CanvasView: View {
     .allowsHitTesting(false)
     
     
+    
+    
   }
 }
 
-extension CanvasView {
+extension DrawingView {
   
   
   //  func renderStrokes(
@@ -120,23 +126,23 @@ extension CanvasView {
   //    }
   //  }
   
-  func renderBasicStrokes(
-    points: [CGPoint],
-    widths: [CGFloat],
-    context: inout GraphicsContext
-  ) {
-    /// THIS WORKS
-    for point in points {
-      let debugCircle = Path(ellipseIn: CGRect(origin: point, size: CGSize(width: 2, height: 2)))
-      context.fill(debugCircle, with: .color(.purple))
-    }
-  }
+//  func renderBasicStrokes(
+//    points: [CGPoint],
+//    widths: [CGFloat],
+//    context: inout GraphicsContext
+//  ) {
+//    /// THIS WORKS
+//    for point in points {
+//      let debugCircle = Path(ellipseIn: CGRect(origin: point, size: CGSize(width: 2, height: 2)))
+//      context.fill(debugCircle, with: .color(.purple))
+//    }
+//  }
 }
-#if DEBUG
-@available(macOS 15, iOS 18, *)
-#Preview(traits: .size(.normal)) {
-  
-  CanvasView()
-    .environment(AppHandler())
-}
-#endif
+//#if DEBUG
+//@available(macOS 15, iOS 18, *)
+//#Preview(traits: .size(.normal)) {
+//  
+//  CanvasView()
+//    .environment(AppHandler())
+//}
+//#endif

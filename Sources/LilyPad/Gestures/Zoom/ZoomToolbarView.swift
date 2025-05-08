@@ -9,20 +9,24 @@ import SwiftUI
 
 public struct ZoomToolbarView: ToolbarContent {
   
+  @Bindable var store: ZoomHandler
+  
   public var body: some ToolbarContent {
     
-    HStack {
-      LabeledContent("Viewport", value: store.viewportSize.displayString(decimalPlaces: 0))
-      Divider()
-      LabeledContent("Pan", value: store.offset.displayString(style: .full))
-    }
-    .foregroundStyle(.tertiary)
-    .font(.callout)
-    .monospacedDigit()
-    Button {
-      store.offset = .zero
-    } label: {
-      Label("Reset pan", systemImage: "hand.draw")
+    ToolbarItemGroup {
+      HStack {
+        LabeledContent("Viewport", value: store.viewportSize.displayString(decimalPlaces: 0))
+        Divider()
+        LabeledContent("Pan", value: store.offset.displayString(style: .full))
+      }
+      .foregroundStyle(.tertiary)
+      .font(.callout)
+      .monospacedDigit()
+      Button {
+        store.offset = .zero
+      } label: {
+        Label("Reset pan", systemImage: "hand.draw")
+      }
     }
     
   }
