@@ -18,6 +18,11 @@ final class ZoomHandler {
   
   var viewportSize: CGSize = .zero
   
+  var panGestureInProgress = false
+  var gestureStartPositions: TouchPositions?
+  var lastPanAmount: CGPoint = .zero
+  var lastScale: CGFloat = 1.0
+  
 }
 
 extension ZoomHandler {
@@ -36,7 +41,7 @@ extension ZoomHandler {
       return
     }
     
-    let currentPair = TouchPositions.mapped(from: touches, to: store.viewportSize.toCGRect)
+    let currentPair = TouchPositions.mapped(from: touches, to: viewportSize.toCGRect)
     
     switch phase {
       case .began:

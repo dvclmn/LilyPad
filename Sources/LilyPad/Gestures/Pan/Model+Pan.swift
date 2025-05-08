@@ -11,13 +11,21 @@ struct PanGestureState: GestureTrackable {
   var offset: CGPoint = .zero
   var startPositions: TouchPositions?
   var isActive = false
-  /// Not needed?
+  
+  let requiredTouchCount: Int = 2
+  
+  /// Not needed? May be useful to calculate some animation
+  /// for inertia-based panning?
 //  var lastVelocity: CGPoint
   
-  mutating func update(touches: TouchPositions, phase: GesturePhase) {
+  mutating func update(touches: Set<TouchPoint>, phase: GesturePhase) {
+    
+    guard touches.count == requiredTouchCount else { return }
+    let positions = TouchPositions.mapped(from: touches, to: destinationRect)
+    
     switch phase {
       case .began:
-        startPositions = touches
+        startPositions = positions
         offset = .zero
         isActive = true
       case .changed:

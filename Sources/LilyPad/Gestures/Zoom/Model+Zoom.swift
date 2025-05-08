@@ -7,13 +7,16 @@
 
 import Foundation
 
-struct ZoomGestureState: GestureTrackable {
+struct RotateGestureState: GestureTrackable {
   var angle: CGFloat
   var startAngle: CGFloat?
   var isActive = false
+  
+  let requiredTouchCount: Int = 2
 
-  mutating func update(touches: TouchPositions, phase: GesturePhase) {
-    guard touches.count == 2 else { return }
+  mutating func update(touches: Set<TouchPoint>, phase: GesturePhase) {
+    guard touches.count == requiredTouchCount else { return }
+    let positions = TouchPositions.mapped(from: touches, to: destinationRect)
     
     let currentAngle = touches.angle
     

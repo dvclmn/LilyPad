@@ -16,10 +16,7 @@ public struct ZoomView<Content: View>: View {
 //  @State private var firstPositionPair: TouchPositions?
 //  @State private var currentPositionPair: TouchPositions?
   
-  @State private var panGestureInProgress = false
-  @State private var gestureStartPositions: TouchPositions?
-  @State private var lastPanAmount: CGPoint = .zero
-  @State private var lastScale: CGFloat = 1.0
+  
 
   let zoomThreshold: CGFloat = 40
   let scaleThresholdDistance: CGFloat = 10

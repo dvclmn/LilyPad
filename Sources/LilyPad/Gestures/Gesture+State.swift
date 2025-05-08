@@ -8,7 +8,8 @@
 import Foundation
 
 protocol GestureTrackable {
-  mutating func update(touches: TouchPositions, phase: GesturePhase)
+  var requiredTouchCount: Int { get }
+  mutating func update(touches: Set<TouchPoint>, phase: GesturePhase)
   var isActive: Bool { get }
 }
 
@@ -17,6 +18,9 @@ struct TrackpadGestureState {
   var pan = PanGestureState()
   var zoom = ZoomGestureState()
   var rotation = RotationGestureState()
+  
+  var canvasSize: CGSize = .zero
+  var viewportSize: CGSize = .zero
   
   mutating func update(touches: TouchPositions, phase: GesturePhase) {
     pan.update(touches: touches, phase: phase)

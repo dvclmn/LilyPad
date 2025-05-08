@@ -5,15 +5,18 @@
 //  Created by Dave Coleman on 8/5/2025.
 //
 
-struct RotateGestureState: GestureTrackable {
+struct ZoomGestureState: GestureTrackable {
   var scale: CGFloat = 1.0
   var startDistance: CGFloat?
   var isActive = false
   
-  mutating func update(touches: TouchPositions, phase: GesturePhase) {
-    guard touches.count == 2 else { return }
+  let requiredTouchCount: Int = 2
+  
+  mutating func update(touches: Set<TouchPoint>, phase: GesturePhase) {
+    guard touches.count == requiredTouchCount else { return }
+    let positions = TouchPositions.mapped(from: touches, to: destinationRect)
     
-    let currentDistance = touches.distanceBetweenFirstTwo()
+    let currentDistance = positions.distanceBetween
     
     switch phase {
       case .began:
