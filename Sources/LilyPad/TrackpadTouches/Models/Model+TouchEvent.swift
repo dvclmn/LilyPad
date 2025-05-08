@@ -5,10 +5,10 @@
 //  Created by Dave Coleman on 8/5/2025.
 //
 
-import Foundation
+import AppKit
 
 public struct TouchEventData {
-  let touches: Set<TouchPoint>
+  let touches: Set<NSTouch>
   let phase: TrackpadGesturePhase
   let pressure: CGFloat
   let timestamp: TimeInterval

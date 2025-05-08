@@ -132,12 +132,7 @@ extension ZoomView {
 //  }
 }
 
-public enum TrackpadGesturePhase {
-  case began
-  case changed
-  case ended
-  case cancelled
-}
+
 
 #if DEBUG
 @available(macOS 15, iOS 18, *)

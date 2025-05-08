@@ -22,6 +22,12 @@ struct MappingSpaces {
   var viewport: CGRect
 }
 
+public enum TrackpadGesturePhase {
+  case began
+  case moved
+  case ended
+  case cancelled
+}
 
 struct TrackpadGestureState {
   var pan = PanGestureState()

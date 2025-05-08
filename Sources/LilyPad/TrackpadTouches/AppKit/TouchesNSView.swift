@@ -15,7 +15,9 @@ public class TrackpadTouchesNSView: NSView {
   /// Touch manager to handle touch tracking and velocity calculation
   private let touchManager = TrackpadTouchManager()
   
-  private var currentPressure: CGFloat = .zero
+  private var activeTouches: Set<NSTouch> = []
+  
+//  private var currentPressure: CGFloat = .zero
   
   public override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
@@ -38,6 +40,9 @@ public class TrackpadTouchesNSView: NSView {
   
   private func processTouches(with event: NSEvent, phase: TrackpadGesturePhase) {
     let touches = event.touches(matching: [.touching], in: self)
+    
+//    activeTouches = touches
+    
     let trackpadTouches = touchManager.processTouches(
       touches,
       timestamp: event.timestamp,
@@ -47,7 +52,7 @@ public class TrackpadTouchesNSView: NSView {
     let eventData = TouchEventData(
       touches: trackpadTouches,
       phase: phase,
-      pressure: currentPressure,
+      pressure: touchManager.currentPressure,
       timestamp: event.timestamp
     )
     
@@ -55,14 +60,16 @@ public class TrackpadTouchesNSView: NSView {
   }
   
   public override func pressureChange(with event: NSEvent) {
-    currentPressure = CGFloat(event.pressure)
+//    currentPressure = CGFloat(event.pressure)
+    touchManager.updatePressure(CGFloat(event.pressure))
     
     // Only send pressure updates during active touches
     if !activeTouches.isEmpty {
       let eventData = TouchEventData(
-        touches: activeTouches, // Store active touches as a property
-        phase: .moved, // During pressure changes, the phase should be "moved"
-        pressure: currentPressure,
+        touches: activeTouches,
+        /// During pressure changes, the phase should be "moved"
+        phase: .moved,
+        pressure: touchManager.currentPressure,
         timestamp: event.timestamp
       )
       delegate?.touchesView(self, didUpdate: eventData)
