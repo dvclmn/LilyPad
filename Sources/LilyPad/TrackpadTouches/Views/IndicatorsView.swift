@@ -13,7 +13,7 @@ import BaseStyles
 public struct TouchIndicatorsView: View {
 
   let touches: Set<TouchPoint>
-  let mapToSize: CGSize
+  let mappingRect: CGRect
   
   public var body: some View {
 
@@ -22,7 +22,7 @@ public struct TouchIndicatorsView: View {
         .fill(Color.blue.opacity(0.7))
         .frame(width: 40, height: 40)
         .overlay(alignment: .top) {
-          Text(touch.position.displayAtring)
+          Text(touch.position.displayString)
             .monospaced()
             .roundedBackground(Styles.sizeNano, colour: AnyShapeStyle(.black.opacity(0.6)))
             .offset(y: -22)
@@ -32,8 +32,8 @@ public struct TouchIndicatorsView: View {
         .position(touchPosition(touch))
     }
     .frame(
-      width: mapToSize.width,
-      height: mapToSize.height
+      width: mappingRect.width,
+      height: mappingRect.height
     )
 
   }
@@ -41,7 +41,7 @@ public struct TouchIndicatorsView: View {
 
 extension TouchIndicatorsView {
   func touchPosition(_ touch: TouchPoint) -> CGPoint {
-    touch.position.mapped(to: mapToSize.toCGRect)
+    touch.position.mapped(to: mappingRect)
   }
 }
 
@@ -50,7 +50,7 @@ extension TouchIndicatorsView {
 #Preview(traits: .size(.normal)) {
   TouchIndicatorsView(
     touches: [],
-    mapToSize: .init(width: 700, height: 600)
+    mappingRect: CGRect(x: 0, y: 0, width: 700, height: 600)
   )
 }
 #endif

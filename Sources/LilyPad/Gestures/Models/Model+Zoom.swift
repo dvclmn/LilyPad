@@ -14,13 +14,9 @@ struct ZoomGestureState: GestureTrackable {
   
   let requiredTouchCount: Int = 2
   
-  mutating func update(
-    touches: Set<TouchPoint>,
-    phase: TrackpadGesturePhase,
-    in rect: CGRect,
-  ) {
-    guard touches.count == requiredTouchCount else { return }
-    let positions = TouchPositions.mapped(from: touches, to: rect)
+  mutating func update(eventData: TouchEventData, in rect: CGRect) {
+    guard eventData.touches.count == requiredTouchCount else { return }
+    let positions = TouchPositions.mapped(from: eventData.touches, to: rect)
     
     let currentDistance = positions.distanceBetween
     

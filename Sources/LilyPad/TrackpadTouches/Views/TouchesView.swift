@@ -28,7 +28,7 @@ public struct TrackpadTouchesModifier: ViewModifier {
       if showIndicators {
         TouchIndicatorsView(
           touches: localTouches,
-          mapToSize: viewSize
+          mappingRect: viewSize
         )
       }
       TrackpadTouchesView { events in
