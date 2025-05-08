@@ -9,7 +9,7 @@ import SwiftUI
 
 public struct DrawingView: View {
   //  @Environment(AppHandler.self) private var store
-  @State private var store = StrokeHandler()
+  @State private var store = DrawingHandler()
 
   public typealias ArtworkUpdate = (Artwork) async -> Void
 
@@ -35,13 +35,11 @@ public struct DrawingView: View {
       context,
       _ in
 
-      /// Draw all strokes
+      for stroke in store.strokeHandler.allStrokes {
 
-      for stroke in store.allStrokes {
-
-        store.engine.drawStroke(
+        store.strokeHandler.engine.drawStroke(
           stroke,
-          config: store.config,
+          config: config,
           in: context
         )
 
@@ -58,11 +56,11 @@ public struct DrawingView: View {
     )
     .allowsHitTesting(false)
     .task(id: config) {
-      store.config = config
+      store.strokeHandler.config = config
     }
     
-    .task(id: store.artwork) {
-      onArtworkUpdate(store.artwork)
+    .task(id: store.strokeHandler.artwork) {
+      await onArtworkUpdate(store.strokeHandler.artwork)
     }
 
 

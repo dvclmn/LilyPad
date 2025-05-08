@@ -26,7 +26,7 @@ public enum DrawingCommand {
   }
   
   /// Map from key to command
-  static func fromKey(_ key: KeyEquivalent) -> DrawingCommand? {
+  public static func fromKey(_ key: KeyEquivalent) -> DrawingCommand? {
     switch key {
       case "a": return .lockPointer
       case "c": return .clearCanvas

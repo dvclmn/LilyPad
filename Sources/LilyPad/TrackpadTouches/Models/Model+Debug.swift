@@ -16,7 +16,7 @@ public enum TouchDebugItem: String, HBarItem {
 //  case pointCountFiltered
   case touchModeActive
   case pointerLocked
-  case clickedDown
+//  case clickedDown
   case pressure
   
   public static let itemsKey: String = "InfoBarItems"
@@ -45,7 +45,7 @@ public enum TouchDebugItem: String, HBarItem {
 //      case .pointCountRaw: "Points (Raw)"
       case .touchModeActive: "Touch Mode Active"
       case .pointerLocked: "Pointer Locked"
-      case .clickedDown: "Clicked Down"
+//      case .clickedDown: "Clicked Down"
       case .pressure: "Pressure"
     }
   }
