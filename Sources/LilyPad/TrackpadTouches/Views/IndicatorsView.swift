@@ -22,7 +22,7 @@ public struct TouchIndicatorsView: View {
         .fill(Color.blue.opacity(0.7))
         .frame(width: 40, height: 40)
         .overlay(alignment: .top) {
-          Text(touch.position.displayString)
+          Text(touch.position.displayAtring)
             .monospaced()
             .roundedBackground(Styles.sizeNano, colour: AnyShapeStyle(.black.opacity(0.6)))
             .offset(y: -22)

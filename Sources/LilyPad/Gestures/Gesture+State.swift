@@ -33,6 +33,7 @@ struct TrackpadGestureState {
   var pan = PanGestureState()
   var zoom = ZoomGestureState()
   var rotation = RotateGestureState()
+  var drawing = DrawingGestureState()
   
   /// The space to which touch points are mapped (e.g., canvas or viewport)
   var mappingRect: CGRect = .zero

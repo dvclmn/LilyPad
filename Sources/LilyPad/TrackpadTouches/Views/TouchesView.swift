@@ -31,10 +31,9 @@ public struct TrackpadTouchesModifier: ViewModifier {
           mapToSize: viewSize
         )
       }
-      TrackpadTouchesView { touches in
-//        self.localTouches = touches
-//        touchUpdates(touches, pressure)
-        
+      TrackpadTouchesView { events in
+        self.localTouches = events.touches
+        touchUpdates(events)
       }
     }
     .viewSize { size in

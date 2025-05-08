@@ -13,7 +13,7 @@ struct PanGestureState: GestureTrackable {
   var startPositions: TouchPositions?
   var isActive = false
   
-  let requiredTouchCount: Int = 2
+  var requiredTouchCount: Int { return 2 }
   
   /// Not needed? May be useful to calculate some animation
   /// for inertia-based panning?
