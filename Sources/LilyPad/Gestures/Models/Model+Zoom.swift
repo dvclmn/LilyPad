@@ -1,9 +1,11 @@
 //
-//  Model+Rotate.swift
+//  Model+Zoom.swift
 //  LilyPad
 //
 //  Created by Dave Coleman on 8/5/2025.
 //
+
+import Foundation
 
 struct ZoomGestureState: GestureTrackable {
   var scale: CGFloat = 1.0
@@ -12,7 +14,11 @@ struct ZoomGestureState: GestureTrackable {
   
   let requiredTouchCount: Int = 2
   
-  mutating func update(touches: Set<TouchPoint>, phase: GesturePhase) {
+  mutating func update(
+    touches: Set<TouchPoint>,
+    phase: GesturePhase,
+    in rect: CGRect,
+  ) {
     guard touches.count == requiredTouchCount else { return }
     let positions = TouchPositions.mapped(from: touches, to: destinationRect)
     

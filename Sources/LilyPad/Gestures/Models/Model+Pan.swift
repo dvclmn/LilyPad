@@ -18,7 +18,11 @@ struct PanGestureState: GestureTrackable {
   /// for inertia-based panning?
 //  var lastVelocity: CGPoint
   
-  mutating func update(touches: Set<TouchPoint>, phase: GesturePhase) {
+  mutating func update(
+    touches: Set<TouchPoint>,
+    phase: GesturePhase,
+    in rect: CGRect,
+  ) {
     
     guard touches.count == requiredTouchCount else { return }
     let positions = TouchPositions.mapped(from: touches, to: destinationRect)

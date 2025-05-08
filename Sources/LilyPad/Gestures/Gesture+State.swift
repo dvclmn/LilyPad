@@ -9,23 +9,50 @@ import Foundation
 
 protocol GestureTrackable {
   var requiredTouchCount: Int { get }
-  mutating func update(touches: Set<TouchPoint>, phase: GesturePhase)
+  mutating func update(
+    touches: Set<TouchPoint>,
+    phase: GesturePhase,
+    in rect: CGRect,
+  )
   var isActive: Bool { get }
+}
+
+struct MappingSpaces {
+  var canvas: CGRect
+  var viewport: CGRect
 }
 
 
 struct TrackpadGestureState {
   var pan = PanGestureState()
   var zoom = ZoomGestureState()
-  var rotation = RotationGestureState()
+  var rotation = RotateGestureState()
   
-  var canvasSize: CGSize = .zero
-  var viewportSize: CGSize = .zero
+  /// The space to which touch points are mapped (e.g., canvas or viewport)
+  var mappingRect: CGRect = .zero
+//  var canvasSize: CGSize = .zero
+//  var viewportSize: CGSize = .zero
   
-  mutating func update(touches: TouchPositions, phase: GesturePhase) {
-    pan.update(touches: touches, phase: phase)
-    zoom.update(touches: touches, phase: phase)
-    rotation.update(touches: touches, phase: phase)
+  mutating func update(
+    touches: Set<TouchPoint>,
+    phase: GesturePhase,
+    in rect: CGRect,
+  ) {
+    pan.update(
+      touches: touches,
+      phase: phase,
+      in: rect,
+    )
+    zoom.update(
+      touches: touches,
+      phase: phase,
+      in: rect,
+    )
+    rotation.update(
+      touches: touches,
+      phase: phase,
+      in: rect,
+    )
   }
 }
 
