@@ -21,7 +21,7 @@ public struct TouchPoint: Identifiable, Hashable, Codable {
   public let position: CGPoint
   public let timestamp: TimeInterval
   public let velocity: CGVector
-  public let pressure: CGFloat?
+  public let pressure: CGFloat
 
   @Init(.ignore) private var _width: CGFloat? = nil
 
@@ -51,6 +51,16 @@ public struct TouchPoint: Identifiable, Hashable, Codable {
   
   public func mapPoint(to destination: CGRect) -> CGPoint {
     return self.position.mapped(to: destination)
+  }
+  
+  /// Whether this touch has meaningful pressure data
+  public var hasPressure: Bool {
+    return pressure > 0
+  }
+  
+  /// Normalized pressure between 0 and 1 for drawing operations
+  public var normalizedPressure: CGFloat {
+    return min(max(pressure, 0), 1)
   }
 }
 

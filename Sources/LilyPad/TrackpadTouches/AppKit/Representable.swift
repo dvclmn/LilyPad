@@ -11,16 +11,10 @@ import SwiftUI
 // MARK: - Delegate Protocol
 /// Protocol for receiving touch updates
 public protocol TrackpadTouchesDelegate: AnyObject {
-  func touchesView(_ view: TrackpadTouchesNSView, didUpdateTouches touches: Set<TouchPoint>)
-  func touchesView(_ view: TrackpadTouchesNSView, didUpdatePhase phase: TrackpadGesturePhase)
-  func touchesView(_ view: TrackpadTouchesNSView, didUpdatePressure pressure: CGFloat)
+  func touchesView(_ view: TrackpadTouchesNSView, didUpdate eventData: TouchEventData)
 }
 
-public typealias TouchUpdates = (
-  _ touches: Set<TouchPoint>,
-  _ phase: TrackpadGesturePhase,
-  _ pressure: CGFloat
-) -> Void
+public typealias TouchUpdates = (_ eventData: TouchEventData) -> Void
 
 // MARK: - SwiftUI Representable
 /// SwiftUI wrapper for the trackpad touches view

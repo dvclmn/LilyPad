@@ -8,6 +8,8 @@
 import AppKit
 import Foundation
 
+
+
 /// Manages trackpad touches and maintains their history for velocity calculations
 public class TrackpadTouchManager {
 

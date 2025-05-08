@@ -15,6 +15,8 @@ public class TrackpadTouchesNSView: NSView {
   /// Touch manager to handle touch tracking and velocity calculation
   private let touchManager = TrackpadTouchManager()
   
+  private var currentPressure: CGFloat = .zero
+  
   public override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
     setupView()
@@ -35,20 +37,71 @@ public class TrackpadTouchesNSView: NSView {
   }
   
   private func processTouches(with event: NSEvent, phase: TrackpadGesturePhase) {
-
     let touches = event.touches(matching: [.touching], in: self)
-
-    /// Convert to data model
     let trackpadTouches = touchManager.processTouches(
       touches,
       timestamp: event.timestamp,
       in: self
     )
-
-    /// Forward via delegate
-    delegate?.touchesView(self, didUpdateTouches: trackpadTouches)
-    delegate?.touchesView(self, didUpdatePhase: phase)
+    
+    let eventData = TouchEventData(
+      touches: trackpadTouches,
+      phase: phase,
+      pressure: currentPressure,
+      timestamp: event.timestamp
+    )
+    
+    delegate?.touchesView(self, didUpdate: eventData)
   }
+  
+  public override func pressureChange(with event: NSEvent) {
+    currentPressure = CGFloat(event.pressure)
+    
+    // Only send pressure updates during active touches
+    if !activeTouches.isEmpty {
+      let eventData = TouchEventData(
+        touches: activeTouches, // Store active touches as a property
+        phase: .moved, // During pressure changes, the phase should be "moved"
+        pressure: currentPressure,
+        timestamp: event.timestamp
+      )
+      delegate?.touchesView(self, didUpdate: eventData)
+    }
+  }
+  
+//  public override func pressureChange(with event: NSEvent) {
+//    currentPressure = CGFloat(event.pressure)
+//    
+//    // Only send pressure updates during active touches
+//    if !activeTouches.isEmpty {
+//      let eventData = TouchEventData(
+//        touches: activeTouches, // Store active touches as a property
+//        phase: .moved, // During pressure changes, the phase should be "moved"
+//        pressure: currentPressure,
+//        timestamp: event.timestamp
+//      )
+//      delegate?.touchesView(self, didUpdate: eventData)
+//    }
+//  }
+  
+  
+  
+  
+//  private func processTouches(with event: NSEvent, phase: TrackpadGesturePhase) {
+//
+//    let touches = event.touches(matching: [.touching], in: self)
+//
+//    /// Convert to data model
+//    let trackpadTouches = touchManager.processTouches(
+//      touches,
+//      timestamp: event.timestamp,
+//      in: self
+//    )
+//
+//    /// Forward via delegate
+//    delegate?.touchesView(self, didUpdateTouches: trackpadTouches)
+//    delegate?.touchesView(self, didUpdatePhase: phase)
+//  }
   
   private func processPressure(_ pressure: Float) {
     let pressureAmount = CGFloat(pressure)
