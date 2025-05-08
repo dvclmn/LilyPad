@@ -15,6 +15,7 @@ public struct ZoomView<Content: View>: View {
 //  public typealias Output = (TouchEventData) -> Content
 
   @State private var store = ZoomHandler()
+  
   let zoomThreshold: CGFloat = 40
   let scaleThresholdDistance: CGFloat = 10
 
@@ -49,7 +50,7 @@ public struct ZoomView<Content: View>: View {
         //        .fill(.white.opacity(0.1))
         .midpointIndicator()
         .frame(width: store.canvasSize.width, height: store.canvasSize.height)
-        .scaleEffect(store.zoomScale)
+//        .scaleEffect(store.zoomScale)
         .position(store.canvasPosition)
         .drawingGroup()
         .task(id: proxy.size) {
@@ -63,12 +64,12 @@ public struct ZoomView<Content: View>: View {
     .touches(viewSize: store.viewportSize) { eventData in
       
       if eventData.touches.count == 1, let didUpdateEventData {
-        print("Event Data (for Drawing purposes) received from `TrackpadTouchesModifier`: \(eventData)")
+//        print("Event Data (for Drawing purposes) received from `TrackpadTouchesModifier`: \(eventData)")
         didUpdateEventData(eventData)
       } else {
-        print("Event Data (for Gesture purposes) received from `TrackpadTouchesModifier`: \(eventData)")
+//        print("Event Data (for Gesture purposes) received from `TrackpadTouchesModifier`: \(eventData)")
         store.eventData = eventData
-        store.updateGesture(
+        store.updatePan(
           event: eventData,
           in: store.viewportSize.toCGRect
         )

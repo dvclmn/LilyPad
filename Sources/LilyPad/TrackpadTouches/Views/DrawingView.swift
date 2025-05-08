@@ -45,8 +45,9 @@ public struct DrawingView: View {
             return
           }
 
-          print("Event Data received: \(eventData)")
+//          print("Event Data received: \(eventData)")
           if store.strokeHandler.eventData != eventData {
+            
             store.strokeHandler.eventData = eventData
             store.strokeHandler.processTouchesIntoStrokes()
           }

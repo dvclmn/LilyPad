@@ -18,8 +18,8 @@ public struct ZoomToolbarView: ToolbarContent {
         LabeledContent("Viewport", value: store.viewportSize.displayString(decimalPlaces: 0))
         Divider()
         LabeledContent("Pan", value: store.panOffset.displayString(style: .full))
-        Divider()
-        LabeledContent("Zoom", value: store.zoomScale.displayString)
+//        Divider()
+//        LabeledContent("Zoom", value: store.zoomScale.displayString)
       }
       .foregroundStyle(.tertiary)
       .font(.callout)

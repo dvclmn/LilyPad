@@ -16,6 +16,12 @@ public class TrackpadTouchManager {
   /// Dictionary to store the last known touch for each touch ID
   private var lastTouches: [Int: TouchPoint] = [:]
 
+  /// Maximum number of touch points to keep in history per stroke
+  private let maxHistoryLength = 3
+  
+  /// Dictionary to store touch history for each touch ID
+  private var touchHistories: [Int: [TouchPoint]] = [:]
+  
   var currentPressure: CGFloat = .zero
 
   /// Process new touches and calculate velocity based on history
@@ -41,6 +47,9 @@ public class TrackpadTouchManager {
 
       /// Update last touch
       lastTouches[touchId] = newTouch
+      
+      /// Update touch history
+      updateHistory(for: touchId, with: newTouch)
     }
 
     /// Handle ended touches (those in `lastTouches` but not in the current set)
@@ -51,7 +60,7 @@ public class TrackpadTouchManager {
     for endedId in endedIds {
       /// Clean up ended touches
       lastTouches.removeValue(forKey: endedId)
-      //      touchHistories.removeValue(forKey: endedId)
+            touchHistories.removeValue(forKey: endedId)
     }
 
     return updatedTouches
@@ -63,6 +72,7 @@ public class TrackpadTouchManager {
     previous: TouchPoint?,
     in view: NSView,
   ) -> TouchPoint {
+    
     let now = timestamp
     let position = CGPoint(
       x: nsTouch.normalizedPosition.x,
@@ -85,26 +95,26 @@ public class TrackpadTouchManager {
   }
 
   /// Updates the history for a specific touch ID
-  //  private func updateHistory(for touchId: Int, with touch: TouchPoint) {
-  //    var history = touchHistories[touchId] ?? []
-  //    history.append(touch)
-  //
-  //    /// Limit history length
-  //    if history.count > maxHistoryLength {
-  //      history.removeFirst()
-  //    }
-  //
-  //    touchHistories[touchId] = history
-  //  }
+    private func updateHistory(for touchId: Int, with touch: TouchPoint) {
+      var history = touchHistories[touchId] ?? []
+      history.append(touch)
+  
+      /// Limit history length
+      if history.count > maxHistoryLength {
+        history.removeFirst()
+      }
+  
+      touchHistories[touchId] = history
+    }
 
-  //  /// Get the touch history for a specific ID
-  //  public func history(for touchId: Int) -> [TouchPoint]? {
-  //    return touchHistories[touchId]
-  //  }
-  //
-  //  /// Clear all touch history
-  //  public func clearHistory() {
-  //    lastTouches.removeAll()
-  //    touchHistories.removeAll()
-  //  }
+    /// Get the touch history for a specific ID
+    public func history(for touchId: Int) -> [TouchPoint]? {
+      return touchHistories[touchId]
+    }
+  
+    /// Clear all touch history
+    public func clearHistory() {
+      lastTouches.removeAll()
+      touchHistories.removeAll()
+    }
 }
