@@ -17,13 +17,13 @@ public struct ZoomToolbarView: ToolbarContent {
       HStack {
         LabeledContent("Viewport", value: store.viewportSize.displayString(decimalPlaces: 0))
         Divider()
-        LabeledContent("Pan", value: store.gestureState.pan.offset.displayString(style: .full))
+        LabeledContent("Pan", value: store.pan.offset.displayString(style: .full))
       }
       .foregroundStyle(.tertiary)
       .font(.callout)
       .monospacedDigit()
       Button {
-        store.gestureState.pan.offset = .zero
+        store.pan.offset = .zero
 //        store.offset = .zero
       } label: {
         Label("Reset pan", systemImage: "hand.draw")

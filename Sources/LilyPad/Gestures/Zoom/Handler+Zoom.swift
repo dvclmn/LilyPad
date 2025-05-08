@@ -13,7 +13,10 @@ final class ZoomHandler {
 //  var touches: Set<TouchPoint> = []
   var eventData: TouchEventData = .initial
   
-  var gestureState = TrackpadGestureState()
+//  var gestureState = TrackpadGestureState()
+  var pan = PanGestureState()
+  var zoom = ZoomGestureState()
+  var rotation = RotateGestureState()
   
 //  var scale: CGFloat = 1
 //  var offset: CGPoint = .zero
@@ -30,13 +33,21 @@ final class ZoomHandler {
 
 extension ZoomHandler {
   
+  func updateGesture(event: TouchEventData, in rect: CGRect) {
+    print("Updated gesture state")
+    pan.update(event: event, in: rect)
+    zoom.update(event: event, in: rect)
+    rotation.update(event: event, in: rect)
+    //    drawing.update(event: event, in: rect)
+  }
+  
   var canvasPosition: CGPoint {
 
     let viewportMidPoint = viewportSize.midpoint
 //    let canvasMidPoint = canvasSize.midpoint
     
     let centred = viewportMidPoint
-    return gestureState.pan.offset + centred
+    return pan.offset + centred
   }
   
 //  func panAmount(touches: Set<TouchPoint>, phase: TrackpadGesturePhase) {

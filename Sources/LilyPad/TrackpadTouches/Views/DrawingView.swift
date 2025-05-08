@@ -34,7 +34,26 @@ public struct DrawingView: View {
   }
   public var body: some View {
 
-    ZoomView(canvasSize: canvasSize) { eventData in
+    ZoomView(
+      canvasSize: canvasSize,
+      didUpdateEventData: { eventData in
+
+        Task { @MainActor in
+
+          guard store.isInTouchMode else {
+            print("Not in touch mode, not processing eventData, as it's not required for drawing.")
+            return
+          }
+
+          print("Event Data received: \(eventData)")
+          if store.strokeHandler.eventData != eventData {
+            store.strokeHandler.eventData = eventData
+            store.strokeHandler.processTouchesIntoStrokes()
+          }
+        }
+
+      }
+    ) {
       Canvas {
         context,
         _ in
@@ -58,24 +77,10 @@ public struct DrawingView: View {
         height: canvasSize.height
       )
       .allowsHitTesting(false)
-      .task(id: eventData) {
-        Task { @MainActor in
-          
-          guard store.isInTouchMode else {
-            print("Not in touch mode, not processing eventData, as it's not required for drawing.")
-            return
-          }
-          
-          print("Event Data received: \(eventData)")
-          if store.strokeHandler.eventData != eventData {
-            store.strokeHandler.eventData = eventData
-            store.strokeHandler.processTouchesIntoStrokes()
-          }
-        }
-      }
     }  // END zoom view
+
     .drawingCommands(handler: store)
-    
+
     .overlay(alignment: .bottom) {
       DrawingInfoBarView(store: store)
     }

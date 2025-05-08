@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct TouchPositions {
+struct TouchPositions: Sendable, Equatable, Hashable {
   var p1: CGPoint
   var p2: CGPoint
   

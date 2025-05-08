@@ -11,21 +11,25 @@ import SwiftUI
 
 public struct ZoomView<Content: View>: View {
 
-  public typealias Output = (TouchEventData) -> Content
+  public typealias EventOutput = (TouchEventData) -> Void
+//  public typealias Output = (TouchEventData) -> Content
 
   @State private var store = ZoomHandler()
   let zoomThreshold: CGFloat = 40
   let scaleThresholdDistance: CGFloat = 10
 
   let canvasSize: CGSize
-  let content: Output?
+  let didUpdateEventData: EventOutput?
+  let content: Content
 
   public init(
     canvasSize: CGSize,
-    @ViewBuilder content: Output?
+    didUpdateEventData: EventOutput? = nil,
+    @ViewBuilder content: @escaping () -> Content
   ) {
     self.canvasSize = canvasSize
-    self.content = content
+    self.didUpdateEventData = didUpdateEventData
+    self.content = content()
 
     print("`ZoomView<Content: View>` created at \(Date.now.format(.timeDetailed))")
 
@@ -40,12 +44,12 @@ public struct ZoomView<Content: View>: View {
     GeometryReader { proxy in
       #warning("`.mouseLock(store.eventData.touches.count == 2)` will need to be based on better metrics than this")
 
-      content( store.eventData)
+      content
         //      Rectangle()
         //        .fill(.white.opacity(0.1))
         .midpointIndicator()
         .frame(width: store.canvasSize.width, height: store.canvasSize.height)
-        .scaleEffect(store.gestureState.zoom.scale)
+        .scaleEffect(store.zoom.scale)
         .position(store.canvasPosition)
         .drawingGroup()
         .task(id: proxy.size) {
@@ -58,12 +62,17 @@ public struct ZoomView<Content: View>: View {
     
     .touches(viewSize: store.viewportSize) { eventData in
       
-      print("Event Data received from `TrackpadTouchesModifier`: \(eventData)")
-      store.eventData = eventData
-      store.gestureState.update(
-        event: eventData,
-        in: store.viewportSize.toCGRect
-      )
+      if eventData.touches.count == 1, let didUpdateEventData {
+        print("Event Data (for Drawing purposes) received from `TrackpadTouchesModifier`: \(eventData)")
+        didUpdateEventData(eventData)
+      } else {
+        print("Event Data (for Gesture purposes) received from `TrackpadTouchesModifier`: \(eventData)")
+        store.eventData = eventData
+        store.updateGesture(
+          event: eventData,
+          in: store.viewportSize.toCGRect
+        )
+      }
     }
     .toolbar {
       ZoomToolbarView(store: store)
@@ -78,7 +87,7 @@ public struct ZoomView<Content: View>: View {
 #if DEBUG
 @available(macOS 15, iOS 18, *)
 #Preview(traits: .size(.narrow)) {
-  ZoomView(canvasSize: CGSize.init(width: 400, height: 300)) { event in
+  ZoomView(canvasSize: CGSize.init(width: 400, height: 300)) {
     Text(TestStrings.paragraphs[5])
       .padding(40)
       .background(.purple.quinary)
