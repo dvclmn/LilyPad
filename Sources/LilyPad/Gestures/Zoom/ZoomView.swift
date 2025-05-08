@@ -12,7 +12,7 @@ import SwiftUI
 public struct ZoomView<Content: View>: View {
 
   public typealias Output = (TouchEventData) -> Content
-  
+
   @State private var store = ZoomHandler()
   let zoomThreshold: CGFloat = 40
   let scaleThresholdDistance: CGFloat = 10
@@ -26,16 +26,19 @@ public struct ZoomView<Content: View>: View {
   ) {
     self.canvasSize = canvasSize
     self.content = content
+
+    print("`ZoomView<Content: View>` created at \(Date.now.format(.timeDetailed))")
+
   }
 
   public var body: some View {
-    
+
     @Bindable var store = store
 
     /// Using `GeometryReader` to kind 'reset' everything to be full width,
     /// full height, and top leading.
     GeometryReader { proxy in
-#warning("`.mouseLock(store.eventData.touches.count == 2)` will need to be based on better metrics than this")
+      #warning("`.mouseLock(store.eventData.touches.count == 2)` will need to be based on better metrics than this")
 
       content(store.eventData)
         //      Rectangle()
@@ -50,7 +53,7 @@ public struct ZoomView<Content: View>: View {
         }
     }
     .midpointIndicator()
-    
+
     .mouseLock(store.eventData.touches.count == 2)
     .touches { event in
       store.eventData = event
@@ -60,7 +63,7 @@ public struct ZoomView<Content: View>: View {
       )
     }
     .toolbar {
-ZoomToolbarView(store: store)
+      ZoomToolbarView(store: store)
     }
     .task(id: canvasSize) {
       store.canvasSize = canvasSize

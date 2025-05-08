@@ -13,6 +13,10 @@ final class DrawingHandler: DrawingCommandHandler {
   var strokeHandler = StrokeHandler()
   var isPointerLocked: Bool = false
 
+  init() {
+    print("`DrawingHandler` created at \(Date.now.format(.timeDetailed))")
+  }
+  
 }
 
 extension DrawingHandler {

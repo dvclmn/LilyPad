@@ -13,62 +13,69 @@ public struct DrawingView: View {
 
   public typealias ArtworkUpdate = (Artwork) async -> Void
 
-  let eventData: TouchEventData
+  //  let eventData: TouchEventData
   let canvasSize: CGSize
   let config: StrokeConfiguration
   var onArtworkUpdate: ArtworkUpdate
 
   public init(
-    eventData: TouchEventData,
+    //    eventData: TouchEventData,
     canvasSize: CGSize,
     config: StrokeConfiguration,
     onArtworkUpdate: @escaping ArtworkUpdate
   ) {
-    self.eventData = eventData
+    //    self.eventData = eventData
     self.canvasSize = canvasSize
     self.config = config
     self.onArtworkUpdate = onArtworkUpdate
+
+    print("`DrawingView` created at \(Date.now.format(.timeDetailed))")
+
   }
   public var body: some View {
 
-    Canvas {
-      context,
-      _ in
+    ZoomView(canvasSize: canvasSize) { eventData in
+      Canvas {
+        context,
+        _ in
 
-      for stroke in store.strokeHandler.allStrokes {
+        for stroke in store.strokeHandler.allStrokes {
 
-        store.strokeHandler.engine.drawStroke(
-          stroke,
-          config: config,
-          in: context
-        )
-        /// Shows location of points and handles
-        //          context.debugPath(path: basePath)
+          store.strokeHandler.engine.drawStroke(
+            stroke,
+            config: config,
+            in: context
+          )
+          /// Shows location of points and handles
+          //          context.debugPath(path: basePath)
 
-      }  // END stroke loop
-    }
+        }  // END stroke loop
+      }
+      .background(.gray.opacity(0.2))
+      .clipShape(.rect(cornerRadius: 20))
+      .frame(
+        width: canvasSize.width,
+        height: canvasSize.height
+      )
+      .allowsHitTesting(false)
+      .task(id: eventData) {
+
+        Task { @MainActor in
+          guard store.isInTouchMode else { return }
+          if store.strokeHandler.eventData != eventData {
+            store.strokeHandler.eventData = eventData
+            store.strokeHandler.processTouchesIntoStrokes()
+          }
+        }
+      }
+    }  // END zoom view
     .drawingCommands(handler: store)
-    .background(.gray.opacity(0.2))
-    .clipShape(.rect(cornerRadius: 20))
-    .frame(
-      width: canvasSize.width,
-      height: canvasSize.height
-    )
-    .allowsHitTesting(false)
     .task(id: config) {
       store.strokeHandler.config = config
     }
 
     .task(id: store.strokeHandler.artwork) {
       await onArtworkUpdate(store.strokeHandler.artwork)
-    }
-    .task(id: eventData) {
-
-      guard store.isInTouchMode else { return }
-      if store.strokeHandler.eventData != eventData {
-        store.strokeHandler.eventData = eventData
-        store.strokeHandler.processTouchesIntoStrokes()
-      }
     }
 
 
