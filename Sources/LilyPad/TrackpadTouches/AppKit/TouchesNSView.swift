@@ -48,25 +48,12 @@ public class TrackpadTouchesNSView: NSView {
     touchManager.currentPressure = CGFloat(event.pressure)
 
     /// Only send pressure updates during active touches
-    if !touchManager.activeTouches.isEmpty {
+    guard touchManager.activeTouches.isEmpty else { return }
 
-      /// During pressure changes, the phase should be "moved"
-      let eventData = processTouches(phase: .moved, timestamp: event.timestamp)
-//      let trackpadTouches = touchManager.processTouches(
-//        touches,
-//        timestamp: event.timestamp,
-//        in: self
-//      )
-//
-//      let eventData = TouchEventData(
-//        touches: trackpadTouches,
-//        /// During pressure changes, the phase should be "moved"
-//        phase: .moved,
-//        pressure: touchManager.currentPressure,
-//        timestamp: event.timestamp
-//      )
-      delegate?.touchesView(self, didUpdate: eventData)
-    }
+    /// During pressure changes, the phase should be "moved"
+    let eventData = processTouches(phase: .moved, timestamp: event.timestamp)
+    delegate?.touchesView(self, didUpdate: eventData)
+
   }
 
   private func processTouches(
@@ -90,45 +77,12 @@ public class TrackpadTouchesNSView: NSView {
   }
 
 
-  //  public override func pressureChange(with event: NSEvent) {
-  //    currentPressure = CGFloat(event.pressure)
-  //
-  //    // Only send pressure updates during active touches
-  //    if !activeTouches.isEmpty {
-  //      let eventData = TouchEventData(
-  //        touches: activeTouches, // Store active touches as a property
-  //        phase: .moved, // During pressure changes, the phase should be "moved"
-  //        pressure: currentPressure,
-  //        timestamp: event.timestamp
-  //      )
-  //      delegate?.touchesView(self, didUpdate: eventData)
-  //    }
-  //  }
-
-
-  //  private func processTouches(with event: NSEvent, phase: TrackpadGesturePhase) {
-  //
-  //    let touches = event.touches(matching: [.touching], in: self)
-  //
-  //    /// Convert to data model
-  //    let trackpadTouches = touchManager.processTouches(
-  //      touches,
-  //      timestamp: event.timestamp,
-  //      in: self
-  //    )
-  //
-  //    /// Forward via delegate
-  //    delegate?.touchesView(self, didUpdateTouches: trackpadTouches)
-  //    delegate?.touchesView(self, didUpdatePhase: phase)
-  //  }
-
-
   // MARK: - Touch Event Handlers
   public override func touchesBegan(with event: NSEvent) {
     processTouches(with: event, phase: .began)
   }
   public override func touchesMoved(with event: NSEvent) {
-    processTouches(with: event, phase: .changed)
+    processTouches(with: event, phase: .moved)
   }
   public override func touchesEnded(with event: NSEvent) {
     processTouches(with: event, phase: .ended)
@@ -136,9 +90,8 @@ public class TrackpadTouchesNSView: NSView {
   public override func touchesCancelled(with event: NSEvent) {
     processTouches(with: event, phase: .cancelled)
   }
-
   public override func pressureChange(with event: NSEvent) {
-    processPressure(event.pressure)
+    processPressure(event)
   }
 
 
