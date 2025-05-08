@@ -21,9 +21,9 @@ final class ZoomHandler {
 //  var zoomState = ZoomGestureState()
   
 //  var offset: CGPoint = .zero
-  var startPositions: TouchPositions?
-  var lastPanAmount: CGPoint = .zero
-  var isPanActive = false
+//  var startPositions: TouchPositions?
+//  var lastPanAmount: CGPoint = .zero
+//  var isPanActive = false
   
   
 //  var zoomState = ZoomGestureState()
@@ -58,14 +58,15 @@ extension ZoomHandler {
 //  }
   
   var canvasPosition: CGPoint {
-
     let viewportMidPoint = viewportSize.midpoint
-//    let canvasMidPoint = canvasSize.midpoint
-    
     let centred = viewportMidPoint
     return gestureState.pan.offset
     + centred
   }
+  
+//  var canvasScale: CGFloat {
+    
+//  }
   
 //  func panAmount(touches: Set<TouchPoint>, phase: TrackpadGesturePhase) {
 //    guard touches.count == 2 else {

@@ -17,15 +17,15 @@ public struct ZoomToolbarView: ToolbarContent {
       HStack {
         LabeledContent("Viewport", value: store.viewportSize.displayString(decimalPlaces: 0))
         Divider()
-        LabeledContent("Pan", value: store.panState.offset.displayString(style: .full))
-//        Divider()
-//        LabeledContent("Zoom", value: store.zoomScale.displayString)
+        LabeledContent("Pan", value: store.gestureState.pan.offset.displayString(style: .full))
+        Divider()
+        LabeledContent("Zoom", value: store.gestureState.zoom.scale.displayString)
       }
       .foregroundStyle(.tertiary)
       .font(.callout)
       .monospacedDigit()
       Button {
-        store.panState.offset = .zero
+        store.gestureState.pan.offset = .zero
 //        store.offset = .zero
       } label: {
         Label("Reset pan", systemImage: "hand.draw")

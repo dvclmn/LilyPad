@@ -8,23 +8,19 @@
 import SwiftUI
 
 public struct DrawingView: View {
-  //  @Environment(AppHandler.self) private var store
   @State private var store = DrawingHandler()
 
   public typealias ArtworkUpdate = (Artwork) async -> Void
 
-  //  let eventData: TouchEventData
   let canvasSize: CGSize
   let config: StrokeConfiguration
   var onArtworkUpdate: ArtworkUpdate?
 
   public init(
-    //    eventData: TouchEventData,
     canvasSize: CGSize,
     config: StrokeConfiguration,
     onArtworkUpdate: ArtworkUpdate? = nil
   ) {
-    //    self.eventData = eventData
     self.canvasSize = canvasSize
     self.config = config
     self.onArtworkUpdate = onArtworkUpdate

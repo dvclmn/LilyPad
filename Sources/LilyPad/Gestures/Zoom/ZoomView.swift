@@ -50,7 +50,7 @@ public struct ZoomView<Content: View>: View {
         //        .fill(.white.opacity(0.1))
         .midpointIndicator()
         .frame(width: store.canvasSize.width, height: store.canvasSize.height)
-//        .scaleEffect(store.zoomScale)
+        .scaleEffect(store.gestureState.zoom.scale)
         .position(store.canvasPosition)
         .drawingGroup()
         .task(id: proxy.size) {
@@ -69,7 +69,7 @@ public struct ZoomView<Content: View>: View {
       } else {
 //        print("Event Data (for Gesture purposes) received from `TrackpadTouchesModifier`: \(eventData)")
         store.eventData = eventData
-        store.panState.update(
+        store.gestureState.update(
           event: eventData,
           in: store.viewportSize.toCGRect
         )
