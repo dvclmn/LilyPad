@@ -7,6 +7,7 @@
 
 import Foundation
 
+
 struct ZoomGestureState: GestureTrackable {
 //  typealias GestureValue = CGFloat
   
@@ -17,7 +18,7 @@ struct ZoomGestureState: GestureTrackable {
   
   mutating func update(event: TouchEventData, in rect: CGRect) {
     guard event.touches.count == requiredTouchCount else {
-      print("ZoomGesture requires exactly \(requiredTouchCount) touches")
+//      print("ZoomGesture requires exactly \(requiredTouchCount) touches")
       return
     }
     let positions = TouchPositions.mapped(from: event.touches, to: rect)
@@ -31,7 +32,7 @@ struct ZoomGestureState: GestureTrackable {
       case .moved:
         
         guard let start = startValue else {
-          print("ZoomGesture: No value found for `startDistance`")
+//          print("ZoomGesture: No value found for `startDistance`")
           return
         }
         scale = positions.distanceBetween / start

@@ -31,13 +31,14 @@ public struct DrawingView: View {
   public var body: some View {
 
     ZoomView(
+      showIndicators: store.shouldShowTouchIndicators,
       canvasSize: canvasSize,
       didUpdateEventData: { eventData in
 
         Task { @MainActor in
 
           guard store.isInTouchMode else {
-            print("Not in touch mode, not processing eventData, as it's not required for drawing.")
+//            print("Not in touch mode, not processing eventData, as it's not required for drawing.")
             return
           }
 
@@ -95,9 +96,19 @@ public struct DrawingView: View {
   }
 }
 
-extension DrawingView {
+#if DEBUG
+@available(macOS 15, iOS 18, *)
+#Preview(traits: .size(.normal)) {
+
+  DrawingView(canvasSize: CGSize(width: 300, height: 400), config: StrokeConfiguration.default)
+//    .environment(AppHandler())
+}
+#endif
 
 
+//extension DrawingView {
+//
+//
   //  func renderStrokes(
   //    points: [CGPoint],
   //    widths: inout [CGFloat],
@@ -175,12 +186,4 @@ extension DrawingView {
   //      context.fill(debugCircle, with: .color(.purple))
   //    }
   //  }
-}
-//#if DEBUG
-//@available(macOS 15, iOS 18, *)
-//#Preview(traits: .size(.normal)) {
-//
-//  DrawingView(canvasSize: CGSize(width: 300, height: 400), config: .init())
-////    .environment(AppHandler())
 //}
-//#endif

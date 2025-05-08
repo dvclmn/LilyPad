@@ -73,7 +73,7 @@ public class TrackpadTouchManager {
     in view: NSView,
   ) -> TouchPoint {
     
-    print("Made a touch")
+//    print("Made a touch")
     let now = timestamp
     let position = CGPoint(
       x: nsTouch.normalizedPosition.x,

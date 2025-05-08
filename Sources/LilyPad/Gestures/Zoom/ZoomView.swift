@@ -12,22 +12,23 @@ import SwiftUI
 public struct ZoomView<Content: View>: View {
 
   public typealias EventOutput = (TouchEventData) -> Void
-//  public typealias Output = (TouchEventData) -> Content
-
   @State private var store = ZoomHandler()
   
-  let zoomThreshold: CGFloat = 40
-  let scaleThresholdDistance: CGFloat = 10
+  private let zoomThreshold: CGFloat = 40
+  private let scaleThresholdDistance: CGFloat = 10
 
+  let showIndicators: Bool
   let canvasSize: CGSize
   let didUpdateEventData: EventOutput?
   let content: Content
 
   public init(
+    showIndicators: Bool = true,
     canvasSize: CGSize,
     didUpdateEventData: EventOutput? = nil,
     @ViewBuilder content: @escaping () -> Content
   ) {
+    self.showIndicators = showIndicators
     self.canvasSize = canvasSize
     self.didUpdateEventData = didUpdateEventData
     self.content = content()
@@ -58,11 +59,14 @@ public struct ZoomView<Content: View>: View {
         }
     }
     .midpointIndicator()
-
-    .mouseLock(store.eventData.touches.count == 2)
+    .mouseLock(store.isMouseLocked)
     
-    .touches(viewSize: store.viewportSize) { eventData in
+    .touches(
+      showIndicators: showIndicators,
+      viewSize: store.viewportSize
+    ) { eventData in
       
+    
       if eventData.touches.count == 1, let didUpdateEventData {
 //        print("Event Data (for Drawing purposes) received from `TrackpadTouchesModifier`: \(eventData)")
         didUpdateEventData(eventData)

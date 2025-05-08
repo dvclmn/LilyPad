@@ -23,7 +23,7 @@ struct PanGestureState: GestureTrackable {
   
   mutating func update(event: TouchEventData, in rect: CGRect) {
     
-    print("Let's update the pan")
+//    print("Let's update the pan")
     guard event.touches.count == requiredTouchCount else {
       print("PanGesture requires exactly 2 touches")
       return
@@ -32,16 +32,16 @@ struct PanGestureState: GestureTrackable {
     
     switch event.phase {
       case .began:
-        print("Phase: `began`")
+//        print("Phase: `began`")
         startValue = positions
         //        offset = .zero
         isActive = true
         //        return lastPanAmount
         
       case .moved:
-        print("Phase: `moved`")
+//        print("Phase: `moved`")
         guard let start = startValue else {
-          print("PanGesture: No value found for `startPositions`")
+//          print("PanGesture: No value found for `startPositions`")
           return
         }
         
@@ -60,7 +60,7 @@ struct PanGestureState: GestureTrackable {
         offset = result
         
       case .ended, .cancelled, .none:
-        print("Phase: `ended`, `cancelled` or `none`")
+//        print("Phase: `ended`, `cancelled` or `none`")
         lastPanAmount = offset
         isActive = false
         startValue = nil

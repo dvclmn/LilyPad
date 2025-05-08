@@ -249,7 +249,7 @@ extension StrokeEngine {
   }
 }
 
-public enum CatmullRomType: String, Codable {
+public enum CatmullRomType: String, Codable, Hashable {
   case uniform
   case chordal
   case centripetal

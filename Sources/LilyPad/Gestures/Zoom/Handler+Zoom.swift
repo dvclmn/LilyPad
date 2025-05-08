@@ -17,6 +17,9 @@ final class ZoomHandler {
 //  var zoomScale: CGFloat = 1.0
 //  var rotationAngle: CGFloat = .zero
   var gestureState = TrackpadGestureState()
+  
+  var isMouseLocked: Bool = false
+  
 //  var panState = PanGestureState()
 //  var zoomState = ZoomGestureState()
   

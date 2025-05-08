@@ -21,6 +21,9 @@ final class DrawingHandler: DrawingCommandHandler {
 
 extension DrawingHandler {
   
+  var shouldShowTouchIndicators: Bool {
+    return strokeHandler.eventData.touches.count > 1 && !isInTouchMode 
+  }
   
   public func clearStrokes() {
     strokeHandler.clearStrokes()
@@ -35,11 +38,11 @@ extension DrawingHandler {
   public func handleCommand(_ command: DrawingCommand) {
     switch command {
       case .lockPointer:
-        print("Ran `lockPointer` command")
+//        print("Ran `lockPointer` command")
         isPointerLocked.toggle()
         
       case .clearCanvas:
-        print("Ran `clearCanvas` command")
+//        print("Ran `clearCanvas` command")
         clearStrokes()
     }
   }

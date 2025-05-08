@@ -21,10 +21,10 @@ struct TouchPositions: Sendable, Equatable, Hashable {
   
   static func mapped(from touches: Set<TouchPoint>, to mappingRect: CGRect) -> TouchPositions {
     
-    let positions: String = touches.reduce("", { partialResult, point in
-      partialResult + point.position.displayString
-    })
-    print("Mapping \(touches.count) touches with positions \(positions) to \(mappingRect)")
+//    let positions: String = touches.reduce("", { partialResult, point in
+//      partialResult + point.position.displayString
+//    })
+//    print("Mapping \(touches.count) touches with positions \(positions) to \(mappingRect)")
     let touchesArray = Array(touches)
     precondition(touchesArray.count == 2, "Exactly 2 touches required")
     

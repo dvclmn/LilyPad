@@ -70,7 +70,7 @@ public class TrackpadTouchesNSView: NSView {
       case .changeMode: debugEventsMessage = "Change mode"
       default: debugEventsMessage = "Default event type"
     }
-    print("Event of type \"\(debugEventsMessage)\" received")
+//    print("Event of type \"\(debugEventsMessage)\" received")
     
     touchManager.activeTouches = touches
     let eventData = createEventData(phase: phase, timestamp: event.timestamp)
@@ -118,11 +118,11 @@ public class TrackpadTouchesNSView: NSView {
     processTouches(with: event, phase: .moved)
   }
   public override func touchesEnded(with event: NSEvent) {
-    print("`touchesEnded`, phase should be `ended`")
+//    print("`touchesEnded`, phase should be `ended`")
     processTouches(with: event, phase: .ended)
   }
   public override func touchesCancelled(with event: NSEvent) {
-    print("`touchesCancelled`, phase should be `cancelled`")
+//    print("`touchesCancelled`, phase should be `cancelled`")
     processTouches(with: event, phase: .cancelled)
   }
   public override func pressureChange(with event: NSEvent) {

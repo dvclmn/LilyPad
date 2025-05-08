@@ -25,4 +25,6 @@ public struct StrokeConfiguration: Hashable {
   public var maxStrokeWidth: CGFloat = 100
   public var maxThinningSpeed: CGFloat = 3.0
   public var curveType: CatmullRomType = .chordal
+  
+  public static let `default` = StrokeConfiguration()
 }
