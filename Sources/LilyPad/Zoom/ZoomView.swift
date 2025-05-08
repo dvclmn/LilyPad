@@ -13,11 +13,10 @@ public struct ZoomView<Content: View>: View {
 
   @State private var store = ZoomHandler()
 
-  @State private var firstPositionPair: TouchPositions?
-  @State private var currentPositionPair: TouchPositions?
+//  @State private var firstPositionPair: TouchPositions?
+//  @State private var currentPositionPair: TouchPositions?
   
   @State private var panGestureInProgress = false
-  
   @State private var gestureStartPositions: TouchPositions?
   @State private var lastPanAmount: CGPoint = .zero
   @State private var lastScale: CGFloat = 1.0
@@ -62,6 +61,8 @@ public struct ZoomView<Content: View>: View {
     .touches(mapToSize: store.viewportSize) { touches, pressure in
       
       store.touches = touches
+      
+      /// Pass the touches through to the recieving view
       touchUpdates(touches, pressure)
       
       if touches.count == 2 {
@@ -78,14 +79,7 @@ public struct ZoomView<Content: View>: View {
         panGestureInProgress = false
         panAmount(touches: touches, phase: .ended)
       }
-      
-//      if touches.count == 2 {
-//        panAmount(touches: touches)
-//      }
-//      store.touches = touches
-//
-//      /// Pass the touches through to the recieving view
-//      touchUpdates(touches, pressure)
+
 
     }
     .toolbar {
@@ -111,45 +105,7 @@ public struct ZoomView<Content: View>: View {
 extension ZoomView {
   
   
-  func panAmount(touches: Set<TouchPoint>, phase: GesturePhase) {
-    guard touches.count == 2 else {
-      return
-    }
-    
-    let currentPair = TouchPositions.mapped(from: touches, to: store.viewportSize.toCGRect)
-    
-    switch phase {
-      case .began:
-        // Start of gesture — remember the touch points and where the view was
-        gestureStartPositions = currentPair
-        lastPanAmount = store.offset
-        lastScale = store.scale
-        
-      case .changed:
-        guard let start = gestureStartPositions else { return }
-        
-        let delta = currentPair.midPoint - start.midPoint
-        let deltaDistance = abs(currentPair.distanceBetween - start.distanceBetween)
-
-        
-        
-        // Add delta to previous offset
-        store.offset = lastPanAmount + delta
-        
-        if deltaDistance > zoomThreshold {
-          let scaleChange = currentPair.distanceBetween / start.distanceBetween
-          store.scale = lastScale * scaleChange
-        } else {
-          // Don't update scale if zoom motion is below threshold
-          store.scale = lastScale
-        }
-        
-//        store.scale = lastScale * scaleChange
-        
-      case .ended, .cancelled:
-        gestureStartPositions = nil
-    }
-  }
+  
 //  func panAmount(touches: Set<TouchPoint>) {
 //    guard touches.count == 2 else {
 //      return
