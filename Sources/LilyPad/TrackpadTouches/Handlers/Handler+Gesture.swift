@@ -8,14 +8,14 @@
 import BaseHelpers
 import Foundation
 
-struct GestureStateHandler {
+public struct GestureStateHandler {
 
   //  var activeGestures: Set<GestureType> = []
 
   /// Current values
-  var pan: CGPoint = .zero
-  var zoom: CGFloat = 1.0
-  var rotation: CGFloat = 0.0
+  public var pan: CGPoint = .zero
+  public var zoom: CGFloat = 1.0
+  public var rotation: CGFloat = 0.0
   
   /// Last-updated values
   var lastPan: CGPoint = .zero
@@ -27,7 +27,12 @@ struct GestureStateHandler {
   let zoomThreshold: CGFloat = 50
   let requiredTouchCount: Int = 2
   
-  mutating func update(event: TouchEventData, in rect: CGRect) {
+  public init(
+  ) {
+
+  }
+  
+  public mutating func update(event: TouchEventData, in rect: CGRect) {
     
     guard event.touches.count == 2 else {
       print("Gesture requires exactly 2 touches")
