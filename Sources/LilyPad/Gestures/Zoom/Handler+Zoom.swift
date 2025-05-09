@@ -8,15 +8,15 @@
 import SwiftUI
 import BaseHelpers
 
-@Observable
-final class ZoomHandler {
+//@Observable
+//final class ZoomHandler {
 //  var touches: Set<TouchPoint> = []
 //  var eventData: TouchEventData = .atRest
   
 //  var panOffset: CGPoint = .zero
 //  var zoomScale: CGFloat = 1.0
 //  var rotationAngle: CGFloat = .zero
-  var gestureState = GestureStateHandler()
+//  var gestureState = GestureStateHandler()
   
 //  var isMouseLocked: Bool = false
   
@@ -34,18 +34,18 @@ final class ZoomHandler {
   
 //  var scale: CGFloat = 1
 //  var offset: CGPoint = .zero
-  var canvasSize: CGSize = .zero
-  
-  var viewportSize: CGSize = .zero
-  
+//  var canvasSize: CGSize = .zero
+//  
+//  var viewportSize: CGSize = .zero
+//  
 //  var panGestureInProgress = false
 //  var gestureStartPositions: TouchPositions?
 //  var lastPanAmount: CGPoint = .zero
 //  var lastScale: CGFloat = 1.0
   
-}
-
-extension ZoomHandler {
+//}
+//
+//extension ZoomHandler {
   
 //  func updatePan(event: TouchEventData, in rect: CGRect) {
     
@@ -60,12 +60,7 @@ extension ZoomHandler {
 //    //    drawing.update(event: event, in: rect)
 //  }
   
-  var canvasPosition: CGPoint {
-    let viewportMidPoint = viewportSize.midpoint
-    let centred = viewportMidPoint
-    return gestureState.pan
-    + centred
-  }
+  
   
 //  var canvasScale: CGFloat {
     
@@ -110,5 +105,5 @@ extension ZoomHandler {
 //        gestureStartPositions = nil
 //    }
 //  }
-}
+//}
 
