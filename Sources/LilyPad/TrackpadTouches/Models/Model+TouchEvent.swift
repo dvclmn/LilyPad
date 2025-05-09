@@ -11,7 +11,7 @@ public struct TouchEventData: Sendable, Equatable {
   public let touches: Set<TouchPoint>
   public let phase: TrackpadGesturePhase
   
-  public static let initial = TouchEventData(
+  public static let atRest = TouchEventData(
     touches: [],
     phase: .none,
   )

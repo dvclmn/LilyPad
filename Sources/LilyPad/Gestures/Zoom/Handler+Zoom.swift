@@ -11,14 +11,14 @@ import BaseHelpers
 @Observable
 final class ZoomHandler {
 //  var touches: Set<TouchPoint> = []
-  var eventData: TouchEventData = .initial
+//  var eventData: TouchEventData = .atRest
   
 //  var panOffset: CGPoint = .zero
 //  var zoomScale: CGFloat = 1.0
 //  var rotationAngle: CGFloat = .zero
   var gestureState = GestureStateHandler()
   
-  var isMouseLocked: Bool = false
+//  var isMouseLocked: Bool = false
   
 //  var panState = PanGestureState()
 //  var zoomState = ZoomGestureState()

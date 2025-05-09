@@ -17,17 +17,20 @@ public struct ZoomView<Content: View>: View {
   private let zoomThreshold: CGFloat = 40
   private let scaleThresholdDistance: CGFloat = 10
 
+  let shouldLockMouse: Bool
   let showIndicators: Bool
   let canvasSize: CGSize
-  let didUpdateEventData: EventOutput?
+  let didUpdateEventData: EventOutput
   let content: Content
 
   public init(
+    shouldLockMouse: Bool = false,
     showIndicators: Bool = true,
     canvasSize: CGSize,
-    didUpdateEventData: EventOutput? = nil,
+    didUpdateEventData: @escaping EventOutput,
     @ViewBuilder content: @escaping () -> Content
   ) {
+    self.shouldLockMouse = shouldLockMouse
     self.showIndicators = showIndicators
     self.canvasSize = canvasSize
     self.didUpdateEventData = didUpdateEventData
@@ -54,33 +57,35 @@ public struct ZoomView<Content: View>: View {
         }
     }
     .midpointIndicator()
-    .mouseLock(store.isMouseLocked)
+    .mouseLock(shouldLockMouse)
 
     .touches(
       showIndicators: showIndicators,
       viewSize: store.viewportSize
-      ) { eventData in
+    ) { eventData in
+      handleEventData(eventData)
+    }
+    .toolbar {
+      ZoomToolbarView(store: store)
+    }
+    .task(id: canvasSize) {
+      print("This should only update once in a while, on actual canvas size changes, right?")
+      store.canvasSize = canvasSize
+    }
+  }
+}
 
-        print("Event Data received from `TrackpadTouchesModifier`: \(eventData)")
-
-        if eventData.touches.count == 1, let didUpdateEventData {
-          //        print("Event Data (for Drawing purposes) received from `TrackpadTouchesModifier`: \(eventData)")
-          didUpdateEventData(eventData)
-        } else {
-          store.eventData = eventData
-          store.gestureState.update(
-            event: eventData,
-            in: store.viewportSize.toCGRect
-          )
-        }
-      }
-      .toolbar {
-        ZoomToolbarView(store: store)
-      }
-      .task(id: canvasSize) {
-        print("This should only update once in a while, on actual canvas size changes, right?")
-        store.canvasSize = canvasSize
-      }
+extension ZoomView {
+  
+  private func handleEventData(_ eventData: TouchEventData) {
+    /// Send data through to child view
+    didUpdateEventData(eventData)
+    
+    /// Send events to `GestureStateHandler`
+    store.gestureState.update(
+      event: eventData,
+      in: store.viewportSize.toCGRect
+    )
   }
 }
 
@@ -88,7 +93,7 @@ public struct ZoomView<Content: View>: View {
 #if DEBUG
 @available(macOS 15, iOS 18, *)
 #Preview(traits: .size(.narrow)) {
-  ZoomView(canvasSize: CGSize.init(width: 400, height: 300)) {
+  ZoomView(canvasSize: CGSize.init(width: 400, height: 300), didUpdateEventData: { _ in }) {
     Text(TestStrings.paragraphs[5])
       .padding(40)
       .background(.purple.quinary)
