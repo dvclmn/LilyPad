@@ -23,30 +23,7 @@ public struct TouchPoint: Identifiable, Sendable, Hashable, Equatable, Codable {
   public let velocity: CGVector
   public let pressure: CGFloat
 
-  @Init(.ignore) private var _width: CGFloat? = nil
-
-  public mutating func setCachedWidth(_ value: CGFloat) {
-    _width = value
-  }
-  
-  #warning("This drawing-specific logic needs to go over to Paperbark")
-//
-//  public func width(
-//    using model: StrokeWidthHandler,
-//    config: StrokeConfiguration
-//  ) -> CGFloat {
-//    if let cachedWidth = _width {
-//      print("Used a cached width for this touch point.")
-//      return cachedWidth
-//    }
-//    let result = model.calculateStrokeWidth(
-//      speed: velocity.speed,
-//      pressure: pressure,
-//      config: config
-//    )
-//    return result
-//  }
-
+ 
   public var direction: CGFloat {
     return atan2(velocity.dy, velocity.dx)
   }

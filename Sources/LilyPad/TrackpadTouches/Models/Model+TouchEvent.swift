@@ -8,10 +8,10 @@
 import AppKit
 
 public struct TouchEventData: Sendable, Equatable {
-  let touches: Set<TouchPoint>
-  let phase: TrackpadGesturePhase
-  let pressure: CGFloat
-  let timestamp: TimeInterval
+  public let touches: Set<TouchPoint>
+  public let phase: TrackpadGesturePhase
+  public let pressure: CGFloat
+  public let timestamp: TimeInterval
   
   public static let initial = TouchEventData(
     touches: [],
