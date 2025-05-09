@@ -52,7 +52,7 @@ public struct TrackpadTouchesView: NSViewRepresentable {
       _ view: TrackpadTouchesNSView,
       didUpdate eventData: TouchEventData
     ) {
-      DispatchQueue.main.async {
+      Task { @MainActor in
         self.parent.onTouchesUpdate?(eventData)
 //        self.parent.onPressureUpdate?(pressure)
       }

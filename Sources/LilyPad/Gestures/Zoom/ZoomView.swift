@@ -13,7 +13,7 @@ public struct ZoomView<Content: View>: View {
 
   public typealias EventOutput = (TouchEventData) -> Void
   @State private var store = ZoomHandler()
-  
+
   private let zoomThreshold: CGFloat = 40
   private let scaleThresholdDistance: CGFloat = 10
 
@@ -34,7 +34,6 @@ public struct ZoomView<Content: View>: View {
     self.content = content()
 
     print("`ZoomView<Content: View>` created at \(Date.now.format(.timeDetailed))")
-
   }
 
   public var body: some View {
@@ -56,31 +55,32 @@ public struct ZoomView<Content: View>: View {
     }
     .midpointIndicator()
     .mouseLock(store.isMouseLocked)
-    
+
     .touches(
       showIndicators: showIndicators,
       viewSize: store.viewportSize
-    ) { eventData in
-      
-    
-      if eventData.touches.count == 1, let didUpdateEventData {
-//        print("Event Data (for Drawing purposes) received from `TrackpadTouchesModifier`: \(eventData)")
-        didUpdateEventData(eventData)
-      } else {
-//        print("Event Data (for Gesture purposes) received from `TrackpadTouchesModifier`: \(eventData)")
-        store.eventData = eventData
-        store.gestureState.update(
-          event: eventData,
-          in: store.viewportSize.toCGRect
-        )
+      ) { eventData in
+
+        print("Event Data received from `TrackpadTouchesModifier`: \(eventData)")
+
+        if eventData.touches.count == 1, let didUpdateEventData {
+          //        print("Event Data (for Drawing purposes) received from `TrackpadTouchesModifier`: \(eventData)")
+          didUpdateEventData(eventData)
+        } else {
+          store.eventData = eventData
+          store.gestureState.update(
+            event: eventData,
+            in: store.viewportSize.toCGRect
+          )
+        }
       }
-    }
-    .toolbar {
-      ZoomToolbarView(store: store)
-    }
-    .task(id: canvasSize) {
-      store.canvasSize = canvasSize
-    }
+      .toolbar {
+        ZoomToolbarView(store: store)
+      }
+      .task(id: canvasSize) {
+        print("This should only update once in a while, on actual canvas size changes, right?")
+        store.canvasSize = canvasSize
+      }
   }
 }
 

@@ -64,16 +64,16 @@ public class TrackpadTouchManager {
     }
 
 
-    print(
-      """
-
-        processTouches():
-
-        updatedTouches: \(updatedTouches)
-        currentIDs: \(currentIDs)
-        lastIDs: \(lastIDs)
-        endedIDs: \(endedIDs)
-      """)
+//    print(
+//      """
+//
+//        processTouches():
+//
+//        updatedTouches: \(updatedTouches)
+//        currentIDs: \(currentIDs)
+//        lastIDs: \(lastIDs)
+//        endedIDs: \(endedIDs)
+//      """)
 
     return TouchEventData(touches: updatedTouches, phase: phase)
   }

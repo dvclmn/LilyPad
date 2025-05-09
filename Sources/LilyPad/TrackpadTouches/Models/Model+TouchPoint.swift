@@ -71,12 +71,16 @@ public struct TouchPoint: Identifiable, Sendable, Hashable, Equatable, Codable {
 extension TouchPoint: CustomStringConvertible {
   public var description: String {
     """
+    /////
     TouchPoint
       - ID: \(id)
       - Position: \(position.displayString)
       - Timestamp: \(timestamp.displayString)
       - Velocity: \(velocity.displayString)
       - Pressure: \(pressure.displayString)
+    /////
+    
+    
     """
   }
 }

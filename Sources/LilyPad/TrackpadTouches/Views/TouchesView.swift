@@ -24,9 +24,9 @@ public struct TrackpadTouchesModifier: ViewModifier {
           mappingRect: viewSize.toCGRect
         )
       }
-      TrackpadTouchesView { events in
-        self.localTouches = events.touches
-        touchUpdates(events)
+      TrackpadTouchesView { eventData in
+        self.localTouches = eventData.touches
+        touchUpdates(eventData)
       }
     }
     
