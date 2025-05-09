@@ -76,65 +76,99 @@ public class TrackpadTouchManager {
 
     return eventData
   }
-
-  func makeTouch(
-    from nsTouch: NSTouch,
-    timestamp: TimeInterval,
-    previous: TouchPoint?,
-  ) -> TouchPoint {
-
-    let now = timestamp
+  
+  
+  private func makeRawTouch(from nsTouch: NSTouch, touchId: Int, timestamp: TimeInterval) -> TouchPoint {
     let position = CGPoint(
       x: nsTouch.normalizedPosition.x,
-      /// Flip Y to match SwiftUI coordinate system
-      y: 1.0 - nsTouch.normalizedPosition.y
+      y: 1.0 - nsTouch.normalizedPosition.y // Flip Y
     )
-    let history = touchHistories[touchId] ?? []
-    let velocity: CGVector = computeVelocity(for: history, current: <#T##TouchPoint#>)
-//    {
-//      guard let prev = previous else { return .zero }
-//      return CGVector.between(prev.position, position, dt: now - prev.timestamp)
-//    }()
-
+    
     return TouchPoint(
-      id: nsTouch.identity.hash,
+      id: touchId,
       position: position,
       timestamp: timestamp,
-      velocity: velocity,
       pressure: currentPressure
     )
   }
+  
+  
+
+//  func makeTouch(
+//    from nsTouch: NSTouch,
+//    timestamp: TimeInterval,
+//    previous: TouchPoint?,
+//  ) -> TouchPoint {
+//
+//    let now = timestamp
+//    let position = CGPoint(
+//      x: nsTouch.normalizedPosition.x,
+//      /// Flip Y to match SwiftUI coordinate system
+//      y: 1.0 - nsTouch.normalizedPosition.y
+//    )
+//    let history = touchHistories[touchId] ?? []
+//    let velocity: CGVector = computeVelocity(for: history, current: <#T##TouchPoint#>)
+////    {
+////      guard let prev = previous else { return .zero }
+////      return CGVector.between(prev.position, position, dt: now - prev.timestamp)
+////    }()
+//
+//    return TouchPoint(
+//      id: nsTouch.identity.hash,
+//      position: position,
+//      timestamp: timestamp,
+//      velocity: velocity,
+//      pressure: currentPressure
+//    )
+//  }
   
   func id(for touch: NSTouch) -> Int {
     ObjectIdentifier(touch.identity).hashValue
   }
   
-  func computeVelocity(
-    for history: [TouchPoint],
-    current: TouchPoint
-  ) -> CGVector {
-    guard history.count >= 2, let first = history.first else { return .zero }
+  private func computeVelocity(for history: [TouchPoint]) -> CGVector {
+    guard history.count >= 2 else { return .zero }
     
-    let dx = current.position.x - first.position.x
-    let dy = current.position.y - first.position.y
-    let dt = current.timestamp - first.timestamp
+    let a = history[history.count - 2]
+    let b = history[history.count - 1]
+    let dt = b.timestamp - a.timestamp
     
-    guard dt != 0 else { return .zero }
-    return CGVector(dx: dx / dt, dy: dy / dt)
+    guard dt > 0 else { return .zero }
+    
+    /// Replace with BaseHelpers `CGVector.between()`
+    /// at some point
+    return CGVector(
+      dx: (b.position.x - a.position.x) / dt,
+      dy: (b.position.y - a.position.y) / dt
+    )
   }
-
-  /// Updates the history for a specific touch ID
-  private func updateHistory(for touchId: Int, with touch: TouchPoint) {
-    var history = touchHistories[touchId] ?? []
-    history.append(touch)
-
-    /// Limit history length
-    if history.count > maxHistoryLength {
-      history.removeFirst()
-    }
-
-    touchHistories[touchId] = history
-  }
+  
+//  func computeVelocity(
+//    for history: [TouchPoint],
+//    current: TouchPoint
+//  ) -> CGVector {
+//    guard history.count >= 2, let first = history.first else { return .zero }
+//    
+//    let dx = current.position.x - first.position.x
+//    let dy = current.position.y - first.position.y
+//    let dt = current.timestamp - first.timestamp
+//    
+//    guard dt != 0 else { return .zero }
+//    return CGVector(dx: dx / dt, dy: dy / dt)
+//  }
+//
+//  /// Updates the history for a specific touch ID
+//  private func updateHistory(for touchId: Int, with touch: TouchPoint) {
+//    var history = touchHistories[touchId] ?? []
+//    history.append(touch)
+//
+//    /// Limit history length
+//    if history.count > maxHistoryLength {
+//      history.removeFirst()
+//    }
+//
+//    touchHistories[touchId] = history
+//  }
 
   /// Get the touch history for a specific ID
   public func history(for touchId: Int) -> [TouchPoint]? {
