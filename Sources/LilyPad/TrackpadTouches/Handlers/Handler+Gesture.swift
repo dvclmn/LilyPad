@@ -19,7 +19,7 @@ struct GestureStateHandler {
   
   /// Last-updated values
   var lastPan: CGPoint = .zero
-  var lastZoom: CGFloat = .zero
+  var lastZoom: CGFloat = 1.0
   var lastRotation: CGFloat = .zero
 
   var startTouchPositions: TouchPositions?

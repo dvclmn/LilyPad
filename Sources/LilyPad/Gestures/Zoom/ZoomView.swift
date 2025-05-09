@@ -44,14 +44,10 @@ public struct ZoomView<Content: View>: View {
     /// Using `GeometryReader` to kind 'reset' everything to be full width,
     /// full height, and top leading.
     GeometryReader { proxy in
-      #warning("`.mouseLock(store.eventData.touches.count == 2)` will need to be based on better metrics than this")
-
       content
-        //      Rectangle()
-        //        .fill(.white.opacity(0.1))
         .midpointIndicator()
         .frame(width: store.canvasSize.width, height: store.canvasSize.height)
-        .scaleEffect(store.gestureState.zoom.scale)
+        .scaleEffect(store.gestureState.zoom)
         .position(store.canvasPosition)
         .drawingGroup()
         .task(id: proxy.size) {

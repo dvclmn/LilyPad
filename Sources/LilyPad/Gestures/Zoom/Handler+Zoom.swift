@@ -63,7 +63,7 @@ extension ZoomHandler {
   var canvasPosition: CGPoint {
     let viewportMidPoint = viewportSize.midpoint
     let centred = viewportMidPoint
-    return gestureState.pan.offset
+    return gestureState.pan
     + centred
   }
   
