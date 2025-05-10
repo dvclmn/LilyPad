@@ -24,6 +24,7 @@ protocol GestureTrackable: Sendable, Equatable, Hashable {
 }
 
 public enum GestureType: Sendable {
+  case none
   case draw
   case pan
   case zoom

@@ -8,19 +8,22 @@
 import BaseHelpers
 import SwiftUI
 
+public typealias TouchesModifierOutput = (_ eventData: TouchEventData) -> Void
+
 public struct TrackpadTouchesModifier: ViewModifier {
   @State private var localTouches: Set<TouchPoint> = []
 
   let showIndicators: Bool
-  let touchUpdates: TouchUpdates
+  let viewSize: CGSize
+  let touchUpdates: TouchesModifierOutput
 
   public func body(content: Content) -> some View {
-    GeometryReader { proxy in
+    GeometryReader { _ in
       content
       if showIndicators {
         TouchIndicatorsView(
           touches: localTouches,
-          mappingRect: proxy.size.toCGRect
+          mappingRect: viewSize.toCGRect
         )
       }
       TrackpadTouchesView { eventData in
@@ -33,11 +36,13 @@ public struct TrackpadTouchesModifier: ViewModifier {
 extension View {
   public func touches(
     showIndicators: Bool = true,
-    touchUpdates: @escaping TouchUpdates
+    in viewSize: CGSize,
+    touchUpdates: @escaping TouchesModifierOutput
   ) -> some View {
     self.modifier(
       TrackpadTouchesModifier(
         showIndicators: showIndicators,
+        viewSize: viewSize,
         touchUpdates: touchUpdates
       )
     )

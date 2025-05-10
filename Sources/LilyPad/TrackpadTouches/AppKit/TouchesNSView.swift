@@ -10,7 +10,8 @@ import AppKit
 /// The underlying AppKit NSView that captures raw trackpad touches
 public class TrackpadTouchesNSView: NSView {
   /// Delegate to forward touch events to
-  weak var delegate: TrackpadTouchesDelegate?
+  weak var touchesDelegate: TrackpadTouchesDelegate?
+//  weak var gesturesDelegate: TrackpadGesturesDelegate?
 
   /// Touch manager to handle touch tracking and velocity calculation
   private let touchManager = TrackpadTouchManager()
@@ -50,7 +51,7 @@ public class TrackpadTouchesNSView: NSView {
     
 //    touchManager.activeTouches = touches
 //    let eventData = createEventData(phase: phase, timestamp: event.timestamp)
-    delegate?.touchesView(self, didUpdate: eventData)
+    touchesDelegate?.touchesView(self, didUpdate: eventData)
   }
 
 //  private func processPressure(_ event: NSEvent) {
@@ -99,6 +100,10 @@ public class TrackpadTouchesNSView: NSView {
   }
 //  public override func pressureChange(with event: NSEvent) {
 //    processPressure(event)
+//  }
+  
+//  public override func addGestureRecognizer(_ gestureRecognizer: NSGestureRecognizer) {
+//    <#code#>
 //  }
 
 

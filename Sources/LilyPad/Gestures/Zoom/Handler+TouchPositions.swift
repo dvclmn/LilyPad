@@ -70,15 +70,15 @@ struct TouchPositions: Sendable, Equatable, Hashable {
   /// `content.rotationEffect(.radians(store.rotation))`
   ///
   /// Angle in radians, from p1 to p2, in range [-π, π]
-  var angle: CGFloat {
+  var angleBetween: CGFloat {
     atan2(p2.y - p1.y, p2.x - p1.x)
   }
   
   /// Returns delta angle from another `TouchPositions`, normalized to [-π, π]
-  func angleDelta(from other: TouchPositions) -> CGFloat {
-    let delta = angle - other.angle
-    return atan2(sin(delta), cos(delta)) // Normalize
-  }
+//  func angleDelta(from other: TouchPositions) -> CGFloat {
+//    let delta = angle - other.angle
+//    return atan2(sin(delta), cos(delta)) // Normalize
+//  }
 }
 
 extension TouchPositions: CustomStringConvertible {
@@ -89,7 +89,7 @@ extension TouchPositions: CustomStringConvertible {
       - p2: \(p2.displayString)
       - Mapping rect: \(mappingRect)
       - Mid point: \(midPoint.displayString)
-      - Angle: \(angle.displayString)
+      - Angle: \(angleBetween.displayString)
       - Distance: \(distanceBetween.displayString)
     """
   }

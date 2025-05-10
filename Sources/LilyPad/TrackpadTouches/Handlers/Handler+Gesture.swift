@@ -10,91 +10,110 @@ import Foundation
 
 public struct GestureStateHandler {
 
-  //  var activeGestures: Set<GestureType> = []
-
   /// Current values
   public var pan: CGPoint = .zero
   public var zoom: CGFloat = 1.0
-  public var rotation: CGFloat = 0.0
-  
+  public var rotation: CGFloat = .zero
+
   /// Last-updated values
   var lastPan: CGPoint = .zero
   var lastZoom: CGFloat = 1.0
   var lastRotation: CGFloat = .zero
 
   var startTouchPositions: TouchPositions?
-  
-  let zoomThreshold: CGFloat = 50
-  let requiredTouchCount: Int = 2
-  
-  public init(
-  ) {
+  var gestureType: GestureType = .none
 
-  }
-  
-  public mutating func update(event: TouchEventData, in rect: CGRect) {
-    
-    guard event.touches.count == 2 else {
-      print("Gesture requires exactly 2 touches")
-      return
-    }
+  let zoomThreshold: CGFloat = 20
+  let panThreshold: CGFloat = 10
+  let rotationThreshold: CGFloat = .pi / 30  // ~6 degrees
+  let requiredTouchCount: Int = 2
+
+  public init() {}
+
+  public mutating func update(event: TouchEventData, inViewSize rect: CGRect) {
+
+    guard event.touches.count == requiredTouchCount else { return }
     let touchPositions = TouchPositions.mapped(from: event.touches, to: rect)
-    
+
     switch event.phase {
       case .began:
-        //        print("Phase: `began`")
         startTouchPositions = touchPositions
-        
-        
+        gestureType = .none
+
       case .moved:
-        //        print("Phase: `moved`")
         guard let start = startTouchPositions else {
           print("Gesture: No value found for `startPositions`")
           return
         }
-        
-#warning(
-        "Should try a callback here, that asks the conforming type (e.g. Zoom) to provide *it's* own way to calculate a delta"
-        )
+
         let deltaPan = touchPositions.midPoint - start.midPoint
-        let deltaDistance = abs(touchPositions.distanceBetween - start.distanceBetween)
-        
-        if deltaDistance > zoomThreshold {
-          let scaleChange = touchPositions.distanceBetween / start.distanceBetween
-          
-          zoom = lastZoom * scaleChange
-        } else {
-          // Don't update scale if zoom motion is below threshold
-          zoom = lastZoom
+        let deltaZoom = abs(touchPositions.distanceBetween - start.distanceBetween)
+        let deltaAngle = abs(touchPositions.angleBetween - start.angleBetween)
+
+        /// Decide gesture type if undecided
+        if gestureType == .none {
+          if deltaZoom > zoomThreshold {
+            print("Zoom delta: `\(deltaZoom)` crossed threshold `\(zoomThreshold)`")
+            gestureType = .zoom
+          } else if deltaAngle > rotationThreshold {
+            print("Rotation delta: `\(deltaAngle)` crossed threshold `\(rotationThreshold)`")
+            gestureType = .rotate
+          } else if deltaPan.length > panThreshold {
+            print("Zoom delta: `\(deltaZoom)` crossed threshold `\(zoomThreshold)`")
+            gestureType = .pan
+          }
         }
-        
-        pan = lastPan + deltaPan
-        
+
+        //        if deltaDistance > zoomThreshold {
+        //          let scaleChange = touchPositions.distanceBetween / start.distanceBetween
+        //
+        //          zoom = lastZoom * scaleChange
+        //        } else {
+        //          // Don't update scale if zoom motion is below threshold
+        //          zoom = lastZoom
+        //        }
+
+        switch gestureType {
+          case .zoom:
+            let scaleChange = touchPositions.distanceBetween / start.distanceBetween
+            zoom = lastZoom * scaleChange
+          case .rotate:
+            rotation = lastRotation + (touchPositions.angleBetween - start.angleBetween)
+          case .pan:
+            pan = lastPan + deltaPan
+          case .none, .draw:
+            break  // Wait for threshold to be crossed
+        }
+
+      //        pan = lastPan + deltaPan
+
       case .ended, .cancelled, .none:
-        //        print("Phase: `ended`, `cancelled` or `none`")
         lastPan = pan
+        lastZoom = zoom
+        lastRotation = rotation
         startTouchPositions = nil
+        gestureType = .none
     }
-    
-    
+
+
   }
-  
-  
-//
-//  var pan = PanGestureState()
-//  var zoom = ZoomGestureState()
+
+
+  //
+  //  var pan = PanGestureState()
+  //  var zoom = ZoomGestureState()
   //  var rotation = RotateGestureState()
   //  var drawing = DrawingGestureState()
 
   /// The space to which touch points are mapped (e.g., canvas or viewport)
   //  var mappingRect: CGRect = .zero
 
-//  mutating func update(event: TouchEventData, in rect: CGRect) {
-//    pan.update(event: event, in: rect)
-//    zoom.update(event: event, in: rect)
-//    //    rotation.update(event: event, in: rect)
-//    //    drawing.update(event: event, in: rect)
-//  }
+  //  mutating func update(event: TouchEventData, in rect: CGRect) {
+  //    pan.update(event: event, in: rect)
+  //    zoom.update(event: event, in: rect)
+  //    //    rotation.update(event: event, in: rect)
+  //    //    drawing.update(event: event, in: rect)
+  //  }
 
   /// Something worth considering — a default cascade of gesture types?
   /// Though they *can* be simultaneous, so maybe this isn't the way to go.

@@ -14,6 +14,10 @@ public protocol TrackpadTouchesDelegate: AnyObject {
   func touchesView(_ view: TrackpadTouchesNSView, didUpdate eventData: TouchEventData)
 }
 
+public protocol TrackpadGesturesDelegate: AnyObject {
+  func gesturesView(_ view: TrackpadTouchesNSView, didUpdate gestureData: GestureEventData)
+}
+
 public typealias TouchUpdates = (_ eventData: TouchEventData) -> Void
 
 // MARK: - SwiftUI Representable
@@ -31,7 +35,7 @@ public struct TrackpadTouchesView: NSViewRepresentable {
 
   public func makeNSView(context: Context) -> TrackpadTouchesNSView {
     let view = TrackpadTouchesNSView()
-    view.delegate = context.coordinator
+    view.touchesDelegate = context.coordinator
     return view
   }
 
@@ -57,6 +61,16 @@ public struct TrackpadTouchesView: NSViewRepresentable {
 //        self.parent.onPressureUpdate?(pressure)
       }
     }
+    
+//    public func gesturesView(
+//      _ view: TrackpadTouchesNSView,
+//      didUpdate gestureData: GestureEventData
+//    ) {
+//      Task { @MainActor in
+//        self.parent.onTouchesUpdate?(gestureData)
+//        //        self.parent.onPressureUpdate?(pressure)
+//      }
+//    }
   }
 }
 #endif
