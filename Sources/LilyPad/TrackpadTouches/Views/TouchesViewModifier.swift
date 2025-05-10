@@ -22,7 +22,7 @@ public struct TrackpadTouchesModifier: ViewModifier {
       content
       if showIndicators {
         TouchIndicatorsView(
-          touches: localTouches,
+          touches: localTouches.array,
           mappingRect: viewSize.toCGRect
         )
       }

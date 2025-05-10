@@ -45,7 +45,7 @@ struct TouchPositions: Sendable, Equatable, Hashable {
 
   /// Angle in radians, from p1 to p2, in range [-π, π]
   var angleBetween: CGFloat {
-    CGFloat.angleBetween(p1, p2)
+    CGPoint.angleBetween(p1, p2)
   }
 
 }

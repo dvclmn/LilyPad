@@ -12,12 +12,12 @@ import BaseStyles
 
 public struct TouchIndicatorsView: View {
 
-  let touches: Set<TouchPoint>
+  let touches: [TouchPoint]
   let mappingRect: CGRect
   
   public var body: some View {
 
-    ForEach(Array(touches), id: \.id) { touch in
+    ForEach(touches) { touch in
       Circle()
         .fill(Color.blue.opacity(0.7))
         .frame(width: 40, height: 40)
@@ -45,14 +45,13 @@ extension TouchIndicatorsView {
   typealias PointPair = (CGPoint, CGPoint)
   
   var firstTwoPoints: PointPair {
-    let touchesArray = Array(touches)
     let fallback: PointPair = (.zero, .zero)
     
-    guard touchesArray.count >= 2 else {
+    guard touches.count >= 2 else {
       return fallback
     }
-    let p1 = touchesArray[0].position.mapped(to: mappingRect)
-    let p2 = touchesArray[1].position.mapped(to: mappingRect)
+    let p1 = touches[0].position.mapped(to: mappingRect)
+    let p2 = touches[1].position.mapped(to: mappingRect)
     
     return (p1, p2)
     
@@ -66,9 +65,12 @@ extension TouchIndicatorsView {
 #if DEBUG
 @available(macOS 15, iOS 18, *)
 #Preview(traits: .size(.normal)) {
-  TouchIndicatorsView(
-    touches: [],
-    mappingRect: CGRect(x: 0, y: 0, width: 700, height: 600)
-  )
+  GeometryReader { _ in
+    TouchIndicatorsView(
+      touches: [TouchPoint.example01, TouchPoint.example02],
+      mappingRect: CGRect(x: 0, y: 0, width: 400, height: 500)
+    )
+  }
+  .padding()
 }
 #endif

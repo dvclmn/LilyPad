@@ -68,6 +68,22 @@ public struct TouchPoint: Identifiable, Sendable, Hashable, Equatable, Codable {
     return min(max(pressure, 0), 1)
   }
 }
+extension TouchPoint {
+  public static let example01 = TouchPoint(
+    id: 1,
+    position: CGPoint.quickPreset01,
+    timestamp: 1,
+    pressure: 0.5
+  )
+  
+  public static let example02 = TouchPoint(
+    id: 2,
+    position: CGPoint.quickPreset02,
+    timestamp: 2,
+    pressure: 0.2
+  )
+  
+}
 extension TouchPoint: CustomStringConvertible {
   public var description: String {
     """
