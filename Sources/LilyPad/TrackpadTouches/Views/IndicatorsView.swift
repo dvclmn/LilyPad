@@ -12,12 +12,12 @@ import BaseStyles
 
 public struct TouchIndicatorsView: View {
 
-  let touches: [TouchPoint]
+  let touches: Set<TouchPoint>
   let mappingRect: CGRect
   
   public var body: some View {
 
-    ForEach(touches) { touch in
+    ForEach(touches.sortedByTimestamp) { touch in
       Circle()
         .fill(Color.blue.opacity(0.7))
         .frame(width: 40, height: 40)
@@ -31,7 +31,7 @@ public struct TouchIndicatorsView: View {
         }
         .position(touchPosition(touch))
     }
-    .angledLine(from: firstTwoPoints.0, to: firstTwoPoints.1)
+//    .angledLine(from: firstTwoPoints.0, to: firstTwoPoints.1)
     .frame(
       width: mappingRect.width,
       height: mappingRect.height
@@ -42,19 +42,14 @@ public struct TouchIndicatorsView: View {
 
 extension TouchIndicatorsView {
   
-  typealias PointPair = (CGPoint, CGPoint)
-  
   var firstTwoPoints: PointPair {
+    
     let fallback: PointPair = (.zero, .zero)
+
+    guard let touchPair = touches.touchPair else { return fallback }
     
-    guard touches.count >= 2 else {
-      return fallback
-    }
-    let p1 = touches[0].position.mapped(to: mappingRect)
-    let p2 = touches[1].position.mapped(to: mappingRect)
-    
-    return (p1, p2)
-    
+    let pointPair = touchPair.pointPair(in: mappingRect)
+    return pointPair
   }
   
   func touchPosition(_ touch: TouchPoint) -> CGPoint {

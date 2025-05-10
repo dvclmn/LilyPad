@@ -45,12 +45,6 @@ public class TrackpadTouchesNSView: NSView {
       phase: phase,
       timestamp: event.timestamp
     )
-    
-    /// Forward via delegate
-//    delegate?.touchesView(self, didUpdateTouches: trackpadTouches, didUpdatePressure: .zero)
-    
-//    touchManager.activeTouches = touches
-//    let eventData = createEventData(phase: phase, timestamp: event.timestamp)
     touchesDelegate?.touchesView(self, didUpdate: eventData)
   }
 
