@@ -66,7 +66,7 @@ extension GestureStateHandler {
     switch event.phase {
       case .began:
         startTouchPositions = touchPositions
-        currentTouchPositions = touchPositions
+//        currentTouchPositions = touchPositions
         gestureType = .none
 
       case .moved:
@@ -75,7 +75,7 @@ extension GestureStateHandler {
           return
         }
 
-        currentTouchPositions = touchPositions
+//        currentTouchPositions = touchPositions
 
         let deltaPan = touchPositions.midPoint - start.midPoint
         let deltaZoom = abs(touchPositions.distanceBetween - start.distanceBetween)
@@ -116,7 +116,7 @@ extension GestureStateHandler {
         lastZoom = zoom
         lastRotation = rotation
         startTouchPositions = nil
-        currentTouchPositions = nil
+//        currentTouchPositions = nil
         gestureType = .none
     }
   }

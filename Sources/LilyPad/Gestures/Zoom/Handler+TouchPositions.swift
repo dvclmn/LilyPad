@@ -8,6 +8,7 @@
 import Foundation
 import BaseHelpers
 
+/// Used in `GestureStateHandler` to define gesture start positions
 struct TouchPositions: Sendable, Equatable, Hashable {
   var p1: CGPoint
   var p2: CGPoint
