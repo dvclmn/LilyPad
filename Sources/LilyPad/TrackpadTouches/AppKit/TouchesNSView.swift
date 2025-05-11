@@ -34,15 +34,19 @@ public class TrackpadTouchesNSView: NSView {
     wantsRestingTouches = false
   }
 
-  private func processTouches(
+  private func processFirstTouches(
     with event: NSEvent,
     phase: TrackpadGesturePhase
   ) {
-    let touches = event.allTouches()
-//    let touches = event.touches(matching: [.cancelled, .ended, .touching], in: self)
+//    let touches = event.allTouches()
     
-    /// Only emit nil when all touches have ended
-    let eventData = touchManager.processTouches(touches, phase: phase, timestamp: event.timestamp)
+    let touches = event.touches(matching: [.cancelled, .ended, .touching], in: self)
+    
+    let eventData = touchManager.processCapturedTouches(
+      touches,
+      phase: phase,
+      timestamp: event.timestamp
+    )
     
     touchesDelegate?.touchesView(self, didUpdate: eventData)
 //    if eventData?.touches.isEmpty == true && (phase == .ended || phase == .cancelled) {
@@ -99,20 +103,16 @@ public class TrackpadTouchesNSView: NSView {
 
   // MARK: - Touch Event Handlers
   public override func touchesBegan(with event: NSEvent) {
-//    print("Touches began")
-    processTouches(with: event, phase: .began)
+    processFirstTouches(with: event, phase: .began)
   }
   public override func touchesMoved(with event: NSEvent) {
-//    print("Touches moved")
-    processTouches(with: event, phase: .moved)
+    processFirstTouches(with: event, phase: .moved)
   }
   public override func touchesEnded(with event: NSEvent) {
-//    print("Touches ended")
-    processTouches(with: event, phase: .ended)
+    processFirstTouches(with: event, phase: .ended)
   }
   public override func touchesCancelled(with event: NSEvent) {
-//    print("Touches cancelled")
-    processTouches(with: event, phase: .cancelled)
+    processFirstTouches(with: event, phase: .cancelled)
   }
 //  public override func pressureChange(with event: NSEvent) {
 //    processPressure(event)
@@ -124,13 +124,13 @@ public class TrackpadTouchesNSView: NSView {
 
   
   // MARK: - Disable mouse clicks when performing drawing/gestures
-  public override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
-    return isClickEnabled
-  }
-  
-  public override func hitTest(_ point: NSPoint) -> NSView? {
-    return isClickEnabled ? super.hitTest(point) : nil
-  }
+//  public override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
+//    return isClickEnabled
+//  }
+//  
+//  public override func hitTest(_ point: NSPoint) -> NSView? {
+//    return isClickEnabled ? super.hitTest(point) : nil
+//  }
   
   
 //  public override func mouseDown(with event: NSEvent) {

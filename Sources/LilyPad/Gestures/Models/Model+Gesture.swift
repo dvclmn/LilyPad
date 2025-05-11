@@ -24,6 +24,7 @@ public enum TrackpadGesturePhase: String, Sendable, Equatable, Codable {
   case none
   case began
   case moved
+  case stationary
   case ended
   case cancelled
 }

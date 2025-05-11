@@ -73,7 +73,7 @@ extension GestureStateHandler {
 //        currentTouchPositions = touchPositions
         gestureType = .none
 
-      case .moved:
+      case .moved, .stationary:
         guard let start = startTouchPair else {
           print("Gesture: No value found for `startPositions`")
           return
