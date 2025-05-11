@@ -41,7 +41,7 @@ public struct TouchPair {
   public init?(_ touches: Set<TouchPoint>, mappingRect: CGRect) {
     let sorted = touches.sorted { $0.timestamp < $1.timestamp }
     guard sorted.count >= 2 else {
-      print("Cannot form a TouchPair with fewer than two touches")
+//      print("Cannot form a TouchPair with fewer than two touches")
       return nil
     }
     self.first = sorted[0]
@@ -86,6 +86,10 @@ extension TouchPair {
   /// Angle in radians, from p1 to p2, in range [-π, π]
   public var angleBetween: Angle {
     CGPoint.angle(from: p1, to: p2)
+  }
+  
+  public var angleInRadiansBetween: CGFloat {
+    CGPoint.angleInRadians(from: p1, to: p2)
   }
   
 }

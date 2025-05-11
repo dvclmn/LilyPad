@@ -17,7 +17,7 @@ public struct TouchIndicatorsView: View {
   
   public var body: some View {
 
-    ForEach(touches.sortedByTimestamp) { touch in
+    ForEach(touches.array) { touch in
       Circle()
         .fill(Color.blue.opacity(0.7))
         .frame(width: 40, height: 40)
@@ -31,7 +31,7 @@ public struct TouchIndicatorsView: View {
         }
         .position(touchPosition(touch))
     }
-//    .angledLine(from: firstTwoPoints.0, to: firstTwoPoints.1)
+    .angledLine(from: pointPair.0, to: pointPair.1)
     .frame(
       width: mappingRect.width,
       height: mappingRect.height
@@ -42,16 +42,22 @@ public struct TouchIndicatorsView: View {
 
 extension TouchIndicatorsView {
   
-  var firstTwoPoints: PointPair {
+  var pointPair: (CGPoint, CGPoint) {
+    guard let touchPair = touches.touchPair(in: mappingRect) else { return  (.zero, .zero) }
+    return (touchPair.p1, touchPair.p2)
     
-    let fallback: PointPair = (.zero, .zero)
-
-    guard let touchPair = touches.touchPair else { return fallback }
-    
-    let pointPair = touchPair.pointPair(in: mappingRect)
-    return pointPair
   }
   
+//  var firstTwoPoints: PointPair {
+//    
+//    let fallback: PointPair = (.zero, .zero)
+//
+//    guard let touchPair = touches.touchPair else { return fallback }
+//    
+//    let pointPair = touchPair.pointPair(in: mappingRect)
+//    return pointPair
+//  }
+//  
   func touchPosition(_ touch: TouchPoint) -> CGPoint {
     touch.position.mapped(to: mappingRect)
   }

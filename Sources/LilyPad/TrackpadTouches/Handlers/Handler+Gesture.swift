@@ -21,7 +21,7 @@ public struct GestureStateHandler {
   var lastZoom: CGFloat = 1.0
   var lastRotation: CGFloat = .zero
 
-  var startTouchPositions: TouchPositions?
+  var startTouchPair: TouchPair?
   
   #warning("I 'feel' like this is useful, but not 100% sure. Leaving here for now in case.")
 //  var currentTouchPositions: TouchPositions?
@@ -60,26 +60,27 @@ extension GestureStateHandler {
 
   public mutating func update(event: TouchEventData, inViewSize rect: CGRect) {
 
-    guard event.touches.count == requiredTouchCount else { return }
-    let touchPositions = TouchPositions.mapped(from: event.touches, to: rect)
+    guard event.touches.count == requiredTouchCount,
+    let touchPositions = TouchPair(event.touches, mappingRect: rect)
+    else { return }
 
     switch event.phase {
       case .began:
-        startTouchPositions = touchPositions
+        startTouchPair = touchPositions
 //        currentTouchPositions = touchPositions
         gestureType = .none
 
       case .moved:
-        guard let start = startTouchPositions else {
+        guard let start = startTouchPair else {
           print("Gesture: No value found for `startPositions`")
           return
         }
 
 //        currentTouchPositions = touchPositions
 
-        let deltaPan = touchPositions.midPoint - start.midPoint
+        let deltaPan = touchPositions.midPointBetween - start.midPointBetween
         let deltaZoom = abs(touchPositions.distanceBetween - start.distanceBetween)
-        let deltaAngle = abs(touchPositions.angleBetween - start.angleBetween)
+        let deltaAngle = abs(touchPositions.angleInRadiansBetween - start.angleInRadiansBetween)
 
         if gestureType == .none {
           let zoomPassed = deltaZoom > zoomThreshold
@@ -104,7 +105,7 @@ extension GestureStateHandler {
             let scaleChange = touchPositions.distanceBetween / start.distanceBetween
             zoom = lastZoom * scaleChange
           case .rotate:
-            rotation = lastRotation + (touchPositions.angleBetween - start.angleBetween)
+            rotation = lastRotation + (touchPositions.angleInRadiansBetween - start.angleInRadiansBetween)
           case .pan:
             pan = lastPan + deltaPan
           case .none, .draw:
@@ -115,7 +116,7 @@ extension GestureStateHandler {
         lastPan = pan
         lastZoom = zoom
         lastRotation = rotation
-        startTouchPositions = nil
+        startTouchPair = nil
 //        currentTouchPositions = nil
         gestureType = .none
     }
