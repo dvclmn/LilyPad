@@ -13,6 +13,7 @@ public typealias TouchesModifierOutput = (_ eventData: TouchEventData?) -> Void
 public struct TrackpadTouchesModifier: ViewModifier {
   @State private var localTouches: Set<TouchPoint> = []
 
+  let isClickEnabled: Bool
   let showIndicators: Bool
   let mappingRect: CGRect
   let touchUpdates: TouchesModifierOutput
@@ -26,7 +27,8 @@ public struct TrackpadTouchesModifier: ViewModifier {
           mappingRect: mappingRect
         )
       }
-      TrackpadTouchesView { eventData in
+        
+      TrackpadTouchesView(isClickEnabled: isClickEnabled) { eventData in
         /// It's ok to fall back here to `[]`, as the touch indicators `ForEach`
         /// should gracefully handle displaying *nothing*, if there is an empty set
 //        guard let eventData else {
@@ -37,17 +39,23 @@ public struct TrackpadTouchesModifier: ViewModifier {
         self.localTouches = eventData?.touches ?? []
         touchUpdates(eventData)
       }
+      
+    }
+    .task(id: isClickEnabled) {
+//      print("`TrackpadTouchesModifier`'s Is Click Enabled changed. Value is: `\(isClickEnabled)`")
     }
   }
 }
 extension View {
   public func touches(
+    isClickEnabled: Bool,
     showIndicators: Bool = true,
     in mappingRect: CGRect,
     touchUpdates: @escaping TouchesModifierOutput
   ) -> some View {
     self.modifier(
       TrackpadTouchesModifier(
+        isClickEnabled: isClickEnabled,
         showIndicators: showIndicators,
         mappingRect: mappingRect,
         touchUpdates: touchUpdates

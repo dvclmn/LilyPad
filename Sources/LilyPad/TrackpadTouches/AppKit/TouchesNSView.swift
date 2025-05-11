@@ -14,6 +14,8 @@ public class TrackpadTouchesNSView: NSView {
 
   /// Touch manager to handle touch tracking and velocity calculation
   private let touchManager = TrackpadTouchManager()
+  
+  public var isClickEnabled: Bool = true
 
   public override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
@@ -37,21 +39,33 @@ public class TrackpadTouchesNSView: NSView {
     phase: TrackpadGesturePhase
   ) {
     let touches = event.allTouches()
-   
-    /// Convert to data model
-    var eventData: TouchEventData? = touchManager.processTouches(
-      touches,
-      phase: phase,
-      timestamp: event.timestamp
-    )
-
-    /// THIS is important, to ensure we don't send or leave a stale touch event
-    /// in the pipeline, when there are no touches. If there are no touches, we need
-    /// to clean things out, and set back to `nil`
-    if phase == .ended || phase == .cancelled {
-      eventData = nil
+    
+    /// Only emit nil when all touches have ended
+    let eventData = touchManager.processTouches(touches, phase: phase, timestamp: event.timestamp)
+    
+    if eventData?.touches.isEmpty == true && (phase == .ended || phase == .cancelled) {
+      touchesDelegate?.touchesView(self, didUpdate: nil)
+    } else {
+      touchesDelegate?.touchesView(self, didUpdate: eventData)
     }
-    touchesDelegate?.touchesView(self, didUpdate: eventData)
+//   
+//    /// Convert to data model
+//    var eventData: TouchEventData? = touchManager.processTouches(
+//      touches,
+//      phase: phase,
+//      timestamp: event.timestamp
+//    )
+//
+//    /// THIS is important, to ensure we don't send or leave a stale touch event
+//    /// in the pipeline, when there are no touches. If there are no touches, we need
+//    /// to clean things out, and set back to `nil`
+//    if phase == .ended || phase == .cancelled {
+//      
+//      if touches.count <= 1 {
+//        eventData = nil
+//      }
+//    }
+//    touchesDelegate?.touchesView(self, didUpdate: eventData)
   }
 
 //  private func processPressure(_ event: NSEvent) {
@@ -106,5 +120,40 @@ public class TrackpadTouchesNSView: NSView {
 //    <#code#>
 //  }
 
+  
+  // MARK: - Disable mouse clicks when performing drawing/gestures
+  public override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
+    return isClickEnabled
+  }
+  
+  public override func hitTest(_ point: NSPoint) -> NSView? {
+    return isClickEnabled ? super.hitTest(point) : nil
+  }
+  
+  
+//  public override func mouseDown(with event: NSEvent) {
+//    if isClickEnabled {
+//      super.mouseDown(with: event)
+//    }
+//    // else: swallow the event
+//  }
+//  
+//  public override func mouseUp(with event: NSEvent) {
+//    if isClickEnabled {
+//      super.mouseUp(with: event)
+//    }
+//  }
+//  
+//  public override func rightMouseDown(with event: NSEvent) {
+//    if isClickEnabled {
+//      super.rightMouseDown(with: event)
+//    }
+//  }
+//  
+//  public override func otherMouseDown(with event: NSEvent) {
+//    if isClickEnabled {
+//      super.otherMouseDown(with: event)
+//    }
+//  }
 
 }

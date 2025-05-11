@@ -24,22 +24,32 @@ public typealias TouchUpdates = (_ eventData: TouchEventData?) -> Void
 /// SwiftUI wrapper for the trackpad touches view
 public struct TrackpadTouchesView: NSViewRepresentable {
 
+  let isClickEnabled: Bool
+//  @Binding var isClickEnabled: Bool
   /// Callback for touch updates
   private var onTouchesUpdate: TouchUpdates?
 
   public init(
+    isClickEnabled: Bool,
     onTouchesUpdate: TouchUpdates? = nil,
   ) {
+    self.isClickEnabled = isClickEnabled
     self.onTouchesUpdate = onTouchesUpdate
   }
 
   public func makeNSView(context: Context) -> TrackpadTouchesNSView {
     let view = TrackpadTouchesNSView()
+    view.isClickEnabled = isClickEnabled
     view.touchesDelegate = context.coordinator
     return view
   }
 
-  public func updateNSView(_ nsView: TrackpadTouchesNSView, context: Context) {}
+  public func updateNSView(_ nsView: TrackpadTouchesNSView, context: Context) {
+    if nsView.isClickEnabled != self.isClickEnabled {
+      nsView.isClickEnabled = self.isClickEnabled
+      print("`TrackpadTouchesNSView`'s Is Click Enabled changed. Value is now: `\(nsView.isClickEnabled)`")
+    }
+  }
 
   public func makeCoordinator() -> Coordinator {
     Coordinator(self)

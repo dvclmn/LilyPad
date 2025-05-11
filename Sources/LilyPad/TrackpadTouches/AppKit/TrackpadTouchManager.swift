@@ -11,6 +11,8 @@ import Foundation
 /// Manages trackpad touches and maintains their history for velocity calculations
 public class TrackpadTouchManager {
 
+  public var activeTouches: Set<Int> = []
+  
   /// Dictionary to store the last known touch for each touch ID
   private var lastTouches: [Int: TouchPoint] = [:]
 
@@ -30,7 +32,11 @@ public class TrackpadTouchManager {
 
     /// Really hoping this line right here, helps to properly 'remove'
     /// touches, when the last finger is lifted off.
-    guard !touches.isEmpty else { return nil }
+//    guard !touches.isEmpty else { return nil }
+    guard !touches.isEmpty else {
+      activeTouches = []
+      return nil
+    }
     
     var updatedTouches = Set<TouchPoint>()
 
@@ -57,27 +63,36 @@ public class TrackpadTouchManager {
       lastTouches[touchId] = enrichedTouch
     }
 
-    /// Cleanup ended touches
+    /// Updates the internal touch state by removing ended touches and maintaining active ones.
+    ///
+    /// This section is responsible for tracking which touches are still active on the trackpad,
+    /// and cleaning up any touch state associated with fingers that have been lifted.
+    ///
+    /// - Note: `NSTouch` instances are not retained across events, so we identify them
+    ///   by hashing their `identity` property. Each touch has a unique identity for its
+    ///   lifecycle on the trackpad.
+    ///
+    /// The logic works as follows:
+    /// 1. Create a set of currently present touch IDs (`currentIDs`) from the incoming touch set.
+    /// 2. Look at the previously known touch IDs (`lastIDs`), from the `lastTouches` dictionary.
+    /// 3. Calculate the difference (`endedIDs`), which tells us which touches have ended.
+    /// 4. Clean up the state associated with ended touches by removing their entries from:
+    ///     - `lastTouches` (the last known position and velocity)
+    ///     - `touchHistories` (historical touch points used for velocity computation)
+    ///     - `activeTouches` (a public-facing set of current touch IDs)
+    ///
+    /// This cleanup ensures that stale data does not linger between gesture events, and
+    /// helps external consumers (such as a SwiftUI view) reliably track when touches end.
     let currentIDs = Set(touches.map { $0.identity.hash })
     let lastIDs = Set(lastTouches.keys)
     let endedIDs = lastIDs.subtracting(currentIDs)
+    activeTouches = currentIDs
 
     for endedId in endedIDs {
       lastTouches.removeValue(forKey: endedId)
       touchHistories.removeValue(forKey: endedId)
+      activeTouches.remove(endedId)
     }
-
-
-//    print(
-//      """
-//
-//        processTouches():
-//
-//        updatedTouches: \(updatedTouches)
-//        currentIDs: \(currentIDs)
-//        lastIDs: \(lastIDs)
-//        endedIDs: \(endedIDs)
-//      """)
 
     return TouchEventData(touches: updatedTouches, phase: phase)
   }
