@@ -36,8 +36,8 @@ public struct TrackpadTouchesModifier: ViewModifier {
 //          touchUpdates(nil)
 //          return
 //        }
-        
-        print("Touches received on the SwiftUI end: `\(eventData?.description ?? "nil")`")
+        print("`TrackpadTouchesModifier`: Number of touches: \(eventData?.touches.count ?? 0). Phase: \(eventData?.phase.rawValue ?? "—")")
+//        print("Touches received on the SwiftUI end: `\(eventData?.description ?? "nil")`")
         self.localTouches = eventData?.touches ?? []
         touchUpdates(eventData)
       }
