@@ -97,8 +97,6 @@ extension TouchPoint {
 
 }
 
-
-
 extension TouchPoint: CustomStringConvertible {
   public var description: String {
     """
