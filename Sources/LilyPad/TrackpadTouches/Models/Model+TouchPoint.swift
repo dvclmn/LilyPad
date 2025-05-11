@@ -131,16 +131,6 @@ extension Set where Element == TouchPoint {
     return pair
 
   }
-
-  //  public var touchPair: TouchPair? {
-  //
-  //    let sorted = self.sorted { $0.timestamp < $1.timestamp }
-  //    guard sorted.count >= 2 else { return nil }
-  //
-  //    let pair = TouchPair(first: sorted[0], second: sorted[1])
-  //    return pair
-  //  }
-
 }
 
 

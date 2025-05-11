@@ -7,22 +7,6 @@
 
 import Foundation
 
-protocol GestureTrackable: Sendable, Equatable, Hashable {
-  
-  associatedtype GestureValue
-  var value: GestureValue { get set }
-  var startTouchPositions: TouchPositions? { get set }
-  var lastValue: GestureValue { get set }
-  
-  //  var requiredTouchCount: Int { get }
-  //  var isActive: Bool { get }
-  
-  mutating func update(
-    event: TouchEventData,
-    in rect: CGRect,
-  )
-}
-
 public enum GestureType: Sendable {
   case none
   case draw
