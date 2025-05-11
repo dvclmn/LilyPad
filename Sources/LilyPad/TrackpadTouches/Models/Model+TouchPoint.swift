@@ -16,6 +16,17 @@ import MemberwiseInit
 
 
 public struct TouchPoint: Identifiable, Sendable, Hashable, Equatable, Codable {
+  
+  /// This comes from `NSTouch` identity:
+  /// ```
+  /// var identity: any NSCopying & NSObjectProtocol { get }
+  /// ```
+  /// and is constructed as below:
+  /// ```
+  /// func id(for touch: NSTouch) -> Int {
+  ///   ObjectIdentifier(touch.identity).hashValue
+  /// }
+  /// ```
   public let id: Int
 
   /// This is normalised, comes from `NSTouch.normalizedPosition`

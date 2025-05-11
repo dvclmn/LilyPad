@@ -41,6 +41,19 @@ extension GestureStateHandler {
     guard let currentTouchPositions else { return .center }
     return currentTouchPositions.midPoint.unitPoint(in: viewSize)
   }
+  
+  public mutating func resetValue(for gestureType: GestureType) {
+    switch gestureType {
+      case .pan:
+        pan = .zero
+      case .zoom:
+        zoom = 1.0
+      case .rotate:
+        rotation = .zero
+      default:
+        break
+    }
+  }
 
   public mutating func update(event: TouchEventData, inViewSize rect: CGRect) {
 
