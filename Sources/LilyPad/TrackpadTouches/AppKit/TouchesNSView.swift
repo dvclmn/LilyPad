@@ -38,9 +38,17 @@ public class TrackpadTouchesNSView: NSView {
     with event: NSEvent,
     phase: TrackpadGesturePhase
   ) {
-//    let touches = event.allTouches()
+    // Get all touches for the current view
+    // For .ended and .cancelled phases, we need to specifically request those touches
+    var touches: Set<NSTouch> = Set()
     
-    let touches = event.touches(matching: [.cancelled, .ended, .touching], in: self)
+    if phase == .ended || phase == .cancelled {
+      // When touches end or cancel, we need to request those specific touches
+      touches = event.touches(matching: [.ended, .cancelled], in: self)
+    } else {
+      // For active touches (.began, .moved, .touching)
+      touches = event.touches(matching: [.touching], in: self)
+    }
     
     let eventData = touchManager.processCapturedTouches(
       touches,
@@ -49,29 +57,6 @@ public class TrackpadTouchesNSView: NSView {
     )
     
     touchesDelegate?.touchesView(self, didUpdate: eventData)
-//    if eventData?.touches.isEmpty == true && (phase == .ended || phase == .cancelled) {
-//      touchesDelegate?.touchesView(self, didUpdate: nil)
-//    } else {
-//      touchesDelegate?.touchesView(self, didUpdate: eventData)
-//    }
-//   
-//    /// Convert to data model
-//    var eventData: TouchEventData? = touchManager.processTouches(
-//      touches,
-//      phase: phase,
-//      timestamp: event.timestamp
-//    )
-//
-//    /// THIS is important, to ensure we don't send or leave a stale touch event
-//    /// in the pipeline, when there are no touches. If there are no touches, we need
-//    /// to clean things out, and set back to `nil`
-//    if phase == .ended || phase == .cancelled {
-//      
-//      if touches.count <= 1 {
-//        eventData = nil
-//      }
-//    }
-//    touchesDelegate?.touchesView(self, didUpdate: eventData)
   }
 
 //  private func processPressure(_ event: NSEvent) {

@@ -15,10 +15,10 @@ public class TrackpadTouchManager {
   
   /// Dictionary to store the last known touch for each touch ID
   private var lastTouches: [Int: TouchPoint] = [:]
-
+  
   /// Maximum number of touch points to keep in history per stroke
   private let maxHistoryLength = 3
-
+  
   /// Dictionary to store touch history for each touch ID
   private var touchHistories: [Int: [TouchPoint]] = [:]
 
@@ -29,105 +29,88 @@ public class TrackpadTouchManager {
     phase: TrackpadGesturePhase,
     timestamp: TimeInterval
   ) -> TouchEventData? {
-    
-    print("`TrackpadTouchManager`: Number of touches: \(touches.count). Phase: \(phase)")
-    
     var updatedTouches = Set<TouchPoint>()
     
-    for touch in touches {
-      let touchId = touch.identity.hash
-      let rawTouch = makeRawTouch(
-        from: touch,
-        touchId: touchId,
-        phase: phase,
-        timestamp: timestamp
-      )
-      
-      var history = touchHistories[touchId] ?? []
-      history.append(rawTouch)
-      if history.count > maxHistoryLength {
-        history.removeFirst()
-      }
-      touchHistories[touchId] = history
-      
-      let velocity = computeVelocity(for: history)
-      let enrichedTouch = rawTouch.withVelocity(velocity)
-      updatedTouches.insert(enrichedTouch)
-      
-      // Update touch state based on phase
-      switch touch.phase {
-        case .began, .moved, .stationary:
-          activeTouches.insert(touchId)
-          lastTouches[touchId] = enrichedTouch
-          
-        case .ended, .cancelled:
-          activeTouches.remove(touchId)
-          lastTouches.removeValue(forKey: touchId)
+    // For ended/cancelled phases, we need to handle touch removal
+    if phase == .ended || phase == .cancelled {
+      for touch in touches {
+        let touchId = touch.identity.hash
+        
+        // Create a touch point with the end/cancel phase
+        let rawTouch = makeRawTouch(
+          from: touch,
+          touchId: touchId,
+          phase: phase,
+          timestamp: timestamp
+        )
+        
+        // Update history
+        var history = touchHistories[touchId] ?? []
+        history.append(rawTouch)
+        if history.count > maxHistoryLength {
+          history.removeFirst()
+        }
+        touchHistories[touchId] = history
+        
+        // Calculate velocity for the final touch
+        let velocity = computeVelocity(for: history)
+        let enrichedTouch = rawTouch.withVelocity(velocity)
+        updatedTouches.insert(enrichedTouch)
+        
+        // Remove from active touches as this touch has ended
+        activeTouches.remove(touchId)
+        
+        // If needed, also clean up history for ended touches to prevent memory leaks
+        if phase == .ended || phase == .cancelled {
           touchHistories.removeValue(forKey: touchId)
-        default:
-          break
+          lastTouches.removeValue(forKey: touchId)
+        }
+      }
+    } else {
+      // For began and moved phases
+      for touch in touches {
+        let touchId = touch.identity.hash
+        
+        // For began phase, add to active touches
+        if phase == .began {
+          activeTouches.insert(touchId)
+        }
+        
+        let rawTouch = makeRawTouch(
+          from: touch,
+          touchId: touchId,
+          phase: phase,
+          timestamp: timestamp
+        )
+        
+        // Update history
+        var history = touchHistories[touchId] ?? []
+        history.append(rawTouch)
+        if history.count > maxHistoryLength {
+          history.removeFirst()
+        }
+        touchHistories[touchId] = history
+        
+        // Calculate velocity and store enriched touch
+        let velocity = computeVelocity(for: history)
+        let enrichedTouch = rawTouch.withVelocity(velocity)
+        updatedTouches.insert(enrichedTouch)
+        
+        // Update last touch
+        lastTouches[touchId] = enrichedTouch
       }
     }
-    
-    return TouchEventData(touches: updatedTouches, phase: phase)
-    
-//    guard !touches.isEmpty else {
-//      activeTouches.removeAll()
-//      
-//      return nil
-//    }
-//    
-//    var updatedTouches = Set<TouchPoint>()
-//    var endedIDs = Set<Int>()
-//    var currentIDs = Set<Int>()
-//    
-//    for touch in touches {
-//      let touchId = touch.identity.hash
-//      let rawTouch = makeRawTouch(
-//        from: touch,
-//        touchId: touchId,
-//        phase: phase,
-//        timestamp: timestamp
-//      )
-//      
-//      // Update history
-//      var history = touchHistories[touchId] ?? []
-//      history.append(rawTouch)
-//      if history.count > maxHistoryLength {
-//        history.removeFirst()
-//      }
-//      touchHistories[touchId] = history
-//      
-//      // Compute velocity
-//      let velocity = computeVelocity(for: history)
-//      let enrichedTouch = rawTouch.withVelocity(velocity)
-//      
-//      updatedTouches.insert(enrichedTouch)
-//      lastTouches[touchId] = enrichedTouch
-//      currentIDs.insert(touchId)
-//      
-//      // Mark ended touches for cleanup
-//      if touch.phase == .ended || touch.phase == .cancelled {
-//        endedIDs.insert(touchId)
-//      }
-//    }
-//    
-//    // Cleanup ended touches
-//    for endedId in endedIDs {
-//      lastTouches.removeValue(forKey: endedId)
-//      touchHistories.removeValue(forKey: endedId)
-//      activeTouches.remove(endedId)
-//    }
-//    
-//    // Update active touch list
-//    activeTouches = currentIDs.subtracting(endedIDs)
-//    
-//    return TouchEventData(touches: updatedTouches, phase: phase)
-    
-    
-   
-  }
 
+    
+    // Only return event data if we have touches to report
+    if !updatedTouches.isEmpty {
+      return TouchEventData(touches: updatedTouches, phase: phase)
+    }
+    
+    return nil
+  }
+  
+  
   private func makeRawTouch(
     from nsTouch: NSTouch,
     touchId: Int,
@@ -138,15 +121,40 @@ public class TrackpadTouchManager {
       x: nsTouch.normalizedPosition.x,
       y: 1.0 - nsTouch.normalizedPosition.y  // Flip Y
     )
-
+    
+    // You might need to adjust how you get pressure
+//    let currentPressure: CGFloat = nsTouch.pressure > 0 ? nsTouch.pressure : 1.0
+    
     return TouchPoint(
       id: touchId,
       phase: phase,
       position: position,
       timestamp: timestamp,
+      velocity: CGVector.zero, // Will be populated by withVelocity()
       pressure: currentPressure
     )
   }
+//}
+
+//  private func makeRawTouch(
+//    from nsTouch: NSTouch,
+//    touchId: Int,
+//    phase: TrackpadGesturePhase,
+//    timestamp: TimeInterval
+//  ) -> TouchPoint {
+//    let position = CGPoint(
+//      x: nsTouch.normalizedPosition.x,
+//      y: 1.0 - nsTouch.normalizedPosition.y  // Flip Y
+//    )
+//
+//    return TouchPoint(
+//      id: touchId,
+//      phase: phase,
+//      position: position,
+//      timestamp: timestamp,
+//      pressure: currentPressure
+//    )
+//  }
 
   func id(for touch: NSTouch) -> Int {
     ObjectIdentifier(touch.identity).hashValue
@@ -168,15 +176,37 @@ public class TrackpadTouchManager {
       dy: (b.position.y - a.position.y) / dt
     )
   }
+  
+//  private func computeVelocity(for history: [TouchPoint]) -> CGVector {
+//    // Implement velocity calculation from history
+//    // This is just a placeholder - you'd implement actual velocity calculation
+//    // based on position changes over time
+//    if history.count < 2 {
+//      return CGVector.zero
+//    }
+//    
+//    let latest = history.last!
+//    let previous = history[history.count - 2]
+//    let dt = latest.timestamp - previous.timestamp
+//    
+//    if dt <= 0 {
+//      return CGVector.zero
+//    }
+//    
+//    let dx = latest.position.x - previous.position.x
+//    let dy = latest.position.y - previous.position.y
+//    
+//    return CGVector(dx: dx / CGFloat(dt), dy: dy / CGFloat(dt))
+//  }
 
   /// Get the touch history for a specific ID
-  public func history(for touchId: Int) -> [TouchPoint]? {
-    return touchHistories[touchId]
-  }
-
-  /// Clear all touch history
-  public func clearHistory() {
-    lastTouches.removeAll()
-    touchHistories.removeAll()
-  }
+//  public func history(for touchId: Int) -> [TouchPoint]? {
+//    return touchHistories[touchId]
+//  }
+//
+//  /// Clear all touch history
+//  public func clearHistory() {
+//    lastTouches.removeAll()
+//    touchHistories.removeAll()
+//  }
 }
