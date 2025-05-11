@@ -22,7 +22,9 @@ public struct GestureStateHandler {
   var lastRotation: CGFloat = .zero
 
   var startTouchPositions: TouchPositions?
-  var currentTouchPositions: TouchPositions?
+  
+  #warning("I 'feel' like this is useful, but not 100% sure. Leaving here for now in case.")
+//  var currentTouchPositions: TouchPositions?
 
 
   var gestureType: GestureType = .none
@@ -37,10 +39,11 @@ public struct GestureStateHandler {
 
 extension GestureStateHandler {
 
-  public func currentTouchesMidpoint(in viewSize: CGSize) -> UnitPoint {
-    guard let currentTouchPositions else { return .center }
-    return currentTouchPositions.midPoint.unitPoint(in: viewSize)
-  }
+  #warning("This is still probably useful, but I'm doing a tidy, and hiding for simplicity for a while")
+//  public func currentTouchesMidpoint(in viewSize: CGSize) -> UnitPoint {
+//    guard let currentTouchPositions else { return .center }
+//    return currentTouchPositions.midPoint.unitPoint(in: viewSize)
+//  }
 
   public mutating func resetValue(for gestureType: GestureType) {
     switch gestureType {
