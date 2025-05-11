@@ -31,81 +31,125 @@ public class TrackpadTouchManager {
   ) -> TouchEventData? {
     var updatedTouches = Set<TouchPoint>()
     
-    // For ended/cancelled phases, we need to handle touch removal
-    if phase == .ended || phase == .cancelled {
-      for touch in touches {
-        let touchId = touch.identity.hash
-        
-        // Create a touch point with the end/cancel phase
-        let rawTouch = makeRawTouch(
-          from: touch,
-          touchId: touchId,
-          phase: phase,
-          timestamp: timestamp
-        )
-        
-        // Update history
-        var history = touchHistories[touchId] ?? []
-        history.append(rawTouch)
-        if history.count > maxHistoryLength {
-          history.removeFirst()
-        }
-        touchHistories[touchId] = history
-        
-        // Calculate velocity for the final touch
-        let velocity = computeVelocity(for: history)
-        let enrichedTouch = rawTouch.withVelocity(velocity)
-        updatedTouches.insert(enrichedTouch)
-        
-        // Remove from active touches as this touch has ended
-        activeTouches.remove(touchId)
-        
-        // If needed, also clean up history for ended touches to prevent memory leaks
-        if phase == .ended || phase == .cancelled {
+    for touch in touches {
+      let touchId = touch.identity.hash
+      
+      switch phase {
+        case .began:
+          activeTouches.insert(touchId)
+          
+        case .moved:
+          // no insert needed, but you might want to check that it's already active
+          print("Is this touch active? \(activeTouches.contains(touchId))")
+          
+        case .ended, .cancelled:
+          activeTouches.remove(touchId)
           touchHistories.removeValue(forKey: touchId)
           lastTouches.removeValue(forKey: touchId)
-        }
+          
+        default:
+          break
       }
-    } else {
-      // For began and moved phases
-      for touch in touches {
-        let touchId = touch.identity.hash
-        
-        // For began phase, add to active touches
-        if phase == .began {
-          activeTouches.insert(touchId)
-        }
-        
-        let rawTouch = makeRawTouch(
-          from: touch,
-          touchId: touchId,
-          phase: phase,
-          timestamp: timestamp
-        )
-        
-        // Update history
-        var history = touchHistories[touchId] ?? []
-        history.append(rawTouch)
-        if history.count > maxHistoryLength {
-          history.removeFirst()
-        }
-        touchHistories[touchId] = history
-        
-        // Calculate velocity and store enriched touch
-        let velocity = computeVelocity(for: history)
-        let enrichedTouch = rawTouch.withVelocity(velocity)
-        updatedTouches.insert(enrichedTouch)
-        
-        // Update last touch
-        lastTouches[touchId] = enrichedTouch
+      
+      // Always construct and store updated TouchPoint for output
+      let rawTouch = makeRawTouch(
+        from: touch,
+        touchId: touchId,
+        phase: phase,
+        timestamp: timestamp
+      )
+      var history = touchHistories[touchId] ?? []
+      history.append(rawTouch)
+      if history.count > maxHistoryLength {
+        history.removeFirst()
       }
+      touchHistories[touchId] = history
+      
+      let velocity = computeVelocity(for: history)
+      let enrichedTouch = rawTouch.withVelocity(velocity)
+      updatedTouches.insert(enrichedTouch)
+      
+      print("Phase: \(phase), Touch ID: \(touchId)")
     }
-
     
-    // Only return event data if we have touches to report
-    if !updatedTouches.isEmpty {
-      return TouchEventData(touches: updatedTouches, phase: phase)
-    }
+    print("Active touches: \(activeTouches)")
+//    // For ended/cancelled phases, we need to handle touch removal
+//    if phase == .ended || phase == .cancelled {
+//      for touch in touches {
+//        let touchId = touch.identity.hash
+//        
+//        // Create a touch point with the end/cancel phase
+//        let rawTouch = makeRawTouch(
+//          from: touch,
+//          touchId: touchId,
+//          phase: phase,
+//          timestamp: timestamp
+//        )
+//        
+//        // Update history
+//        var history = touchHistories[touchId] ?? []
+//        history.append(rawTouch)
+//        if history.count > maxHistoryLength {
+//          history.removeFirst()
+//        }
+//        touchHistories[touchId] = history
+//        
+//        // Calculate velocity for the final touch
+//        let velocity = computeVelocity(for: history)
+//        let enrichedTouch = rawTouch.withVelocity(velocity)
+//        updatedTouches.insert(enrichedTouch)
+//        
+//        // Remove from active touches as this touch has ended
+//        activeTouches.remove(touchId)
+//        
+//        // If needed, also clean up history for ended touches to prevent memory leaks
+//        if phase == .ended || phase == .cancelled {
+//          touchHistories.removeValue(forKey: touchId)
+//          lastTouches.removeValue(forKey: touchId)
+//        }
+//      }
+//    } else {
+//      // For began and moved phases
+//      for touch in touches {
+//        let touchId = touch.identity.hash
+//        
+//        // For began phase, add to active touches
+//        if phase == .began {
+//          activeTouches.insert(touchId)
+//        }
+//        
+//        let rawTouch = makeRawTouch(
+//          from: touch,
+//          touchId: touchId,
+//          phase: phase,
+//          timestamp: timestamp
+//        )
+//        
+//        // Update history
+//        var history = touchHistories[touchId] ?? []
+//        history.append(rawTouch)
+//        if history.count > maxHistoryLength {
+//          history.removeFirst()
+//        }
+//        touchHistories[touchId] = history
+//        
+//        // Calculate velocity and store enriched touch
+//        let velocity = computeVelocity(for: history)
+//        let enrichedTouch = rawTouch.withVelocity(velocity)
+//        updatedTouches.insert(enrichedTouch)
+//        
+//        // Update last touch
+//        lastTouches[touchId] = enrichedTouch
+//      }
+//    }
+//
+//    
+//    // Only return event data if we have touches to report
+//    if !updatedTouches.isEmpty {
+//      return TouchEventData(touches: updatedTouches, phase: phase)
+//    }
+//    
+//    return nil
     
     return nil
   }
