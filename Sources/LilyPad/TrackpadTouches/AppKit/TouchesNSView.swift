@@ -11,7 +11,6 @@ import AppKit
 public class TrackpadTouchesNSView: NSView {
   /// Delegate to forward touch events to
   weak var touchesDelegate: TrackpadTouchesDelegate?
-//  weak var gesturesDelegate: TrackpadGesturesDelegate?
 
   /// Touch manager to handle touch tracking and velocity calculation
   private let touchManager = TrackpadTouchManager()
@@ -40,11 +39,18 @@ public class TrackpadTouchesNSView: NSView {
     let touches = event.allTouches()
    
     /// Convert to data model
-    let eventData = touchManager.processTouches(
+    var eventData: TouchEventData? = touchManager.processTouches(
       touches,
       phase: phase,
       timestamp: event.timestamp
     )
+
+    /// THIS is important, to ensure we don't send or leave a stale touch event
+    /// in the pipeline, when there are no touches. If there are no touches, we need
+    /// to clean things out, and set back to `nil`
+    if phase == .ended || phase == .cancelled {
+      eventData = nil
+    }
     touchesDelegate?.touchesView(self, didUpdate: eventData)
   }
 

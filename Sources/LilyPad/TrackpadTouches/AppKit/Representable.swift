@@ -11,14 +11,14 @@ import SwiftUI
 // MARK: - Delegate Protocol
 /// Protocol for receiving touch updates
 public protocol TrackpadTouchesDelegate: AnyObject {
-  func touchesView(_ view: TrackpadTouchesNSView, didUpdate eventData: TouchEventData)
+  func touchesView(
+    _ view: TrackpadTouchesNSView,
+    didUpdate eventData: TouchEventData?
+  )
 }
 
-public protocol TrackpadGesturesDelegate: AnyObject {
-  func gesturesView(_ view: TrackpadTouchesNSView, didUpdate gestureData: GestureEventData)
-}
-
-public typealias TouchUpdates = (_ eventData: TouchEventData) -> Void
+/// There may not be any touches, so this needs to be optional
+public typealias TouchUpdates = (_ eventData: TouchEventData?) -> Void
 
 // MARK: - SwiftUI Representable
 /// SwiftUI wrapper for the trackpad touches view
@@ -54,23 +54,17 @@ public struct TrackpadTouchesView: NSViewRepresentable {
 
     public func touchesView(
       _ view: TrackpadTouchesNSView,
-      didUpdate eventData: TouchEventData
+      didUpdate eventData: TouchEventData?
     ) {
       Task { @MainActor in
+//        guard let eventData else {
+//          print("`TrackpadTouchesView`'s Coordinator: No event data found")
+//          self.parent.onTouchesUpdate?(nil)
+//          return
+//        }
         self.parent.onTouchesUpdate?(eventData)
-//        self.parent.onPressureUpdate?(pressure)
       }
     }
-    
-//    public func gesturesView(
-//      _ view: TrackpadTouchesNSView,
-//      didUpdate gestureData: GestureEventData
-//    ) {
-//      Task { @MainActor in
-//        self.parent.onTouchesUpdate?(gestureData)
-//        //        self.parent.onPressureUpdate?(pressure)
-//      }
-//    }
   }
 }
 #endif

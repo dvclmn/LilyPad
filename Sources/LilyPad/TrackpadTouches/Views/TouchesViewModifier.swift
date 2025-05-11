@@ -8,13 +8,13 @@
 import BaseHelpers
 import SwiftUI
 
-public typealias TouchesModifierOutput = (_ eventData: TouchEventData) -> Void
+public typealias TouchesModifierOutput = (_ eventData: TouchEventData?) -> Void
 
 public struct TrackpadTouchesModifier: ViewModifier {
   @State private var localTouches: Set<TouchPoint> = []
 
   let showIndicators: Bool
-  let viewSize: CGSize
+  let mappingRect: CGRect
   let touchUpdates: TouchesModifierOutput
 
   public func body(content: Content) -> some View {
@@ -23,11 +23,18 @@ public struct TrackpadTouchesModifier: ViewModifier {
       if showIndicators {
         TouchIndicatorsView(
           touches: localTouches,
-          mappingRect: viewSize.toCGRect
+          mappingRect: mappingRect
         )
       }
       TrackpadTouchesView { eventData in
-        self.localTouches = eventData.touches
+        /// It's ok to fall back here to `[]`, as the touch indicators `ForEach`
+        /// should gracefully handle displaying *nothing*, if there is an empty set
+//        guard let eventData else {
+//          self.localTouches = []
+//          touchUpdates(nil)
+//          return
+//        }
+        self.localTouches = eventData?.touches ?? []
         touchUpdates(eventData)
       }
     }
@@ -36,13 +43,13 @@ public struct TrackpadTouchesModifier: ViewModifier {
 extension View {
   public func touches(
     showIndicators: Bool = true,
-    in viewSize: CGSize,
+    in mappingRect: CGRect,
     touchUpdates: @escaping TouchesModifierOutput
   ) -> some View {
     self.modifier(
       TrackpadTouchesModifier(
         showIndicators: showIndicators,
-        viewSize: viewSize,
+        mappingRect: mappingRect,
         touchUpdates: touchUpdates
       )
     )

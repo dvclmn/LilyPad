@@ -26,8 +26,12 @@ public class TrackpadTouchManager {
     _ touches: Set<NSTouch>,
     phase: TrackpadGesturePhase,
     timestamp: TimeInterval
-  ) -> TouchEventData {
+  ) -> TouchEventData? {
 
+    /// Really hoping this line right here, helps to properly 'remove'
+    /// touches, when the last finger is lifted off.
+    guard !touches.isEmpty else { return nil }
+    
     var updatedTouches = Set<TouchPoint>()
 
     for touch in touches {

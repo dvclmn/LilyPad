@@ -58,10 +58,13 @@ extension GestureStateHandler {
     }
   }
 
-  public mutating func update(event: TouchEventData, inViewSize rect: CGRect) {
+  public mutating func update(
+    event: TouchEventData,
+    in mappingRect: CGRect
+  ) {
 
     guard event.touches.count == requiredTouchCount,
-    let touchPositions = TouchPair(event.touches, mappingRect: rect)
+    let touchPositions = TouchPair(event.touches, mappingRect: mappingRect)
     else { return }
 
     switch event.phase {
