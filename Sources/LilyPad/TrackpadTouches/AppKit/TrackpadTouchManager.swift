@@ -29,20 +29,44 @@ public class TrackpadTouchManager {
     phase: TrackpadGesturePhase,
     timestamp: TimeInterval
   ) -> TouchEventData? {
-
+    
+    print("How many touches right now? \(touches.count). And the phase is: \(phase)")
+    
+    let currentIDs = Set(touches.map { id(for: $0) })
+    
+    // If all fingers lifted, but the event doesn't give us any touches:
+//    if touches.isEmpty && (phase == .ended || phase == .cancelled) {
+//      // Copy any remaining touches to return in this final event
+//      let remainingTouches = Set(lastTouches.values)
+//      
+//      // Clear all stored state
+//      lastTouches.removeAll()
+//      touchHistories.removeAll()
+//      activeTouches.removeAll()
+//      
+//      return TouchEventData(touches: remainingTouches, phase: phase)
+//    }
+    
+    var updatedTouches = Set<TouchPoint>()
+    
     /// Really hoping this line right here, helps to properly 'remove'
     /// touches, when the last finger is lifted off.
 //    guard !touches.isEmpty else { return nil }
-    guard !touches.isEmpty else {
-      activeTouches = []
-      return nil
-    }
-    
-    var updatedTouches = Set<TouchPoint>()
+//    guard !touches.isEmpty else {
+//      activeTouches = []
+//      return nil
+//    }
+//    
+//    var updatedTouches = Set<TouchPoint>()
 
     for touch in touches {
-      let touchId = touch.identity.hash
-      let rawTouch = makeRawTouch(from: touch, touchId: touchId, timestamp: timestamp)
+      let touchId = id(for: touch)
+      let rawTouch = makeRawTouch(
+        from: touch,
+        touchId: touchId,
+        phase: phase,
+        timestamp: timestamp
+      )
 
       /// Update history
       var history = touchHistories[touchId] ?? []
@@ -83,21 +107,39 @@ public class TrackpadTouchManager {
     ///
     /// This cleanup ensures that stale data does not linger between gesture events, and
     /// helps external consumers (such as a SwiftUI view) reliably track when touches end.
-    let currentIDs = Set(touches.map { $0.identity.hash })
+    
+    
+    // Update active touch IDs
     let lastIDs = Set(lastTouches.keys)
     let endedIDs = lastIDs.subtracting(currentIDs)
     activeTouches = currentIDs
-
+    
     for endedId in endedIDs {
       lastTouches.removeValue(forKey: endedId)
       touchHistories.removeValue(forKey: endedId)
       activeTouches.remove(endedId)
     }
+    
+//    let currentIDs = Set(touches.map { $0.identity.hash })
+//    let lastIDs = Set(lastTouches.keys)
+//    let endedIDs = lastIDs.subtracting(currentIDs)
+//    activeTouches = currentIDs
+//
+//    for endedId in endedIDs {
+//      lastTouches.removeValue(forKey: endedId)
+//      touchHistories.removeValue(forKey: endedId)
+//      activeTouches.remove(endedId)
+//    }
 
     return TouchEventData(touches: updatedTouches, phase: phase)
   }
 
-  private func makeRawTouch(from nsTouch: NSTouch, touchId: Int, timestamp: TimeInterval) -> TouchPoint {
+  private func makeRawTouch(
+    from nsTouch: NSTouch,
+    touchId: Int,
+    phase: TrackpadGesturePhase,
+    timestamp: TimeInterval
+  ) -> TouchPoint {
     let position = CGPoint(
       x: nsTouch.normalizedPosition.x,
       y: 1.0 - nsTouch.normalizedPosition.y  // Flip Y
@@ -105,6 +147,7 @@ public class TrackpadTouchManager {
 
     return TouchPoint(
       id: touchId,
+      phase: phase,
       position: position,
       timestamp: timestamp,
       pressure: currentPressure

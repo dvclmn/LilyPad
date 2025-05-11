@@ -38,16 +38,16 @@ public class TrackpadTouchesNSView: NSView {
     with event: NSEvent,
     phase: TrackpadGesturePhase
   ) {
-    let touches = event.allTouches()
+    let touches = event.touches(matching: [.cancelled, .ended, .touching], in: self)
     
     /// Only emit nil when all touches have ended
     let eventData = touchManager.processTouches(touches, phase: phase, timestamp: event.timestamp)
-    
-    if eventData?.touches.isEmpty == true && (phase == .ended || phase == .cancelled) {
-      touchesDelegate?.touchesView(self, didUpdate: nil)
-    } else {
-      touchesDelegate?.touchesView(self, didUpdate: eventData)
-    }
+    touchesDelegate?.touchesView(self, didUpdate: eventData)
+//    if eventData?.touches.isEmpty == true && (phase == .ended || phase == .cancelled) {
+//      touchesDelegate?.touchesView(self, didUpdate: nil)
+//    } else {
+//      touchesDelegate?.touchesView(self, didUpdate: eventData)
+//    }
 //   
 //    /// Convert to data model
 //    var eventData: TouchEventData? = touchManager.processTouches(

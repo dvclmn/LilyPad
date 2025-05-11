@@ -20,7 +20,7 @@ struct MappingSpaces {
   var viewport: CGRect
 }
 
-public enum TrackpadGesturePhase: String, Sendable, Equatable {
+public enum TrackpadGesturePhase: String, Sendable, Equatable, Codable {
   case none
   case began
   case moved

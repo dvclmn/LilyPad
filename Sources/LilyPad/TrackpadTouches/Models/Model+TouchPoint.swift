@@ -28,7 +28,7 @@ public struct TouchPoint: Identifiable, Sendable, Hashable, Equatable, Codable {
   /// }
   /// ```
   public let id: Int
-
+  public let phase: TrackpadGesturePhase
   /// This is normalised, comes from `NSTouch.normalizedPosition`
   public let position: CGPoint
   public let timestamp: TimeInterval
@@ -37,12 +37,14 @@ public struct TouchPoint: Identifiable, Sendable, Hashable, Equatable, Codable {
 
   public init(
     id: Int,
+    phase: TrackpadGesturePhase,
     position: CGPoint,
     timestamp: TimeInterval,
     velocity: CGVector = .zero,
     pressure: CGFloat,
   ) {
     self.id = id
+    self.phase = phase
     self.position = position
     self.timestamp = timestamp
     self.pressure = pressure
@@ -54,6 +56,7 @@ extension TouchPoint {
   public func withVelocity(_ velocity: CGVector) -> TouchPoint {
     TouchPoint(
       id: id,
+      phase: phase,
       position: position,
       timestamp: timestamp,
       velocity: velocity,
@@ -83,6 +86,7 @@ extension TouchPoint {
 
   public static let example01 = TouchPoint(
     id: 1,
+    phase: .moved,
     position: CGPoint.quickPreset01,
     timestamp: 1,
     pressure: 0.5
@@ -90,6 +94,7 @@ extension TouchPoint {
 
   public static let example02 = TouchPoint(
     id: 2,
+    phase: .moved,
     position: CGPoint.quickPreset02,
     timestamp: 2,
     pressure: 0.2

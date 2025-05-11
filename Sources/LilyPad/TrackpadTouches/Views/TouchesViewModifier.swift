@@ -36,6 +36,8 @@ public struct TrackpadTouchesModifier: ViewModifier {
 //          touchUpdates(nil)
 //          return
 //        }
+        
+        print("Touches received on the SwiftUI end: `\(eventData?.description ?? "nil")`")
         self.localTouches = eventData?.touches ?? []
         touchUpdates(eventData)
       }
