@@ -38,16 +38,18 @@ public class TrackpadTouchesNSView: NSView {
     with event: NSEvent,
     phase: TrackpadGesturePhase
   ) {
-    // Get all touches for the current view
-    // For .ended and .cancelled phases, we need to specifically request those touches
-    var touches: Set<NSTouch> = Set()
+    var touches: Set<NSTouch> = []
     
-    if phase == .ended || phase == .cancelled {
-      // When touches end or cancel, we need to request those specific touches
-      touches = event.touches(matching: [.ended, .cancelled], in: self)
-    } else {
-      // For active touches (.began, .moved, .touching)
-      touches = event.touches(matching: [.touching], in: self)
+    switch phase {
+      case .ended, .cancelled:
+        // Include ended/cancelled + still-touching touches
+        touches = event.touches(matching: [.ended, .cancelled, .touching], in: self)
+        
+      case .began, .moved:
+        touches = event.touches(matching: [.touching], in: self)
+        
+      default:
+        break
     }
     
     let eventData = touchManager.processCapturedTouches(
@@ -56,8 +58,38 @@ public class TrackpadTouchesNSView: NSView {
       timestamp: event.timestamp
     )
     
-    touchesDelegate?.touchesView(self, didUpdate: eventData)
+    // ⬇️ Important: If no touches remain, you should notify with nil
+    if touchManager.activeTouches.isEmpty {
+      touchesDelegate?.touchesView(self, didUpdate: nil)
+    } else {
+      touchesDelegate?.touchesView(self, didUpdate: eventData)
+    }
   }
+  
+//  private func processFirstTouches(
+//    with event: NSEvent,
+//    phase: TrackpadGesturePhase
+//  ) {
+//    // Get all touches for the current view
+//    // For .ended and .cancelled phases, we need to specifically request those touches
+//    var touches: Set<NSTouch> = Set()
+//    
+//    if phase == .ended || phase == .cancelled {
+//      // When touches end or cancel, we need to request those specific touches
+//      touches = event.touches(matching: [.ended, .cancelled], in: self)
+//    } else {
+//      // For active touches (.began, .moved, .touching)
+//      touches = event.touches(matching: [.touching], in: self)
+//    }
+//    
+//    let eventData = touchManager.processCapturedTouches(
+//      touches,
+//      phase: phase,
+//      timestamp: event.timestamp
+//    )
+//    
+//    touchesDelegate?.touchesView(self, didUpdate: eventData)
+//  }
 
 //  private func processPressure(_ event: NSEvent) {
 //    touchManager.currentPressure = CGFloat(event.pressure)
