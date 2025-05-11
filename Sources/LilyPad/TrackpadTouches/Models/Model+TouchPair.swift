@@ -8,19 +8,6 @@
 import BaseHelpers
 import SwiftUI
 
-//public protocol PointPairable {
-//  var mappingRect: CGRect { get }
-//  var pointPair: PointPair { get }
-//  var midPointBetween: CGPoint { get }
-//  var distanceBetween: CGFloat { get }
-//  var angleBetween: Angle { get }
-//}
-//
-//extension PointPairable {
-
-  
-//}
-
 /// I haven't yet worked out if `TouchPair`
 /// needs a `mappingRect: CGRect`
 public struct TouchPair {
@@ -49,25 +36,9 @@ public struct TouchPair {
     self.mappingRect = mappingRect
   }
 
-  /// I think a `TouchPair` shouldn't be initialised from
-  /// point-only data. If this is neccessary, a
-  /// `PointPair` should be used
-
-
 }
 
 extension TouchPair {
-  
-//  public var pointPair: PointPair {
-//    let p1 = first.position.mapped(to: mappingRect)
-//    let p2 = second.position.mapped(to: mappingRect)
-//    
-//    return PointPair(
-//      mappedP1: p1,
-//      mappedP2: p2,
-//      mappingRect: mappingRect
-//    )
-//  }
 
   var p1: CGPoint {
     first.position.mapped(to: mappingRect)
@@ -102,44 +73,3 @@ extension Set where Element == TouchPoint {
   }
   
 }
-
-/// Useful for contexts where only positional data is relevant.
-/// Prefer ``TouchPair`` if pressure or velocity info is required
-///
-/// I could be wrong, but maybe `TouchPair` has a concept of
-/// first and second points, but `PointPair` doesn't? Not sure.
-//public struct PointPair {
-//  public let p1: CGPoint
-//  public let p2: CGPoint
-//  public let mappingRect: CGRect
-//
-//  public init(
-//    mappedP1: CGPoint,
-//    mappedP2: CGPoint,
-//    mappingRect: CGRect
-//  ) {
-//    self.p1 = mappedP1
-//    self.p2 = mappedP2
-//    self.mappingRect = mappingRect
-//  }
-//}
-//
-//extension PointPair {
-//  static func mapped(
-//    from touches: Set<TouchPoint>,
-//    to mappingRect: CGRect
-//  ) -> PointPair {
-//
-//    let touchesArray = touches.array
-//    precondition(touchesArray.count == 2, "Exactly 2 touches required")
-//
-//    let p1 = touchesArray[0].position.mapped(to: mappingRect)
-//    let p2 = touchesArray[1].position.mapped(to: mappingRect)
-//
-//    return PointPair(
-//      mappedP1: p1,
-//      mappedP2: p2,
-//      mappingRect: mappingRect
-//    )
-//  }
-//}
