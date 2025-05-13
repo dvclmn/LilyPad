@@ -15,18 +15,18 @@ import MemberwiseInit
 /// `velocity`: How fast the touch was moving when it arrived at `position`
 
 
+
+/// The ID comes from `NSTouch` identity:
+/// ```
+/// var identity: any NSCopying & NSObjectProtocol { get }
+/// ```
+/// and is constructed as below:
+/// ```
+/// func id(for touch: NSTouch) -> Int {
+///   ObjectIdentifier(touch.identity).hashValue
+/// }
+/// ```
 public struct TouchPoint: Identifiable, Sendable, Hashable, Equatable, Codable {
-  
-  /// This comes from `NSTouch` identity:
-  /// ```
-  /// var identity: any NSCopying & NSObjectProtocol { get }
-  /// ```
-  /// and is constructed as below:
-  /// ```
-  /// func id(for touch: NSTouch) -> Int {
-  ///   ObjectIdentifier(touch.identity).hashValue
-  /// }
-  /// ```
   public let id: Int
   public let phase: TrackpadTouchPhase
   /// This is normalised, comes from `NSTouch.normalizedPosition`
@@ -53,6 +53,7 @@ public struct TouchPoint: Identifiable, Sendable, Hashable, Equatable, Codable {
 }
 
 extension TouchPoint {
+    
   public func withVelocity(_ velocity: CGVector) -> TouchPoint {
     TouchPoint(
       id: id,
@@ -68,8 +69,20 @@ extension TouchPoint {
     return atan2(velocity.dy, velocity.dx)
   }
 
-  public func mapPoint(to destination: CGRect) -> CGPoint {
+  public func cgPointMapped(to destination: CGRect) -> CGPoint {
     return self.position.mapped(to: destination)
+  }
+  
+  public func mapPoint(to destination: CGRect) -> TouchPoint {
+    let mappedPoint: CGPoint = self.cgPointMapped(to: destination)
+    let newTouchPoint = TouchPoint(
+      id: self.id,
+      phase: self.phase,
+      position: mappedPoint,
+      timestamp: self.timestamp,
+      pressure: self.pressure
+    )
+    return newTouchPoint
   }
 
   /// Whether this touch has meaningful pressure data

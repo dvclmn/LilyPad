@@ -14,6 +14,8 @@ public struct TouchIndicatorsView: View {
 
   let touches: Set<TouchPoint>
   let mappingRect: CGRect
+  
+  let indicatorDiameter: CGFloat = 40
 
   public var body: some View {
 
@@ -21,8 +23,9 @@ public struct TouchIndicatorsView: View {
       ForEach(touches.array) { touch in
         Circle()
           .fill(indicatorColour(touch))
-          .frame(width: 40, height: 40)
-          .overlay(alignment: .top) {
+          .frame(width: indicatorDiameter)
+//          .aspectRatio(1, contentMode: .fill)
+          .overlay(alignment: .bottom) {
             /// Displays info above each individual touch location
             TouchLabel(touch)
           }
@@ -34,7 +37,7 @@ public struct TouchIndicatorsView: View {
         width: mappingRect.width,
         height: mappingRect.height
       )
-      .border(Color.orange.opacity(0.1))
+//      .border(Color.orange.opacity(0.1))
       //      .background(.red.opacity(0.4))
       //      .position(mappingRect.midPoint)
     }
@@ -50,13 +53,15 @@ extension TouchIndicatorsView {
       Text(touch.position.displayString)
       if isDuplicateID(touch) {
         Text("\nDuplicate ID")
+          .foregroundStyle(.red)
+          .fontWeight(.bold)
       }
     }
     .monospaced()
     .font(.caption2)
     .fixedSize()
     .roundedBackground(Styles.sizeNano, colour: AnyShapeStyle(.black.opacity(0.6)))
-    .offset(y: -22)
+    .offset(y: -indicatorDiameter * 1.15)
   }
 
   //  func touchLabel(_ touch: TouchPoint) -> String {
@@ -95,7 +100,7 @@ extension TouchIndicatorsView {
         TouchPoint.bottomLeading,
         TouchPoint.bottomTrailing,
       ],
-      mappingRect: CGRect(x: 0, y: 0, width: 400, height: 500)
+      mappingRect: CGRect(x: 0, y: 0, width: 400, height: 200)
     )
   }
   .padding()
