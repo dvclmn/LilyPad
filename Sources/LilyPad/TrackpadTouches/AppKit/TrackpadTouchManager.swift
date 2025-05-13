@@ -26,23 +26,28 @@ public class TrackpadTouchManager {
 
   func processCapturedTouches(
     _ touches: Set<NSTouch>,
-    phase: NSTouch.Phase,
-    timestamp: TimeInterval
+//    phase: NSTouch.Phase,
+    timestamp: TimeInterval,
+    pressure: CGFloat
   ) -> TouchEventData? {
 
     var updatedTouches = Set<TouchPoint>()
 
     for touch in touches {
+      
+      print(touch.debuggingString(timestamp: timestamp, pressure: pressure))
+      
       let touchId = touch.identity.hash
+      let phase = touch.phase
 
       switch phase {
 
-        case .began, .moved, .stationary:
-          // Update or add touch
-          //          activeTouches[id] = touch
+          #warning("Consider here if stationery touches want special handling, to achieve some sort of palm rejection")
+        case .began, .moved:
           activeTouches.insert(touchId)
+          
         case .ended, .cancelled:
-          // Remove just this touch
+          /// Remove just this touch
           activeTouches.remove(touchId)
           touchHistories.removeValue(forKey: touchId)
           lastTouches.removeValue(forKey: touchId)
@@ -72,7 +77,8 @@ public class TrackpadTouchManager {
         from: touch,
         touchId: touchId,
         phase: phase,
-        timestamp: timestamp
+        timestamp: timestamp,
+        pressure: pressure
       )
 
       var history = touchHistories[touchId] ?? []
@@ -97,8 +103,7 @@ public class TrackpadTouchManager {
 
     // Return the updated data for this event
     return TouchEventData(
-      touches: updatedTouches,
-      phase: phase
+      touches: updatedTouches
     )
   }
 
@@ -107,7 +112,8 @@ public class TrackpadTouchManager {
     from nsTouch: NSTouch,
     touchId: Int,
     phase: NSTouch.Phase,
-    timestamp: TimeInterval
+    timestamp: TimeInterval,
+    pressure: CGFloat
   ) -> TouchPoint {
     let position = CGPoint(
       x: nsTouch.normalizedPosition.x,
@@ -205,7 +211,7 @@ public class TrackpadTouchManager {
 
 
 extension NSTouch.Phase {
-  var toDomainPhase: TrackpadGesturePhase {
+  var toDomainPhase: TrackpadTouchPhase {
     switch self {
       case .began: .began
       case .cancelled: .cancelled
