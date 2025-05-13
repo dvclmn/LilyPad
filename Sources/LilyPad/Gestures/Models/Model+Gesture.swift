@@ -38,3 +38,8 @@ public enum TrackpadGesturePhase: String, Sendable, Equatable, Codable {
   case cancelled
 }
 
+public struct TrackpadGesture: Identifiable, Hashable, Sendable {
+  public let id: UUID
+  public let phase: TrackpadGesturePhase
+  public let touches: [TouchPoint]
+}
