@@ -25,14 +25,31 @@ public struct TouchPair {
     self.mappingRect = mappingRect
   }
 
-  public init?(_ touches: Set<TouchPoint>, mappingRect: CGRect) {
-    let sorted = touches.sorted { $0.timestamp < $1.timestamp }
-    guard sorted.count >= 2 else {
-//      print("Cannot form a TouchPair with fewer than two touches")
+//  public init?(
+//    _ touches: Set<TouchPoint>,
+//    mappingRect: CGRect
+//  ) {
+//    let sorted = touches.sorted { $0.timestamp < $1.timestamp }
+//    guard sorted.count >= 2 else {
+////      print("Cannot form a TouchPair with fewer than two touches")
+//      return nil
+//    }
+//    self.first = sorted[0]
+//    self.second = sorted[1]
+//    self.mappingRect = mappingRect
+//  }
+  
+  public init?(
+    _ touches: [TouchPoint],
+    mappingRect: CGRect
+  ) {
+//    let sorted = touches.sorted { $0.timestamp < $1.timestamp }
+    guard touches.count == 2 else {
+      //      print("Cannot form a TouchPair with fewer than two touches")
       return nil
     }
-    self.first = sorted[0]
-    self.second = sorted[1]
+    self.first = touches[0]
+    self.second = touches[1]
     self.mappingRect = mappingRect
   }
 

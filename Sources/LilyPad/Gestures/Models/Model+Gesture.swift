@@ -8,7 +8,7 @@
 import Foundation
 
 public enum GestureType: Sendable {
-  case none
+  case unknown
   case draw
   case pan
   case zoom
@@ -38,8 +38,18 @@ public enum TrackpadGesturePhase: String, Sendable, Equatable, Codable {
   case cancelled
 }
 
-public struct TrackpadGesture: Identifiable, Hashable, Sendable {
+public struct RawGesture: Identifiable, Hashable, Sendable {
   public let id: UUID
   public let phase: TrackpadGesturePhase
   public let touches: [TouchPoint]
 }
+
+public struct TrackpadGesture: Identifiable, Hashable, Sendable {
+  public let id: UUID
+  public let type: GestureType
+  public let phase: TrackpadGesturePhase
+//  public let touches: [TouchPoint]
+  
+  public static let unknown = TrackpadGesture(id: UUID(), type: .unknown, phase: .none)
+}
+
