@@ -66,7 +66,8 @@ public struct TrackpadTouchesView: NSViewRepresentable {
       _ view: TrackpadTouchesNSView,
       didUpdate eventData: TouchEventData?
     ) {
-      Task { @MainActor in
+      DispatchQueue.main.async {
+//      Task { @MainActor in
 //        guard let eventData else {
 //          print("`TrackpadTouchesView`'s Coordinator: No event data found")
 //          self.parent.onTouchesUpdate?(nil)

@@ -26,14 +26,14 @@ public class TrackpadTouchManager {
 
   func processCapturedTouches(
     _ touches: Set<NSTouch>,
-    phase: TrackpadGesturePhase,
+    phase: NSTouch.Phase,
     timestamp: TimeInterval
   ) -> TouchEventData? {
 
     var updatedTouches = Set<TouchPoint>()
 
     for touch in touches {
-      let touchId = id(for: touch)
+      let touchId = touch.identity.hash
 
       switch phase {
 
@@ -106,7 +106,7 @@ public class TrackpadTouchManager {
   private func makeRawTouch(
     from nsTouch: NSTouch,
     touchId: Int,
-    phase: TrackpadGesturePhase,
+    phase: NSTouch.Phase,
     timestamp: TimeInterval
   ) -> TouchPoint {
     let position = CGPoint(
@@ -119,7 +119,7 @@ public class TrackpadTouchManager {
 
     return TouchPoint(
       id: touchId,
-      phase: phase,
+      phase: phase.toDomainPhase,
       position: position,
       timestamp: timestamp,
       velocity: CGVector.zero,  // Will be populated by withVelocity()
@@ -204,9 +204,9 @@ public class TrackpadTouchManager {
 }
 
 
-extension NSTouch {
+extension NSTouch.Phase {
   var toDomainPhase: TrackpadGesturePhase {
-    switch self.phase {
+    switch self {
       case .began: .began
       case .cancelled: .cancelled
       case .ended: .ended

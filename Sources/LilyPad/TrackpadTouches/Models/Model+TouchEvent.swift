@@ -9,19 +9,19 @@ import AppKit
 
 public struct TouchEventData: Sendable, Equatable {
   public let touches: Set<TouchPoint>
-  public let phase: TrackpadGesturePhase
+//  public let phase: TrackpadGesturePhase
   
   public static let atRest = TouchEventData(
     touches: [],
-    phase: .none,
+//    phase: .none,
   )
   
   public init(
     touches: Set<TouchPoint>,
-    phase: TrackpadGesturePhase
+//    phase: TrackpadGesturePhase
   ) {
     self.touches = touches
-    self.phase = phase
+//    self.phase = phase
   }
 }
 extension TouchEventData: CustomStringConvertible {
@@ -30,11 +30,8 @@ extension TouchEventData: CustomStringConvertible {
     
     TouchEventData
       - Touches (count: \(touches.count): 
-    
           \(touches)
     
-    
-      - Phase: \(phase.rawValue)
     
     """
   }

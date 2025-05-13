@@ -7,6 +7,25 @@
 
 import AppKit
 
+extension NSTouch {
+  func debuggingString(from event: NSEvent) -> String {
+    """
+    ////
+    Received `NSTouch`
+      - Phase: \(self.phase)
+      - ID: \(self.identity)
+      - ID Hash: \(self.identity.hash)
+      - Is Resting: \(self.isResting)
+      - Device: \(self.device.debugDescription)
+      - Device Size: \(self.deviceSize)
+    
+      From NSEvent:
+      - Timestamp: \(event.timestamp)
+      - Pressure: \(event.pressure)
+    """
+  }
+}
+
 /// The underlying AppKit NSView that captures raw trackpad touches
 public class TrackpadTouchesNSView: NSView {
   /// Delegate to forward touch events to
@@ -31,39 +50,49 @@ public class TrackpadTouchesNSView: NSView {
     /// Only interested in trackpad touches, not direct touches
     allowedTouchTypes = [.indirect]
     /// Include stationary touches in the updates
-    wantsRestingTouches = false
+    wantsRestingTouches = true
+    
+    #warning("Use this in future for that annoying palm triggering I always get")
+///    wantsRestingTouches = false is fine; set it to true if you want to receive .stationary phase updates (like for palm resting detection).
+    
   }
 
   private func processFirstTouches(
     with event: NSEvent,
-    phase: TrackpadGesturePhase
+    phase: NSTouch.Phase
   ) {
-    var touches: Set<NSTouch> = []
     
-    switch phase {
-      case .ended, .cancelled:
-        // Include ended/cancelled + still-touching touches
-        touches = event.touches(matching: [.ended, .cancelled, .touching], in: self)
-        
-      case .began, .moved:
-        touches = event.touches(matching: [.touching], in: self)
-        
-      default:
-        break
+    let touches = event.allTouches()
+    
+    for touch in touches {
+      print(touch.debuggingString(from: event))
     }
-    
-    let eventData = touchManager.processCapturedTouches(
-      touches,
-      phase: phase,
-      timestamp: event.timestamp
-    )
-    
-    // ⬇️ Important: If no touches remain, you should notify with nil
-    if touchManager.activeTouches.isEmpty {
-      touchesDelegate?.touchesView(self, didUpdate: nil)
-    } else {
-      touchesDelegate?.touchesView(self, didUpdate: eventData)
-    }
+//    var touches: Set<NSTouch> = []
+//    
+//    switch phase {
+//      case .ended, .cancelled:
+//        // Include ended/cancelled + still-touching touches
+//        touches = event.touches(matching: [.ended, .cancelled, .touching], in: self)
+//        
+//      case .began, .moved:
+//        touches = event.touches(matching: [.touching], in: self)
+//        
+//      default:
+//        break
+//    }
+//    
+//    let eventData = touchManager.processCapturedTouches(
+//      touches,
+//      phase: phase,
+//      timestamp: event.timestamp
+//    )
+//    
+//    // ⬇️ Important: If no touches remain, you should notify with nil
+//    if touchManager.activeTouches.isEmpty {
+//      touchesDelegate?.touchesView(self, didUpdate: nil)
+//    } else {
+//      touchesDelegate?.touchesView(self, didUpdate: eventData)
+//    }
   }
   
 //  private func processFirstTouches(
