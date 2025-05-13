@@ -27,7 +27,7 @@ public struct GestureStateHandler {
   //  var currentTouchPositions: TouchPositions?
 
 
-  var gestureType: GestureType = .unknown
+  public var gestureType: GestureType = .unknown
   var currentGestureID: TrackpadGesture.ID?
 
   private var trackedTouchIDs: Set<TouchPoint.ID> = []
@@ -107,20 +107,20 @@ extension GestureStateHandler {
     _ rawGesture: RawGesture,
     //    event: TouchEventData,
     in mappingRect: CGRect
-  ) -> TrackpadGesture {
+  ) {
 
     let touches = rawGesture.touches
     let phase = rawGesture.phase
 
     guard touches.count == requiredTouchCount,
       let touchPositions = TouchPair(touches, mappingRect: mappingRect)
-    else { return .unknown }
+    else { return }
 
     startTouchPair = touchPositions
 
     guard let start = startTouchPair else {
       print("Gesture: No value found for `startPositions`")
-      return .unknown
+      return
     }
 
     let deltaPan = touchPositions.midPointBetween - start.midPointBetween
@@ -170,18 +170,21 @@ extension GestureStateHandler {
       case .unknown, .draw:
         break  // Wait for threshold to be crossed
     }
-
-    lastPan = pan
-    lastZoom = zoom
-    lastRotation = rotation
-    startTouchPair = nil
-    //        currentTouchPositions = nil
-    gestureType = .unknown
-    //      case .ended, .cancelled, .none:
-
-    //    }
     
-    return .unknown
+    if phase == .ended || phase == .cancelled {
+      lastPan = pan
+      lastZoom = zoom
+      lastRotation = rotation
+      startTouchPair = nil
+      //        currentTouchPositions = nil
+      gestureType = .unknown
+      //      case .ended, .cancelled, .none:
+      
+      //    }
+      
+      
+    }
+
 
   }
 

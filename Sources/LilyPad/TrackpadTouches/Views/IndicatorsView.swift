@@ -48,15 +48,27 @@ public struct TouchIndicatorsView: View {
 extension TouchIndicatorsView {
 
   func indicatorColour(_ touch: TouchPoint) -> Color {
-    let thing: Int = touches.count { point in
+    let matchingIdsCount = touches.filter { point in
       point.id == touch.id
-    }
-
-    guard thing < 0 else {
+    }.count
+    
+    // If there's more than 1 point with this ID (including this one), show red
+    if matchingIdsCount > 1 {
       return .red
     }
     return Color.blue.opacity(0.7)
   }
+  
+//  func indicatorColour(_ touch: TouchPoint) -> Color {
+//    let thing: Int = touches.count { point in
+//      point.id == touch.id
+//    }
+//
+//    guard thing < 0 else {
+//      return .red
+//    }
+//    return Color.blue.opacity(0.7)
+//  }
 
   func touchPosition(_ touch: TouchPoint) -> CGPoint {
     touch.position.mapped(to: mappingRect)

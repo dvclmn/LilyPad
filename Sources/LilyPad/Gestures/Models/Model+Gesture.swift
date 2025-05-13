@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum GestureType: Sendable {
+public enum GestureType: String, Sendable {
   case unknown
   case draw
   case pan
