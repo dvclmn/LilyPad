@@ -43,12 +43,16 @@ public struct TrackpadTouchesModifier: ViewModifier {
       }
       
     }
-    .task(id: isClickEnabled) {
+//    .task(id: isClickEnabled) {
 //      print("`TrackpadTouchesModifier`'s Is Click Enabled changed. Value is: `\(isClickEnabled)`")
-    }
+//    }
   }
 }
 extension View {
+  /// `mappingRect` should (I think) be the same as what constrains touches
+  /// out in the view using the touches. Otherwise the indicators and the actual
+  /// strokes/gestures won't line up.
+  /// It's used in this modifier for the touch indicators only
   public func touches(
     isClickEnabled: Bool,
     showIndicators: Bool = true,

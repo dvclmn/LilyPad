@@ -23,23 +23,20 @@ public struct TouchIndicatorsView: View {
           .fill(indicatorColour(touch))
           .frame(width: 40, height: 40)
           .overlay(alignment: .top) {
-
             /// Displays info above each individual touch location
-            Text(touch.position.displayString)
-              .monospaced()
-              .roundedBackground(Styles.sizeNano, colour: AnyShapeStyle(.black.opacity(0.6)))
-              .offset(y: -22)
-              .font(.caption2)
-              .fixedSize()
-
+            TouchLabel(touch)
           }
+//          .position(touch.position)
           .position(touchPosition(touch))
       }
-//      .angledLine(between: touches, mappingRect: mappingRect)
+      //      .angledLine(between: touches, mappingRect: mappingRect)
       .frame(
         width: mappingRect.width,
         height: mappingRect.height
       )
+      .border(Color.orange.opacity(0.1))
+      //      .background(.red.opacity(0.4))
+      //      .position(mappingRect.midPoint)
     }
 
   }
@@ -47,28 +44,39 @@ public struct TouchIndicatorsView: View {
 
 extension TouchIndicatorsView {
 
-  func indicatorColour(_ touch: TouchPoint) -> Color {
-    let matchingIdsCount = touches.filter { point in
-      point.id == touch.id
-    }.count
-    
-    // If there's more than 1 point with this ID (including this one), show red
-    if matchingIdsCount > 1 {
-      return .red
+  @ViewBuilder
+  func TouchLabel(_ touch: TouchPoint) -> some View {
+    TextGroup {
+      Text(touch.position.displayString)
+      if isDuplicateID(touch) {
+        Text("\nDuplicate ID")
+      }
     }
-    return Color.blue.opacity(0.7)
+    .monospaced()
+    .font(.caption2)
+    .fixedSize()
+    .roundedBackground(Styles.sizeNano, colour: AnyShapeStyle(.black.opacity(0.6)))
+    .offset(y: -22)
   }
-  
-//  func indicatorColour(_ touch: TouchPoint) -> Color {
-//    let thing: Int = touches.count { point in
-//      point.id == touch.id
-//    }
-//
-//    guard thing < 0 else {
-//      return .red
-//    }
-//    return Color.blue.opacity(0.7)
-//  }
+
+  //  func touchLabel(_ touch: TouchPoint) -> String {
+
+  //  }
+
+  func isDuplicateID(_ touch: TouchPoint) -> Bool {
+    let matchingIdsCount =
+      touches.filter { point in
+        point.id == touch.id
+      }
+      .count
+
+    /// If there's more than 1 point with this ID (including this one), return true
+    return matchingIdsCount > 1
+  }
+
+  func indicatorColour(_ touch: TouchPoint) -> Color {
+    isDuplicateID(touch) ? Color.red : Color.blue.opacity(0.7)
+  }
 
   func touchPosition(_ touch: TouchPoint) -> CGPoint {
     touch.position.mapped(to: mappingRect)
@@ -80,7 +88,13 @@ extension TouchIndicatorsView {
 #Preview(traits: .size(.normal)) {
   GeometryReader { _ in
     TouchIndicatorsView(
-      touches: [TouchPoint.example01, TouchPoint.example02],
+      touches: [
+        TouchPoint.example01,
+        TouchPoint.topLeading,
+        TouchPoint.topTrailing,
+        TouchPoint.bottomLeading,
+        TouchPoint.bottomTrailing,
+      ],
       mappingRect: CGRect(x: 0, y: 0, width: 400, height: 500)
     )
   }

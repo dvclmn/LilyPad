@@ -87,7 +87,7 @@ extension TouchPoint {
   public static let example01 = TouchPoint(
     id: 1,
     phase: .moved,
-    position: CGPoint.quickPreset01,
+    position: CGPoint(x: 0.2, y: 0.6),
     timestamp: 1,
     pressure: 0.5
   )
@@ -95,9 +95,39 @@ extension TouchPoint {
   public static let example02 = TouchPoint(
     id: 2,
     phase: .moved,
-    position: CGPoint.quickPreset02,
+    position: CGPoint(x: 0.4, y: 0.4),
     timestamp: 2,
     pressure: 0.2
+  )
+  
+  public static let topLeading = TouchPoint(
+    id: 3,
+    phase: .moved,
+    position: CGPoint(x: 0, y: 0),
+    timestamp: 6,
+    pressure: 0.5
+  )
+  
+  public static let topTrailing = TouchPoint(
+    id: 4,
+    phase: .moved,
+    position: CGPoint(x: 1.0, y: 0),
+    timestamp: 10,
+    pressure: 0.5
+  )
+  public static let bottomLeading = TouchPoint(
+    id: 5,
+    phase: .moved,
+    position: CGPoint(x: 0, y: 1.0),
+    timestamp: 16,
+    pressure: 0.5
+  )
+  public static let bottomTrailing = TouchPoint(
+    id: 5,
+    phase: .moved,
+    position: CGPoint(x: 1.0, y: 1.0),
+    timestamp: 19,
+    pressure: 0.5
   )
 
 }

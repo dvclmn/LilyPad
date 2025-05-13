@@ -25,7 +25,7 @@ public typealias TouchUpdates = (_ eventData: TouchEventData?) -> Void
 public struct TrackpadTouchesView: NSViewRepresentable {
 
   let isClickEnabled: Bool
-//  @Binding var isClickEnabled: Bool
+  //  @Binding var isClickEnabled: Bool
   /// Callback for touch updates
   private var onTouchesUpdate: TouchUpdates?
 
@@ -66,13 +66,13 @@ public struct TrackpadTouchesView: NSViewRepresentable {
       _ view: TrackpadTouchesNSView,
       didUpdate eventData: TouchEventData?
     ) {
-      DispatchQueue.main.async {
-//      Task { @MainActor in
-//        guard let eventData else {
-//          print("`TrackpadTouchesView`'s Coordinator: No event data found")
-//          self.parent.onTouchesUpdate?(nil)
-//          return
-//        }
+      //      DispatchQueue.main.async {
+      Task { @MainActor in
+        //        guard let eventData else {
+        //          print("`TrackpadTouchesView`'s Coordinator: No event data found")
+        //          self.parent.onTouchesUpdate?(nil)
+        //          return
+        //        }
         self.parent.onTouchesUpdate?(eventData)
       }
     }

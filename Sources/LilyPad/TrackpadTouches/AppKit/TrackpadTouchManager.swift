@@ -35,7 +35,8 @@ public class TrackpadTouchManager {
 
     for touch in touches {
       
-      print(touch.debuggingString(timestamp: timestamp, pressure: 0.0))
+      
+//      print("`TrackpadTouchManager` touch debug: \(touch.debuggingString(timestamp: timestamp, pressure: 0.0))")
       
       let touchId = touch.identity.hash
       let phase = touch.phase
@@ -95,11 +96,11 @@ public class TrackpadTouchManager {
       // Optionally update lastTouches:
       lastTouches[touchId] = enrichedTouch
 
-      print("Phase: \(phase), Touch ID: \(touchId)")
+//      print("Phase: \(phase), Touch ID: \(touchId)")
 
     }
 
-    print("Active touches: \(activeTouches)")
+//    print("Active touches: \(activeTouches)")
 
     // Return the updated data for this event
     return TouchEventData(
@@ -123,7 +124,7 @@ public class TrackpadTouchManager {
     // You might need to adjust how you get pressure
     //    let currentPressure: CGFloat = nsTouch.pressure > 0 ? nsTouch.pressure : 1.0
 
-    return TouchPoint(
+    let result = TouchPoint(
       id: touchId,
       phase: phase.toDomainPhase,
       position: position,
@@ -131,6 +132,10 @@ public class TrackpadTouchManager {
       velocity: CGVector.zero,  // Will be populated by withVelocity()
       pressure: .zero
     )
+    
+//    print("Made Raw Touch: \(result)")
+    
+    return result
   }
   //}
 
