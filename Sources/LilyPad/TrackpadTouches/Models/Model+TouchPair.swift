@@ -84,9 +84,9 @@ extension TouchPair {
 
 /// This is to address the common scenario where we have a set of touches:
 /// `Set<TouchPoint>`, and want to know the order in which they were invoked
-extension Set where Element == TouchPoint {
-  public func touchPair(in rect: CGRect) -> TouchPair? {
-    TouchPair(self, mappingRect: rect)
-  }
-  
-}
+//extension Set where Element == TouchPoint {
+//  public func touchPair(in rect: CGRect) -> TouchPair? {
+//    TouchPair(self, mappingRect: rect)
+//  }
+//  
+//}

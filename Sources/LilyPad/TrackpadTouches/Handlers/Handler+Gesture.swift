@@ -27,7 +27,7 @@ public struct GestureStateHandler {
   //  var currentTouchPositions: TouchPositions?
 
 
-  var gestureType: GestureType = .none
+  var gestureType: GestureType = .unknown
   var currentGestureID: TrackpadGesture.ID?
 
   private var trackedTouchIDs: Set<TouchPoint.ID> = []
@@ -61,7 +61,7 @@ extension GestureStateHandler {
     }
   }
 
-  mutating func update(
+  public mutating func update(
     with event: TouchEventData
   ) -> RawGesture? {
     let touches = event.touches
@@ -104,74 +104,84 @@ extension GestureStateHandler {
 
 
   public mutating func interpretGesture(
-    rawGesture: RawGesture,
-//    event: TouchEventData,
+    _ rawGesture: RawGesture,
+    //    event: TouchEventData,
     in mappingRect: CGRect
   ) -> TrackpadGesture {
 
     let touches = rawGesture.touches
     let phase = rawGesture.phase
-    
+
     guard touches.count == requiredTouchCount,
       let touchPositions = TouchPair(touches, mappingRect: mappingRect)
     else { return .unknown }
 
-    switch phase {
-      case .began:
-        startTouchPair = touchPositions
-        //        currentTouchPositions = touchPositions
-        gestureType = .unknown
+    startTouchPair = touchPositions
 
-      case .moved, .stationary:
-        guard let start = startTouchPair else {
-          print("Gesture: No value found for `startPositions`")
-          return
-        }
-
-        //        currentTouchPositions = touchPositions
-
-        let deltaPan = touchPositions.midPointBetween - start.midPointBetween
-        let deltaZoom = abs(touchPositions.distanceBetween - start.distanceBetween)
-        let deltaAngle = abs(touchPositions.angleInRadiansBetween - start.angleInRadiansBetween)
-
-        if gestureType == .none {
-          let zoomPassed = deltaZoom > zoomThreshold
-          let rotatePassed = deltaAngle > rotationThreshold
-          let panPassed = deltaPan.length > panThreshold
-
-          /// Priority: pan > zoom > rotate
-          if panPassed {
-            gestureType = .pan
-            print("Now Panning: Pan delta `\(deltaPan)` crossed threshold `\(panThreshold)`")
-          } else if zoomPassed {
-            gestureType = .zoom
-            print("Now Zooming: Zoom delta `\(deltaZoom)` crossed threshold `\(zoomThreshold)`")
-          } else if rotatePassed {
-            gestureType = .rotate
-            print("Now Rotating: Rotation delta `\(deltaAngle)` crossed threshold `\(rotationThreshold)`")
-          }
-        }
-
-        switch gestureType {
-          case .zoom:
-            let scaleChange = touchPositions.distanceBetween / start.distanceBetween
-            zoom = lastZoom * scaleChange
-          case .rotate:
-            rotation = lastRotation + (touchPositions.angleInRadiansBetween - start.angleInRadiansBetween)
-          case .pan:
-            pan = lastPan + deltaPan
-          case .none, .draw:
-            break  // Wait for threshold to be crossed
-        }
-
-      case .ended, .cancelled, .none:
-        lastPan = pan
-        lastZoom = zoom
-        lastRotation = rotation
-        startTouchPair = nil
-        //        currentTouchPositions = nil
-        gestureType = .none
+    guard let start = startTouchPair else {
+      print("Gesture: No value found for `startPositions`")
+      return .unknown
     }
+
+    let deltaPan = touchPositions.midPointBetween - start.midPointBetween
+    let deltaZoom = abs(touchPositions.distanceBetween - start.distanceBetween)
+    let deltaAngle = abs(touchPositions.angleInRadiansBetween - start.angleInRadiansBetween)
+
+
+    //    switch phase {
+    //      case .began:
+    //
+    //        //        currentTouchPositions = touchPositions
+    //        gestureType = .unknown
+    //
+    //      case .moved, .stationary:
+    //
+    //
+    //        //        currentTouchPositions = touchPositions
+    //
+    //
+
+    if gestureType == .unknown {
+      let zoomPassed = deltaZoom > zoomThreshold
+      let rotatePassed = deltaAngle > rotationThreshold
+      let panPassed = deltaPan.length > panThreshold
+
+      /// Priority: pan > zoom > rotate
+      if panPassed {
+        gestureType = .pan
+        print("Now Panning: Pan delta `\(deltaPan)` crossed threshold `\(panThreshold)`")
+      } else if zoomPassed {
+        gestureType = .zoom
+        print("Now Zooming: Zoom delta `\(deltaZoom)` crossed threshold `\(zoomThreshold)`")
+      } else if rotatePassed {
+        gestureType = .rotate
+        print("Now Rotating: Rotation delta `\(deltaAngle)` crossed threshold `\(rotationThreshold)`")
+      }
+    }
+
+    switch gestureType {
+      case .zoom:
+        let scaleChange = touchPositions.distanceBetween / start.distanceBetween
+        zoom = lastZoom * scaleChange
+      case .rotate:
+        rotation = lastRotation + (touchPositions.angleInRadiansBetween - start.angleInRadiansBetween)
+      case .pan:
+        pan = lastPan + deltaPan
+      case .unknown, .draw:
+        break  // Wait for threshold to be crossed
+    }
+
+    lastPan = pan
+    lastZoom = zoom
+    lastRotation = rotation
+    startTouchPair = nil
+    //        currentTouchPositions = nil
+    gestureType = .unknown
+    //      case .ended, .cancelled, .none:
+
+    //    }
+    
+    return .unknown
 
   }
 

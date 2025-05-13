@@ -62,7 +62,7 @@ public class TrackpadTouchesNSView: NSView {
 
   private func processFirstTouches(
     with event: NSEvent,
-    phase: NSTouch.Phase
+//    phase: NSTouch.Phase
   ) {
 
     let touches = event.allTouches()
@@ -84,7 +84,7 @@ public class TrackpadTouchesNSView: NSView {
     let eventData = touchManager.processCapturedTouches(
       touches,
       timestamp: event.timestamp,
-      pressure: CGFloat(event.pressure)
+//      pressure: CGFloat(event.pressure)
     )
 
     ///     ⬇️ Important: If no touches remain, you should notify with nil
@@ -149,16 +149,16 @@ public class TrackpadTouchesNSView: NSView {
 
   // MARK: - Touch Event Handlers
   public override func touchesBegan(with event: NSEvent) {
-    processFirstTouches(with: event, phase: .began)
+    processFirstTouches(with: event)
   }
   public override func touchesMoved(with event: NSEvent) {
-    processFirstTouches(with: event, phase: .moved)
+    processFirstTouches(with: event)
   }
   public override func touchesEnded(with event: NSEvent) {
-    processFirstTouches(with: event, phase: .ended)
+    processFirstTouches(with: event)
   }
   public override func touchesCancelled(with event: NSEvent) {
-    processFirstTouches(with: event, phase: .cancelled)
+    processFirstTouches(with: event)
   }
   //  public override func pressureChange(with event: NSEvent) {
   //    processPressure(event)

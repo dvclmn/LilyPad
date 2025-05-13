@@ -22,20 +22,20 @@ public class TrackpadTouchManager {
   /// Dictionary to store touch history for each touch ID
   private var touchHistories: [Int: [TouchPoint]] = [:]
 
-  var currentPressure: CGFloat = .zero
+//  var currentPressure: CGFloat = .zero
 
   func processCapturedTouches(
     _ touches: Set<NSTouch>,
 //    phase: NSTouch.Phase,
     timestamp: TimeInterval,
-    pressure: CGFloat
+//    pressure: CGFloat
   ) -> TouchEventData? {
 
     var updatedTouches = Set<TouchPoint>()
 
     for touch in touches {
       
-      print(touch.debuggingString(timestamp: timestamp, pressure: pressure))
+      print(touch.debuggingString(timestamp: timestamp, pressure: 0.0))
       
       let touchId = touch.identity.hash
       let phase = touch.phase
@@ -78,7 +78,7 @@ public class TrackpadTouchManager {
         touchId: touchId,
         phase: phase,
         timestamp: timestamp,
-        pressure: pressure
+//        pressure: pressure
       )
 
       var history = touchHistories[touchId] ?? []
@@ -113,7 +113,7 @@ public class TrackpadTouchManager {
     touchId: Int,
     phase: NSTouch.Phase,
     timestamp: TimeInterval,
-    pressure: CGFloat
+//    pressure: CGFloat
   ) -> TouchPoint {
     let position = CGPoint(
       x: nsTouch.normalizedPosition.x,
@@ -129,7 +129,7 @@ public class TrackpadTouchManager {
       position: position,
       timestamp: timestamp,
       velocity: CGVector.zero,  // Will be populated by withVelocity()
-      pressure: currentPressure
+      pressure: .zero
     )
   }
   //}

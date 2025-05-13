@@ -35,7 +35,7 @@ public struct TouchIndicatorsView: View {
           }
           .position(touchPosition(touch))
       }
-      .angledLine(between: touches, mappingRect: mappingRect)
+//      .angledLine(between: touches, mappingRect: mappingRect)
       .frame(
         width: mappingRect.width,
         height: mappingRect.height
