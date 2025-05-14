@@ -40,20 +40,30 @@ public struct TouchPoint: Identifiable, Sendable, Hashable, Equatable, Codable {
     phase: TrackpadTouchPhase,
     position: CGPoint,
     timestamp: TimeInterval,
-    velocity: CGVector = .zero,
+    velocity: CGVector,
     pressure: CGFloat,
   ) {
     self.id = id
     self.phase = phase
     self.position = position
     self.timestamp = timestamp
-    self.pressure = pressure
     self.velocity = velocity
+    self.pressure = pressure
+  }
+}
+
+extension Array where Element == TouchPoint {
+  
+  public func mappedPoints(in rect: CGRect) -> [TouchPoint] {
+    let result = self.map { point in
+      point.mapPoint(to: rect)
+    }
+    return result
   }
 }
 
 extension TouchPoint {
-    
+
   public func withVelocity(_ velocity: CGVector) -> TouchPoint {
     TouchPoint(
       id: id,
@@ -69,21 +79,33 @@ extension TouchPoint {
     return atan2(velocity.dy, velocity.dx)
   }
 
-  public func cgPointMapped(to destination: CGRect) -> CGPoint {
-    return self.position.mapped(to: destination)
-  }
-  
-  public func mapPoint(to destination: CGRect) -> TouchPoint {
-    let mappedPoint: CGPoint = self.cgPointMapped(to: destination)
-    let newTouchPoint = TouchPoint(
+  func mapPoint(to destination: CGRect) -> TouchPoint {
+    let mappedPoint = self.position.mapped(to: destination)
+    return TouchPoint(
       id: self.id,
       phase: self.phase,
       position: mappedPoint,
       timestamp: self.timestamp,
+      velocity: self.velocity,
       pressure: self.pressure
     )
-    return newTouchPoint
   }
+  
+//  public func cgPointMapped(to destination: CGRect) -> CGPoint {
+//    return self.position.mapped(to: destination)
+//  }
+//  
+//  public func mapPoint(to destination: CGRect) -> TouchPoint {
+//    let mappedPoint: CGPoint = self.cgPointMapped(to: destination)
+//    let newTouchPoint = TouchPoint(
+//      id: self.id,
+//      phase: self.phase,
+//      position: mappedPoint,
+//      timestamp: self.timestamp,
+//      pressure: self.pressure
+//    )
+//    return newTouchPoint
+//  }
 
   /// Whether this touch has meaningful pressure data
   public var hasPressure: Bool {
@@ -102,6 +124,7 @@ extension TouchPoint {
     phase: .moved,
     position: CGPoint(x: 0.2, y: 0.6),
     timestamp: 1,
+    velocity: CGVector(dx: 2, dy: 9),
     pressure: 0.5
   )
 
@@ -110,6 +133,7 @@ extension TouchPoint {
     phase: .moved,
     position: CGPoint(x: 0.4, y: 0.4),
     timestamp: 2,
+    velocity: CGVector(dx: 2, dy: 9),
     pressure: 0.2
   )
   
@@ -118,6 +142,7 @@ extension TouchPoint {
     phase: .moved,
     position: CGPoint(x: 0, y: 0),
     timestamp: 6,
+    velocity: CGVector(dx: 2, dy: 9),
     pressure: 0.5
   )
   
@@ -126,6 +151,7 @@ extension TouchPoint {
     phase: .moved,
     position: CGPoint(x: 1.0, y: 0),
     timestamp: 10,
+    velocity: CGVector(dx: 2, dy: 9),
     pressure: 0.5
   )
   public static let bottomLeading = TouchPoint(
@@ -133,6 +159,7 @@ extension TouchPoint {
     phase: .moved,
     position: CGPoint(x: 0, y: 1.0),
     timestamp: 16,
+    velocity: CGVector(dx: 2, dy: 9),
     pressure: 0.5
   )
   public static let bottomTrailing = TouchPoint(
@@ -140,6 +167,7 @@ extension TouchPoint {
     phase: .moved,
     position: CGPoint(x: 1.0, y: 1.0),
     timestamp: 19,
+    velocity: CGVector(dx: 2, dy: 9),
     pressure: 0.5
   )
 
