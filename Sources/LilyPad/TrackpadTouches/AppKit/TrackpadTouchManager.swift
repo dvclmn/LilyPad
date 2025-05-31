@@ -17,31 +17,52 @@ public class TrackpadTouchManager {
   private var lastTouches: [Int: TouchPoint] = [:]
 
   /// Maximum number of touch points to keep in history per stroke
-  private let maxHistoryLength = 3
+  ///
+  /// Note from Claude:
+  /// For trackpad velocity calculations, I'd recommend 5-7 points in your
+  /// rolling window, rather than your current 3. Here's why:
+  /// Apple's Trackpad Frequency: Modern MacBook trackpads report at ~120Hz (about every 8ms),
+  /// which is quite high-frequency. With only 3 points, you're looking at roughly 16ms of history,
+  /// which might be too brief to smooth out jitter while still being responsive.
+  /// You might even make it adaptive:
+  /// ```
+  /// private func historyLengthFor(phase: TrackpadTouchPhase) -> Int {
+  ///   switch phase {
+  ///     case .began: return 3      // Less history needed at start
+  ///     case .moved: return 6      // Full smoothing during movement
+  ///     case .ended: return 4      // Slightly less as touch ends
+  ///   }
+  /// }
+  /// ```
+  private let maxHistoryLength = 7
+  
+  /// Weight recent points more heavily
+  let weights = [0.1, 0.15, 0.2, 0.25, 0.3] // Most recent gets 0.3
 
   /// Dictionary to store touch history for each touch ID
   private var touchHistories: [Int: [TouchPoint]] = [:]
 
   func processCapturedTouches(
     _ touches: Set<NSTouch>,
-//    phase: NSTouch.Phase,
+    //    phase: NSTouch.Phase,
     timestamp: TimeInterval,
-//    pressure: CGFloat
+    //    pressure: CGFloat
   ) -> TouchEventData? {
 
     var updatedTouches = Set<TouchPoint>()
 
     for touch in touches {
-      
+
       let touchId = touch.identity.hash
       let phase = touch.phase
 
+//      #warning("Consider here if stationery touches want special handling, to achieve some sort of palm rejection")
+
       switch phase {
 
-          #warning("Consider here if stationery touches want special handling, to achieve some sort of palm rejection")
         case .began, .moved:
           activeTouches.insert(touchId)
-          
+
         case .ended, .cancelled:
           /// Remove just this touch
           activeTouches.remove(touchId)
@@ -52,12 +73,11 @@ public class TrackpadTouchManager {
           break
       }
 
-      let rawTouch = makeRawTouch(
+      let rawTouch = makeTouchPoint(
         from: touch,
         touchId: touchId,
         phase: phase,
         timestamp: timestamp,
-//        pressure: pressure
       )
 
       var history = touchHistories[touchId] ?? []
@@ -82,20 +102,17 @@ public class TrackpadTouchManager {
   }
 
 
-  private func makeRawTouch(
+  private func makeTouchPoint(
     from nsTouch: NSTouch,
     touchId: Int,
     phase: NSTouch.Phase,
     timestamp: TimeInterval,
-//    pressure: CGFloat
   ) -> TouchPoint {
+    
     let position = CGPoint(
       x: nsTouch.normalizedPosition.x,
       y: 1.0 - nsTouch.normalizedPosition.y  // Flip Y
     )
-
-    // You might need to adjust how you get pressure
-    //    let currentPressure: CGFloat = nsTouch.pressure > 0 ? nsTouch.pressure : 1.0
 
     let result = TouchPoint(
       id: touchId,
@@ -105,13 +122,13 @@ public class TrackpadTouchManager {
       velocity: CGVector.zero,  // Will be populated by withVelocity()
       pressure: .zero
     )
-    
+
     return result
   }
 
-  func id(for touch: NSTouch) -> Int {
-    ObjectIdentifier(touch.identity).hashValue
-  }
+//  func id(for touch: NSTouch) -> Int {
+//    ObjectIdentifier(touch.identity).hashValue
+//  }
 
   private func computeVelocity(for history: [TouchPoint]) -> CGVector {
     guard history.count >= 2 else { return .zero }
