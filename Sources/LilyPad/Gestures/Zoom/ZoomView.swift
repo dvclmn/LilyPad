@@ -57,7 +57,7 @@ import SwiftUI
 //        }
 //    }
 //    .midpointIndicator()
-//    .mouseLock(shouldLockMouse)
+//    .pointerLock(shouldLockMouse)
 //
 //    .touches(
 //      showIndicators: showIndicators,

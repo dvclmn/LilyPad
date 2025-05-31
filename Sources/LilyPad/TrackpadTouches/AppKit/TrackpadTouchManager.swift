@@ -146,8 +146,8 @@ public class TrackpadTouchManager {
   //    timestamp: TimeInterval
   //  ) -> TouchPoint {
   //    let position = CGPoint(
-  //      x: nsTouch.normalizedPosition.x,
-  //      y: 1.0 - nsTouch.normalizedPosition.y  // Flip Y
+  //      x: nsTouch.normalisedPosition.x,
+  //      y: 1.0 - nsTouch.normalisedPosition.y  // Flip Y
   //    )
   //
   //    return TouchPoint(
