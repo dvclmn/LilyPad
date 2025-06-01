@@ -62,9 +62,10 @@ extension GestureStateHandler {
   }
 
   public mutating func update(
-    with event: TouchEventData
+    with event: TouchEventData,
+    mappedTo mappingRect: CGRect
   ) -> RawGesture? {
-    let touches = event.touches
+    let touches = event.getTouches(mappedTo: mappingRect)
     let activeTouches = touches.filter { $0.phase != .ended && $0.phase != .cancelled }
     let activeTouchIDs = Set(activeTouches.map(\.id))
 
