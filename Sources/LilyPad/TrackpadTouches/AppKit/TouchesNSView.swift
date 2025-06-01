@@ -17,6 +17,7 @@ public class TrackpadTouchesNSView: NSView {
   private let touchManager = TrackpadTouchManager()
 
   public var isClickEnabled: Bool = true
+  public var shouldUseVelocity: Bool = true
 
   public override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
@@ -49,10 +50,11 @@ public class TrackpadTouchesNSView: NSView {
     let eventData = touchManager.processCapturedTouches(
       touches,
       timestamp: event.timestamp,
+      includeVelocity: shouldUseVelocity
 //      pressure: CGFloat(event.pressure)
     )
 
-    ///     ⬇️ Important: If no touches remain, you should notify with nil
+    /// ⬇️ Important: If no touches remain,  should notify with nil
     if touchManager.activeTouches.isEmpty {
       touchesDelegate?.touchesView(self, didUpdate: nil)
     } else {
