@@ -7,27 +7,6 @@
 
 import AppKit
 
-extension NSTouch {
-  func debuggingString(
-    timestamp: TimeInterval,
-    pressure: CGFloat
-  ) -> String {
-    """
-    ////
-    Received `NSTouch`
-      - Phase: \(self.phase)
-      - ID: \(self.identity)
-      - ID Hash: \(self.identity.hash)
-      - Is Resting: \(self.isResting)
-      - Device: \(self.device.debugDescription)
-      - Device Size: \(self.deviceSize)
-
-      From NSEvent:
-      - Timestamp: \(timestamp)
-      - Pressure: \(pressure)
-    """
-  }
-}
 
 /// The underlying AppKit NSView that captures raw trackpad touches
 public class TrackpadTouchesNSView: NSView {
@@ -67,20 +46,6 @@ public class TrackpadTouchesNSView: NSView {
 
     let touches = event.allTouches()
 
-    //    var touches: Set<NSTouch> = []
-    //
-    //    switch phase {
-    //      case .ended, .cancelled:
-    //        // Include ended/cancelled + still-touching touches
-    //        touches = event.touches(matching: [.ended, .cancelled, .touching], in: self)
-    //
-    //      case .began, .moved:
-    //        touches = event.touches(matching: [.touching], in: self)
-    //
-    //      default:
-    //        break
-    //    }
-
     let eventData = touchManager.processCapturedTouches(
       touches,
       timestamp: event.timestamp,
@@ -94,58 +59,6 @@ public class TrackpadTouchesNSView: NSView {
       touchesDelegate?.touchesView(self, didUpdate: eventData)
     }
   }
-
-  //  private func processFirstTouches(
-  //    with event: NSEvent,
-  //    phase: TrackpadGesturePhase
-  //  ) {
-  //    // Get all touches for the current view
-  //    // For .ended and .cancelled phases, we need to specifically request those touches
-  //    var touches: Set<NSTouch> = Set()
-  //
-  //    if phase == .ended || phase == .cancelled {
-  //      // When touches end or cancel, we need to request those specific touches
-  //      touches = event.touches(matching: [.ended, .cancelled], in: self)
-  //    } else {
-  //      // For active touches (.began, .moved, .touching)
-  //      touches = event.touches(matching: [.touching], in: self)
-  //    }
-  //
-  //    let eventData = touchManager.processCapturedTouches(
-  //      touches,
-  //      phase: phase,
-  //      timestamp: event.timestamp
-  //    )
-  //
-  //    touchesDelegate?.touchesView(self, didUpdate: eventData)
-  //  }
-
-  //  private func processPressure(_ event: NSEvent) {
-  //    touchManager.currentPressure = CGFloat(event.pressure)
-  //
-  //    /// Only send pressure updates during active touches
-  //    guard !touchManager.activeTouches.isEmpty else { return }
-  //
-  //    /// During pressure changes, the phase should be "moved"
-  //    let eventData = createEventData(phase: .moved, timestamp: event.timestamp)
-  //    delegate?.touchesView(self, didUpdate: eventData)
-  //
-  //  }
-
-  //  private func createEventData(
-  //    phase: TrackpadGesturePhase,
-  //    timestamp: TimeInterval,
-  //  ) -> TouchEventData {
-  //    print("Creating event data, with phase: `\(phase.rawValue)`. `TrackpadTouchManager` is showing `\(touchManager.activeTouches.count)` active touches.")
-  //    let touches = touchManager.processTouches(
-  //      timestamp: timestamp,
-  //      in: self
-  //    )
-  //
-  //
-  //    return eventData
-  //  }
-
 
   // MARK: - Touch Event Handlers
   public override func touchesBegan(with event: NSEvent) {
@@ -168,40 +81,26 @@ public class TrackpadTouchesNSView: NSView {
   //    <#code#>
   //  }
 
+}
 
-  // MARK: - Disable mouse clicks when performing drawing/gestures
-  //  public override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
-  //    return isClickEnabled
-  //  }
-  //
-  //  public override func hitTest(_ point: NSPoint) -> NSView? {
-  //    return isClickEnabled ? super.hitTest(point) : nil
-  //  }
-
-
-  //  public override func mouseDown(with event: NSEvent) {
-  //    if isClickEnabled {
-  //      super.mouseDown(with: event)
-  //    }
-  //    // else: swallow the event
-  //  }
-  //
-  //  public override func mouseUp(with event: NSEvent) {
-  //    if isClickEnabled {
-  //      super.mouseUp(with: event)
-  //    }
-  //  }
-  //
-  //  public override func rightMouseDown(with event: NSEvent) {
-  //    if isClickEnabled {
-  //      super.rightMouseDown(with: event)
-  //    }
-  //  }
-  //
-  //  public override func otherMouseDown(with event: NSEvent) {
-  //    if isClickEnabled {
-  //      super.otherMouseDown(with: event)
-  //    }
-  //  }
-
+extension NSTouch {
+  func debuggingString(
+    timestamp: TimeInterval,
+    pressure: CGFloat
+  ) -> String {
+    """
+    ////
+    Received `NSTouch`
+      - Phase: \(self.phase)
+      - ID: \(self.identity)
+      - ID Hash: \(self.identity.hash)
+      - Is Resting: \(self.isResting)
+      - Device: \(self.device.debugDescription)
+      - Device Size: \(self.deviceSize)
+    
+      From NSEvent:
+      - Timestamp: \(timestamp)
+      - Pressure: \(pressure)
+    """
+  }
 }

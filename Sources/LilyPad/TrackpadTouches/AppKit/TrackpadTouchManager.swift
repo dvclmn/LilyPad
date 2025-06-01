@@ -35,6 +35,7 @@ public class TrackpadTouchManager {
   func processCapturedTouches(
     _ touches: Set<NSTouch>,
     timestamp: TimeInterval,
+    includeVelocity: Bool = false
   ) -> TouchEventData? {
 
     var updatedTouches = Set<TouchPoint>()
@@ -68,14 +69,21 @@ public class TrackpadTouchManager {
 
       /// Update history
       updateTouchHistory(touchId: touchId, touchPoint: rawTouch)
+      
+      if includeVelocity {
+        /// Compute velocity based on history
+        let velocity = computeWeightedVelocity(for: touchId)
+        
+        /// Create final touch with computed velocity
+        let enrichedTouch = rawTouch.withVelocity(velocity)
+        updatedTouches.insert(enrichedTouch)
+        lastTouches[touchId] = enrichedTouch
+        
+      } else {
+        updatedTouches.insert(rawTouch)
+        lastTouches[touchId] = rawTouch
+      }
 
-      /// Compute velocity based on history
-      let velocity = computeWeightedVelocity(for: touchId)
-
-      /// Create final touch with computed velocity
-      let enrichedTouch = rawTouch.withVelocity(velocity)
-      updatedTouches.insert(enrichedTouch)
-      lastTouches[touchId] = enrichedTouch
     }
 
     guard !updatedTouches.isEmpty else { return nil }
@@ -169,7 +177,7 @@ public class TrackpadTouchManager {
   ) -> TouchPoint {
     let position = CGPoint(
       x: nsTouch.normalizedPosition.x,
-      y: 1.0 - nsTouch.normalizedPosition.y  /// Flip Y
+      y: 1.0 - nsTouch.normalizedPosition.y/// Flip Y
     )
 
     /// Extract pressure if available (some trackpads support this)
@@ -248,18 +256,4 @@ public class TrackpadTouchManager {
   //    )
   //  }
 
-}
-
-
-extension NSTouch.Phase {
-  var toDomainPhase: TrackpadTouchPhase {
-    switch self {
-      case .began: .began
-      case .cancelled: .cancelled
-      case .ended: .ended
-      case .moved: .moved
-      case .stationary: .stationary
-      default: .none
-    }
-  }
 }

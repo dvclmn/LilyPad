@@ -5,7 +5,7 @@
 //  Created by Dave Coleman on 8/5/2025.
 //
 
-import Foundation
+import AppKit
 
 public enum GestureType: String, Sendable {
   case unknown
@@ -36,6 +36,19 @@ public enum TrackpadGesturePhase: String, Sendable, Equatable, Codable {
   case changed
   case ended
   case cancelled
+}
+
+extension NSTouch.Phase {
+  var toDomainPhase: TrackpadTouchPhase {
+    switch self {
+      case .began: .began
+      case .cancelled: .cancelled
+      case .ended: .ended
+      case .moved: .moved
+      case .stationary: .stationary
+      default: .none
+    }
+  }
 }
 
 public struct RawGesture: Identifiable, Hashable, Sendable {
