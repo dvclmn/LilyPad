@@ -43,13 +43,13 @@ public class TrackpadTouchManager {
       let touchId = touch.identity.hash
       let phase = touch.phase
 
-      // Handle touch lifecycle
+      /// Handle touch lifecycle
       switch phase {
         case .began, .moved:
           activeTouches.insert(touchId)
         case .ended, .cancelled:
           activeTouches.remove(touchId)
-          // Clean up after processing this final touch
+          /// Clean up after processing this final touch
           do {
             touchHistories.removeValue(forKey: touchId)
             lastTouches.removeValue(forKey: touchId)
@@ -58,7 +58,7 @@ public class TrackpadTouchManager {
           break
       }
 
-      // Create raw touch point
+      /// Create raw touch point
       let rawTouch = makeTouchPoint(
         from: touch,
         touchId: touchId,
@@ -66,13 +66,13 @@ public class TrackpadTouchManager {
         timestamp: timestamp
       )
 
-      // Update history
+      /// Update history
       updateTouchHistory(touchId: touchId, touchPoint: rawTouch)
 
-      // Compute velocity based on history
+      /// Compute velocity based on history
       let velocity = computeWeightedVelocity(for: touchId)
 
-      // Create final touch with computed velocity
+      /// Create final touch with computed velocity
       let enrichedTouch = rawTouch.withVelocity(velocity)
       updatedTouches.insert(enrichedTouch)
       lastTouches[touchId] = enrichedTouch
@@ -88,7 +88,7 @@ public class TrackpadTouchManager {
     var history = touchHistories[touchId] ?? []
     history.append(touchPoint)
 
-    // Maintain rolling window
+    /// Maintain rolling window
     if history.count > maxHistoryLength {
       history.removeFirst()
     }
@@ -103,22 +103,22 @@ public class TrackpadTouchManager {
       return .zero
     }
 
-    // For very short history, use simple calculation
+    /// For very short history, use simple calculation
     if history.count == 2 {
       return computeSimpleVelocity(from: history[0], to: history[1])
     }
 
-    // Weighted average of velocities between consecutive points
+    /// Weighted average of velocities between consecutive points
     var weightedDx: Double = 0
     var weightedDy: Double = 0
     var totalWeight: Double = 0
 
-    // Calculate velocity between each consecutive pair
+    /// Calculate velocity between each consecutive pair
     for i in 1..<history.count {
       let velocity = computeSimpleVelocity(from: history[i - 1], to: history[i])
 
-      // Use weight based on how recent this velocity sample is
-      // More recent samples (higher index) get higher weight
+      /// Use weight based on how recent this velocity sample is
+      /// More recent samples (higher index) get higher weight
       let weightIndex = min(i - 1, velocityWeights.count - 1)
       let weight = velocityWeights[weightIndex]
 
@@ -134,7 +134,7 @@ public class TrackpadTouchManager {
       dy: weightedDy / totalWeight
     )
 
-    // Clamp to reasonable bounds to prevent outliers
+    /// Clamp to reasonable bounds to prevent outliers
     return clampVelocity(finalVelocity)
   }
 
@@ -153,7 +153,7 @@ public class TrackpadTouchManager {
 
     guard magnitude > maxVelocity else { return velocity }
 
-    // Scale down to max velocity while preserving direction
+    /// Scale down to max velocity while preserving direction
     let scale = maxVelocity / magnitude
     return CGVector(
       dx: velocity.dx * scale,
@@ -169,11 +169,11 @@ public class TrackpadTouchManager {
   ) -> TouchPoint {
     let position = CGPoint(
       x: nsTouch.normalizedPosition.x,
-      y: 1.0 - nsTouch.normalizedPosition.y  // Flip Y
+      y: 1.0 - nsTouch.normalizedPosition.y  /// Flip Y
     )
 
-    // Extract pressure if available (some trackpads support this)
-    //    let pressure = CGFloat(nsTouch.force)
+    /// Extract pressure if available (some trackpads support this)
+    ///    let pressure = CGFloat(nsTouch.force)
 
     return TouchPoint(
       id: touchId,
