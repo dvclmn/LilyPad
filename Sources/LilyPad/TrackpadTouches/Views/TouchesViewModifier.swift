@@ -8,7 +8,7 @@
 import BaseHelpers
 import SwiftUI
 
-public typealias TouchesModifierOutput = (_ eventData: TouchEventData?) -> Void
+public typealias TouchesModifierOutput = (_ eventData: Set<TouchPoint>) -> Void
 
 public struct TrackpadTouchesModifier: ViewModifier {
   @State private var localTouches: Set<TouchPoint> = []
@@ -33,23 +33,13 @@ public struct TrackpadTouchesModifier: ViewModifier {
         isClickEnabled: isClickEnabled,
         shouldUseVelocity: shouldUseVelocity
       ) { eventData in
-        /// It's ok to fall back here to `[]`, as the touch indicators `ForEach`
-        /// should gracefully handle displaying *nothing*, if there is an empty set
-        //        guard let eventData else {
-        //          self.localTouches = []
-        //          touchUpdates(nil)
-        //          return
-        //        }
-        //        print("`TrackpadTouchesModifier`: Number of touches: \(eventData?.touches.count ?? 0). Phase: \(eventData?.phase.rawValue ?? "—")")
-        //        print("Touches received on the SwiftUI end: `\(eventData?.description ?? "nil")`")
-        self.localTouches = eventData?.getTouches(mappedTo: mappingRect) ?? []
-        touchUpdates(eventData)
+        
+        let touches = eventData?.getTouches(mappedTo: mappingRect) ?? []
+        
+        self.localTouches = touches
+        touchUpdates(touches)
       }
-
     }
-    //    .task(id: isClickEnabled) {
-    //      print("`TrackpadTouchesModifier`'s Is Click Enabled changed. Value is: `\(isClickEnabled)`")
-    //    }
   }
 }
 extension View {
