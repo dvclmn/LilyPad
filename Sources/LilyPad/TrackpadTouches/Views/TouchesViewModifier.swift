@@ -12,7 +12,7 @@ import SwiftUI
 public struct MappedTouchPoints {
   private let touches: Set<TouchPoint>
   let mappedRect: CGRect
-  
+
   public init(
     touches: Set<TouchPoint> = [],
     mappedRect: CGRect = .zero
@@ -20,12 +20,12 @@ public struct MappedTouchPoints {
     self.touches = touches
     self.mappedRect = mappedRect
   }
-  
+
   public var touchCount: Int {
     self.touches.count
   }
- 
-  
+
+
   public var mappedTouches: [MappedTouchPoint] {
     let allMapped: [MappedTouchPoint] = touches.map { touchPoint in
       let position = touchPoint.position.mapped(to: mappedRect)
@@ -34,17 +34,17 @@ public struct MappedTouchPoints {
     }
     return allMapped
   }
-  
+
   public var mappedTouchPoints: [TouchPoint] {
     let mapped = mappedTouches.map(\.touchPoint)
-//    let allMapped: [MappedTouchPoint] = touches.map { touchPoint in
-//      let position = touchPoint.position.mapped(to: mappedRect)
-//      let newTouchPoint = touchPoint.withUpdatedPosition(position)
-//      return MappedTouchPoint(touchPoint: newTouchPoint)
-//    }
+    //    let allMapped: [MappedTouchPoint] = touches.map { touchPoint in
+    //      let position = touchPoint.position.mapped(to: mappedRect)
+    //      let newTouchPoint = touchPoint.withUpdatedPosition(position)
+    //      return MappedTouchPoint(touchPoint: newTouchPoint)
+    //    }
     return mapped
   }
-  
+
   public func mappedTouch(withID id: TouchPoint.ID) -> MappedTouchPoint? {
     guard let touch = touches.first(where: { $0.id == id }) else {
       print("Couldn't find TouchPoint matching id: \(id)")
@@ -52,7 +52,7 @@ public struct MappedTouchPoints {
     }
     let newPosition: CGPoint = touch.position.mapped(to: mappedRect)
     let newTouchPoint = touch.withUpdatedPosition(newPosition)
-    
+
     return MappedTouchPoint(
       touchPoint: newTouchPoint
     )
@@ -67,31 +67,27 @@ public typealias TouchesModifierOutput = (MappedTouchPoints) -> Void
 //public typealias TouchesModifierOutput = (_ eventData: Set<TouchPoint>) -> Void
 
 public struct TrackpadTouchesModifier: ViewModifier {
-  
+
   @State private var localMappedTouches = MappedTouchPoints()
-//  @State private var localTouches: Set<TouchPoint> = []
+  //  @State private var localTouches: Set<TouchPoint> = []
 
   //  let isClickEnabled: Bool
   let shouldUseVelocity: Bool
-  let showIndicators: Bool
+  let shouldShowIndicators: Bool
   let mappingRect: CGRect
   let touchUpdates: TouchesModifierOutput
 
   public func body(content: Content) -> some View {
     GeometryReader { _ in
       content
-      if showIndicators {
-        TouchIndicatorsView(
-          mappedTouches: localMappedTouches
-//          touches: localTouches,
-//          mappingRect: mappingRect
-        )
+      if shouldShowIndicators {
+        TouchIndicatorsView(touches: localMappedTouches)
       }
 
       TrackpadTouchesView(shouldUseVelocity: shouldUseVelocity) { eventData in
 
         let touches = eventData?.touches ?? []
-        
+
         let mappedTouches = MappedTouchPoints(
           touches: touches,
           mappedRect: mappingRect
@@ -121,7 +117,7 @@ extension View {
       TrackpadTouchesModifier(
         //        isClickEnabled: isClickEnabled,
         shouldUseVelocity: shouldUseVelocity,
-        showIndicators: showIndicators,
+        shouldShowIndicators: showIndicators,
         mappingRect: mappingRect,
         touchUpdates: touchUpdates
       )
@@ -148,7 +144,7 @@ struct TrackpadShapeGuide: View {
           /// This just handles the stroke around the trackpad cut-out
           RoundedRectangle(cornerRadius: rounding)
             .fill(.clear)
-            .strokeBorder(.gray.opacity(0.08), style: .simple04)
+            .strokeBorder(.gray.opacity(0.08), style: .simple02)
         }
         .frame(
           width: rect.width,
