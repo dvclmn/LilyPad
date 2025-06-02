@@ -28,7 +28,7 @@ public struct TouchPoint: Identifiable, Sendable, Hashable, Equatable, Codable {
   public let id: Int
   public let phase: TrackpadTouchPhase
   /// This is normalised, comes from `NSTouch.normalisedPosition`
-  public let position: CGPoint
+  public var position: CGPoint
   public let timestamp: TimeInterval
   public let velocity: CGVector
   public let pressure: CGFloat
@@ -67,12 +67,16 @@ extension TouchPoint {
     return atan2(velocity.dy, velocity.dx)
   }
 
-  func mapPoint(to destination: CGRect) -> TouchPoint {
-    let mappedPoint = self.position.mapped(to: destination)
+//  public mutating func updatedPointPosition(_ newPosition: CGPoint) {
+//    self.position = newPosition
+//  }
+  public func withUpdatedPosition(_ newPosition: CGPoint) -> TouchPoint {
+//  public func newWithMappedPoint(to destination: CGRect) -> TouchPoint {
+//    let mappedPoint = self.position.mapped(to: destination)
     return TouchPoint(
       id: self.id,
       phase: self.phase,
-      position: mappedPoint,
+      position: newPosition,
       timestamp: self.timestamp,
       velocity: self.velocity,
       pressure: self.pressure
@@ -110,12 +114,12 @@ extension TouchPoint: CustomStringConvertible {
 
 
 extension Array where Element == TouchPoint {
-  public func mappedPoints(in rect: CGRect) -> [TouchPoint] {
-    let result = self.map { point in
-      point.mapPoint(to: rect)
-    }
-    return result
-  }
+//  public func mappedPoints(in rect: CGRect) -> [TouchPoint] {
+//    let result = self.map { point in
+//      point.mapPoint(to: rect)
+//    }
+//    return result
+//  }
 
   public func hasFourPoints() -> Bool {
     return self.count == 4

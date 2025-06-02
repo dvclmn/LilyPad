@@ -12,15 +12,16 @@ import SwiftUI
 
 public struct TouchIndicatorsView: View {
 
-  let touches: Set<TouchPoint>
-  let mappingRect: CGRect
+  let touches: MappedTouchPoints
+//  let touches: Set<TouchPoint>
+//  let mappingRect: CGRect
   
   let indicatorDiameter: CGFloat = 40
 
   public var body: some View {
 
-    if touches.count > 0 {
-      ForEach(touches.array) { touch in
+    if touches.touchCount > 0 {
+      ForEach(touches.mappedTouchPoints) { touch in
         Circle()
           .fill(indicatorColour(touch))
           .frame(width: indicatorDiameter)
@@ -30,12 +31,12 @@ public struct TouchIndicatorsView: View {
             TouchLabel(touch)
           }
 //          .position(touch.position)
-          .position(touchPosition(touch))
+          .position(touches.mappedRect.origin)
       }
       //      .angledLine(between: touches, mappingRect: mappingRect)
       .frame(
-        width: mappingRect.width,
-        height: mappingRect.height
+        width: touches.mappedRect.width,
+        height: touches.mappedRect.height
       )
 //      .border(Color.orange.opacity(0.1))
       //      .background(.red.opacity(0.4))
@@ -70,7 +71,7 @@ extension TouchIndicatorsView {
 
   func isDuplicateID(_ touch: TouchPoint) -> Bool {
     let matchingIdsCount =
-      touches.filter { point in
+    touches.mappedTouchPoints.filter { point in
         point.id == touch.id
       }
       .count
@@ -84,25 +85,25 @@ extension TouchIndicatorsView {
   }
 
   func touchPosition(_ touch: TouchPoint) -> CGPoint {
-    touch.position.mapped(to: mappingRect)
+    touch.position.mapped(to: touches.mappedRect)
   }
 }
 
-#if DEBUG
-@available(macOS 15, iOS 18, *)
-#Preview(traits: .size(.normal)) {
-  GeometryReader { _ in
-    TouchIndicatorsView(
-      touches: [
-        TouchPoint.example01,
-        TouchPoint.topLeading,
-        TouchPoint.topTrailing,
-        TouchPoint.bottomLeading,
-        TouchPoint.bottomTrailing,
-      ],
-      mappingRect: CGRect(x: 0, y: 0, width: 400, height: 200)
-    )
-  }
-  .padding()
-}
-#endif
+//#if DEBUG
+//@available(macOS 15, iOS 18, *)
+//#Preview(traits: .size(.normal)) {
+//  GeometryReader { _ in
+//    TouchIndicatorsView(
+//      touches: [
+//        TouchPoint.example01,
+//        TouchPoint.topLeading,
+//        TouchPoint.topTrailing,
+//        TouchPoint.bottomLeading,
+//        TouchPoint.bottomTrailing,
+//      ],
+//      mappingRect: CGRect(x: 0, y: 0, width: 400, height: 200)
+//    )
+//  }
+//  .padding()
+//}
+//#endif

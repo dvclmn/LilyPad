@@ -9,7 +9,7 @@ import AppKit
 import BaseHelpers
 
 public struct TouchEventData: Sendable, Equatable, Hashable {
-  private let touches: Set<TouchPoint>
+  public let touches: Set<TouchPoint>
 
   /// If this value is present, then the touches should
 //  public let mappingRect: CGRect?
@@ -28,15 +28,16 @@ public struct TouchEventData: Sendable, Equatable, Hashable {
 }
 
 extension TouchEventData {
-  public func getTouches(mappedTo mappingRect: CGRect?) -> Set<TouchPoint> {
-    guard let mappingRect else {
-      return touches
-    }
-    let mappedTouches: [TouchPoint] = touches.map { point in
-      point.mapPoint(to: mappingRect)
-    }
-    return mappedTouches.toSet()
-  }
+  
+//  public func getTouches(mappedTo mappingRect: CGRect?) -> Set<TouchPoint> {
+//    guard let mappingRect else {
+//      return touches
+//    }
+//    let mappedTouches: [TouchPoint] = touches.map { point in
+//      point.mapPoint(to: mappingRect)
+//    }
+//    return mappedTouches.toSet()
+//  }
 }
 
 extension TouchEventData: CustomStringConvertible {

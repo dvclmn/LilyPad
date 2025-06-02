@@ -16,7 +16,7 @@ public class TrackpadTouchesNSView: NSView {
   /// Touch manager to handle touch tracking and velocity calculation
   private let touchManager = TrackpadTouchManager()
 
-  public var isClickEnabled: Bool = true
+//  public var isClickEnabled: Bool = true
   public var shouldUseVelocity: Bool = true
 
   public override init(frame frameRect: NSRect) {
