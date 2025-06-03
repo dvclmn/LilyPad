@@ -21,12 +21,10 @@ public struct GestureStateHandler {
   var lastZoom: CGFloat = 1.0
   var lastRotation: CGFloat = .zero
 
-  var startTouchPair: TouchPair?
+  public var previousPair: TouchPair?
 
   #warning("I 'feel' like this is useful, but not 100% sure. Leaving here for now in case.")
   //  var currentTouchPositions: TouchPositions?
-
-  
 
   public var gestureType: GestureType = .none
   var currentGestureID: TrackpadGesture.ID?
@@ -42,15 +40,15 @@ public struct GestureStateHandler {
 }
 
 extension GestureStateHandler {
-  
+
   public var hasPanned: Bool {
     !self.pan.isZero
   }
-  
+
   public var hasZoomed: Bool {
     self.zoom != 1.0
   }
-  
+
   public var hasRotated: Bool {
     !self.rotation.isZero
   }
@@ -100,7 +98,7 @@ extension GestureStateHandler {
 
     /// Continue gesture if touches match
     if activeTouchIDs == trackedTouchIDs {
-      
+
       guard let currentGestureID else { return nil }
       return RawGesture(
         id: currentGestureID,
@@ -128,29 +126,35 @@ extension GestureStateHandler {
   }
 
 
-  public mutating func interpretGesture(
+  public func interpretGesture(
     _ rawGesture: RawGesture,
-    //    event: TouchEventData,
-//    in mappingRect: CGRect
-  ) {
-
+    previousPair: TouchPair?
+  ) -> GestureType {
+    print(
+      "Let's interpret this 'raw' gesture. It has \(rawGesture.touches.count) touches, and a gesture phase of \(rawGesture.phase.rawValue)"
+    )
     let touches = rawGesture.touches
     let phase = rawGesture.phase
 
-    guard touches.count == requiredTouchCount,
-      let touchPositions = TouchPair(touches)
-    else { return }
+    /// The init for `TouchPair` is failable, and checks number of touches for us
+    guard let touchPair = TouchPair(touches) else {
+      print("Two touches required to form a valid `TouchPair`, found \(touches.count).")
+      return .none
+    }
+    
+    
 
-    startTouchPair = touchPositions
 
-    guard let start = startTouchPair else {
+    //    startTouchPair = touchPositions
+
+    guard let previousPair else {
       print("Gesture: No value found for `startPositions`")
-      return
+      return .none
     }
 
-    let deltaPan = touchPositions.midPointBetween - start.midPointBetween
-    let deltaZoom = abs(touchPositions.distanceBetween - start.distanceBetween)
-    let deltaAngle = abs(touchPositions.angleInRadiansBetween - start.angleInRadiansBetween)
+    let deltaPan = touchPair.midPointBetween - previousPair.midPointBetween
+    let deltaZoom = abs(touchPair.distanceBetween - touchPair.distanceBetween)
+    let deltaAngle = abs(touchPair.angleInRadiansBetween - touchPair.angleInRadiansBetween)
 
 
     //    switch phase {
@@ -173,44 +177,23 @@ extension GestureStateHandler {
 
       /// Priority: pan > zoom > rotate
       if panPassed {
-        gestureType = .pan
+        //        gestureType = .pan
         print("Now Panning: Pan delta `\(deltaPan)` crossed threshold `\(panThreshold)`")
+        return .pan
+
       } else if zoomPassed {
-        gestureType = .zoom
+        //        gestureType = .zoom
         print("Now Zooming: Zoom delta `\(deltaZoom)` crossed threshold `\(zoomThreshold)`")
+        return .zoom
+
       } else if rotatePassed {
-        gestureType = .rotate
+        //        gestureType = .rotate
         print("Now Rotating: Rotation delta `\(deltaAngle)` crossed threshold `\(rotationThreshold)`")
+        return .rotate
       }
     }
 
-    switch gestureType {
-      case .zoom:
-        let scaleChange = touchPositions.distanceBetween / start.distanceBetween
-        zoom = lastZoom * scaleChange
-      case .rotate:
-        rotation = lastRotation + (touchPositions.angleInRadiansBetween - start.angleInRadiansBetween)
-      case .pan:
-        pan = lastPan + deltaPan
-      case .none, .draw:
-        break  // Wait for threshold to be crossed
-    }
-
-    if phase == .ended || phase == .cancelled {
-      lastPan = pan
-      lastZoom = zoom
-      lastRotation = rotation
-      startTouchPair = nil
-      //        currentTouchPositions = nil
-      gestureType = .none
-      //      case .ended, .cancelled, .none:
-
-      //    }
-
-
-    }
-
-
+    return .none
   }
 
   //  public func updateGesture(event: TouchEventData) -> TrackpadGesture? {

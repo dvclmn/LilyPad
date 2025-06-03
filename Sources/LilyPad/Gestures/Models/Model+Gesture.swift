@@ -63,6 +63,6 @@ public struct TrackpadGesture: Identifiable, Hashable, Sendable {
   public let phase: TrackpadGesturePhase
 //  public let touches: [TouchPoint]
   
-  public static let unknown = TrackpadGesture(id: UUID(), type: .unknown, phase: .none)
+  public static let none = TrackpadGesture(id: UUID(), type: .none, phase: .none)
 }
 
