@@ -12,16 +12,16 @@ import SwiftUI
 
 public struct TouchIndicatorsView: View {
 
-  let touches: MappedTouchPoints
+  let touches: [MappedTouchPoint]
 //  let touches: Set<TouchPoint>
-//  let mappingRect: CGRect
+  let mappingRect: CGRect
   
   let indicatorDiameter: CGFloat = 40
 
   public var body: some View {
 
-    if touches.touchCount > 0 {
-      ForEach(touches.mappedTouchPoints) { touch in
+    if touches.count > 0 {
+      ForEach(touches) { touch in
         Circle()
           .fill(indicatorColour(touch))
           .frame(width: indicatorDiameter)
@@ -31,12 +31,12 @@ public struct TouchIndicatorsView: View {
             TouchLabel(touch)
           }
 //          .position(touch.position)
-          .position(touches.mappedRect.origin)
+          .position(mappingRect.origin)
       }
       //      .angledLine(between: touches, mappingRect: mappingRect)
       .frame(
-        width: touches.mappedRect.width,
-        height: touches.mappedRect.height
+        width: mappingRect.width,
+        height: mappingRect.height
       )
 //      .border(Color.orange.opacity(0.1))
       //      .background(.red.opacity(0.4))
@@ -49,9 +49,9 @@ public struct TouchIndicatorsView: View {
 extension TouchIndicatorsView {
 
   @ViewBuilder
-  func TouchLabel(_ touch: TouchPoint) -> some View {
+  func TouchLabel(_ touch: MappedTouchPoint) -> some View {
     TextGroup {
-      Text(touch.position.displayString)
+      Text(touch.touchPoint.position.displayString)
       if isDuplicateID(touch) {
         Text("\nDuplicate ID")
           .foregroundStyle(.red)
@@ -69,9 +69,9 @@ extension TouchIndicatorsView {
 
   //  }
 
-  func isDuplicateID(_ touch: TouchPoint) -> Bool {
+  func isDuplicateID(_ touch: MappedTouchPoint) -> Bool {
     let matchingIdsCount =
-    touches.mappedTouchPoints.filter { point in
+    touches.filter { point in
         point.id == touch.id
       }
       .count
@@ -80,12 +80,12 @@ extension TouchIndicatorsView {
     return matchingIdsCount > 1
   }
 
-  func indicatorColour(_ touch: TouchPoint) -> Color {
+  func indicatorColour(_ touch: MappedTouchPoint) -> Color {
     isDuplicateID(touch) ? Color.red : Color.blue.opacity(0.7)
   }
 
-  func touchPosition(_ touch: TouchPoint) -> CGPoint {
-    touch.position.mapped(to: touches.mappedRect)
+  func touchPosition(_ touch: MappedTouchPoint) -> CGPoint {
+    touch.touchPoint.position.mapped(to: mappingRect)
   }
 }
 

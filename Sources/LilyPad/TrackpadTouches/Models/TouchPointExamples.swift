@@ -7,6 +7,16 @@
 
 import Foundation
 
+//extension MappedTouchPoint {
+//  public static let allExamplePoints: [MappedTouchPoint] = [
+//    example01,
+//    example02,
+//    topLeading,
+//    topTrailing,
+//    bottomLeading,
+//    bottomTrailing
+//  ]
+//}
 extension TouchPoint {
   
   public static let allExamplePoints: [TouchPoint] = [

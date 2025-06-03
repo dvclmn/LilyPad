@@ -9,12 +9,12 @@ import BaseComponents
 import BaseHelpers
 import SwiftUI
 
-public typealias TouchesModifierOutput = (MappedTouchPoints) -> Void
+public typealias TouchesModifierOutput = ([MappedTouchPoint]) -> Void
 //public typealias TouchesModifierOutput = (_ eventData: Set<TouchPoint>) -> Void
 
 public struct TrackpadTouchesModifier: ViewModifier {
 
-  @State private var localMappedTouches = MappedTouchPoints()
+  @State private var localMappedTouches: [MappedTouchPoint] = []
   //  @State private var localTouches: Set<TouchPoint> = []
 
   //  let isClickEnabled: Bool
@@ -28,7 +28,7 @@ public struct TrackpadTouchesModifier: ViewModifier {
       ZStack(alignment: .topLeading) {
         content
 //        if shouldShowIndicators {
-//          TouchIndicatorsView(touches: localMappedTouches)
+        TouchIndicatorsView(touches: localMappedTouches, mappingRect: mappingRect)
 //        }
 //
 //        TrackpadShapeGuide(rect: mappingRect)
@@ -40,30 +40,36 @@ public struct TrackpadTouchesModifier: ViewModifier {
 
         let touches: Set<TouchPoint>
         
-        if isPreview {
-          let exampleTouches: Set<TouchPoint> = [
-            TouchPoint.example01,
-            TouchPoint.example02,
-            TouchPoint.topLeading,
-            TouchPoint.topTrailing,
-            TouchPoint.bottomLeading,
-            TouchPoint.bottomTrailing,
-          ]
-          touches = exampleTouches
-
-        } else {
+//        if isPreview {
+//          let exampleTouches: Set<TouchPoint> = [
+//            TouchPoint.example01,
+//            TouchPoint.example02,
+//            TouchPoint.topLeading,
+//            TouchPoint.topTrailing,
+//            TouchPoint.bottomLeading,
+//            TouchPoint.bottomTrailing,
+//          ]
+//          touches = exampleTouches
+//
+//        } else {
           touches = eventData?.touches ?? []
-        }
+//        }
         
         guard mappingRect.size.isPositive else { return }
 
-        let mappedTouches = MappedTouchPoints(
+        let mappedTouchBuilder = MappedTouchPointsBuilder(
           touches: touches,
-          mappedRect: mappingRect
+          mappingRect: mappingRect
         )
+        let mapped = mappedTouchBuilder.mappedTouches
+        
+//        let mappedTouches = MappedTouchPoints(
+//          touches: touches,
+//          mappingRect: mappingRect
+//        )
 
-        self.localMappedTouches = mappedTouches
-        touchUpdates(mappedTouches)
+        self.localMappedTouches = mapped
+        touchUpdates(mapped)
       }
       //      .background {
       //        Color.cyan.opacity(0.2)
@@ -156,9 +162,7 @@ public struct TouchesModifierExampleView: View {
 extension TouchesModifierExampleView {
   func mappingRect(_ containerSize: CGSize) -> CGRect {
     let exampleSize: CGSize = .init(width: 400, height: 300)
-    guard let rect: CGRect = exampleSize.toCGRect(centredIn: containerSize) else {
-      return .zero
-    }
+    let rect: CGRect = exampleSize.toCGRect(in: containerSize)
     return rect
   }
 }

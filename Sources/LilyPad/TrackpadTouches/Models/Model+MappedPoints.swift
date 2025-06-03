@@ -7,50 +7,72 @@
 
 import CoreGraphics
 
-public struct MappedTouchPoints {
-  private let touches: Set<TouchPoint>
+public struct MappedTouchPointsBuilder {
+  public let mappedTouches: [MappedTouchPoint]
   let mappedRect: CGRect
   
   public init(
     touches: Set<TouchPoint> = [],
-    mappedRect: CGRect = .zero
+    mappingRect: CGRect = .zero
   ) {
-    self.touches = touches
-    self.mappedRect = mappedRect
+    let mapped = Self.mapTouches(touches, mappingRect: mappingRect)
+    self.mappedTouches = mapped
+    self.mappedRect = mappingRect
   }
   
-  public var touchCount: Int {
-    self.touches.count
-  }
+//  public var touchCount: Int {
+//    self.mappedTouches.count
+//  }
   
-  public var mappedTouches: [MappedTouchPoint] {
-    let allMapped: [MappedTouchPoint] = touches.map { touchPoint in
-      let position = touchPoint.position.mapped(to: mappedRect)
+  private static func mapTouches(
+    _ touches: Set<TouchPoint>,
+    mappingRect: CGRect
+  ) -> [MappedTouchPoint] {
+    let mapped: [MappedTouchPoint] = touches.map { touchPoint in
+      let position = touchPoint.position.mapped(to: mappingRect)
       let newTouchPoint = touchPoint.withUpdatedPosition(position)
       return MappedTouchPoint(touchPoint: newTouchPoint)
     }
-    return allMapped
-  }
-  
-  public var mappedTouchPoints: [TouchPoint] {
-    let mapped = mappedTouches.map(\.touchPoint)
     return mapped
   }
   
+//  public var mappedTouchPoints: [TouchPoint] {
+//    let mapped = touches.map(\.touchPoint)
+////    let mapped = mappedTouches.map(\.touchPoint)
+//    return mapped
+//  }
+  
+  
   public func mappedTouch(withID id: TouchPoint.ID) -> MappedTouchPoint? {
-    guard let touch = touches.first(where: { $0.id == id }) else {
+    guard let touch = mappedTouches.first(where: { $0.touchPoint.id == id }) else {
       print("Couldn't find TouchPoint matching id: \(id)")
       return nil
     }
-    let newPosition: CGPoint = touch.position.mapped(to: mappedRect)
-    let newTouchPoint = touch.withUpdatedPosition(newPosition)
+    return touch
     
-    return MappedTouchPoint(
-      touchPoint: newTouchPoint
-    )
+//    let newPosition: CGPoint = touch.position.mapped(to: mappedRect)
+//    let newTouchPoint = touch.withUpdatedPosition(newPosition)
+    
+//    return MappedTouchPoint(
+//      touchPoint: newTouchPoint
+//    )
   }
+  
+//  public func mappedTouch(withID id: TouchPoint.ID) -> MappedTouchPoint? {
+//    guard let touch = touches.first(where: { $0.touchPoint.id == id }) else {
+//      print("Couldn't find TouchPoint matching id: \(id)")
+//      return nil
+//    }
+//    let newPosition: CGPoint = touch.position.mapped(to: mappedRect)
+//    let newTouchPoint = touch.withUpdatedPosition(newPosition)
+//    
+//    return MappedTouchPoint(
+//      touchPoint: newTouchPoint
+//    )
+//  }
 }
 
-public struct MappedTouchPoint {
+public struct MappedTouchPoint: Identifiable, Codable, Equatable {
+  public var id: Int { touchPoint.id }
   public let touchPoint: TouchPoint
 }
