@@ -9,60 +9,6 @@ import BaseComponents
 import BaseHelpers
 import SwiftUI
 
-public struct MappedTouchPoints {
-  private let touches: Set<TouchPoint>
-  let mappedRect: CGRect
-
-  public init(
-    touches: Set<TouchPoint> = [],
-    mappedRect: CGRect = .zero
-  ) {
-    self.touches = touches
-    self.mappedRect = mappedRect
-  }
-
-  public var touchCount: Int {
-    self.touches.count
-  }
-
-
-  public var mappedTouches: [MappedTouchPoint] {
-    let allMapped: [MappedTouchPoint] = touches.map { touchPoint in
-      let position = touchPoint.position.mapped(to: mappedRect)
-      let newTouchPoint = touchPoint.withUpdatedPosition(position)
-      return MappedTouchPoint(touchPoint: newTouchPoint)
-    }
-    return allMapped
-  }
-
-  public var mappedTouchPoints: [TouchPoint] {
-    let mapped = mappedTouches.map(\.touchPoint)
-    //    let allMapped: [MappedTouchPoint] = touches.map { touchPoint in
-    //      let position = touchPoint.position.mapped(to: mappedRect)
-    //      let newTouchPoint = touchPoint.withUpdatedPosition(position)
-    //      return MappedTouchPoint(touchPoint: newTouchPoint)
-    //    }
-    return mapped
-  }
-
-  public func mappedTouch(withID id: TouchPoint.ID) -> MappedTouchPoint? {
-    guard let touch = touches.first(where: { $0.id == id }) else {
-      print("Couldn't find TouchPoint matching id: \(id)")
-      return nil
-    }
-    let newPosition: CGPoint = touch.position.mapped(to: mappedRect)
-    let newTouchPoint = touch.withUpdatedPosition(newPosition)
-
-    return MappedTouchPoint(
-      touchPoint: newTouchPoint
-    )
-  }
-}
-
-public struct MappedTouchPoint {
-  public let touchPoint: TouchPoint
-}
-
 public typealias TouchesModifierOutput = (MappedTouchPoints) -> Void
 //public typealias TouchesModifierOutput = (_ eventData: Set<TouchPoint>) -> Void
 
@@ -79,14 +25,37 @@ public struct TrackpadTouchesModifier: ViewModifier {
 
   public func body(content: Content) -> some View {
     GeometryReader { _ in
-      content
-      if shouldShowIndicators {
-        TouchIndicatorsView(touches: localMappedTouches)
+      ZStack(alignment: .topLeading) {
+        content
+//        if shouldShowIndicators {
+//          TouchIndicatorsView(touches: localMappedTouches)
+//        }
+//
+//        TrackpadShapeGuide(rect: mappingRect)
       }
+      .drawingGroup()
+
 
       TrackpadTouchesView(shouldUseVelocity: shouldUseVelocity) { eventData in
 
-        let touches = eventData?.touches ?? []
+        let touches: Set<TouchPoint>
+        
+        if isPreview {
+          let exampleTouches: Set<TouchPoint> = [
+            TouchPoint.example01,
+            TouchPoint.example02,
+            TouchPoint.topLeading,
+            TouchPoint.topTrailing,
+            TouchPoint.bottomLeading,
+            TouchPoint.bottomTrailing,
+          ]
+          touches = exampleTouches
+
+        } else {
+          touches = eventData?.touches ?? []
+        }
+        
+        guard mappingRect.size.isPositive else { return }
 
         let mappedTouches = MappedTouchPoints(
           touches: touches,
@@ -96,9 +65,15 @@ public struct TrackpadTouchesModifier: ViewModifier {
         self.localMappedTouches = mappedTouches
         touchUpdates(mappedTouches)
       }
+      //      .background {
+      //        Color.cyan.opacity(0.2)
+      //        Text("AppKit touch tracking view")
+      //          .foregroundStyle(.cyan)
+      //          .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+      //      }
+    }  // END geo reader
 
-      TrackpadShapeGuide(rect: mappingRect)
-    }
+
   }
 }
 extension View {
