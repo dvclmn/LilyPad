@@ -21,10 +21,7 @@ public struct GestureStateHandler {
   var lastZoom: CGFloat = 1.0
   var lastRotation: CGFloat = .zero
 
-  public var previousPair: TouchPair?
-
-  #warning("I 'feel' like this is useful, but not 100% sure. Leaving here for now in case.")
-  //  var currentTouchPositions: TouchPositions?
+  public var lastTouchPair: TouchPair?
 
   public var gestureType: GestureType = .none
   var currentGestureID: TrackpadGesture.ID?
@@ -52,12 +49,14 @@ extension GestureStateHandler {
   public var hasRotated: Bool {
     !self.rotation.isZero
   }
-
-  #warning("This is still probably useful, but I'm doing a tidy, and hiding for simplicity for a while")
-  //  public func currentTouchesMidpoint(in viewSize: CGSize) -> UnitPoint {
-  //    guard let currentTouchPositions else { return .center }
-  //    return currentTouchPositions.midPoint.unitPoint(in: viewSize)
-  //  }
+  
+  public mutating func processGesture(_ rawGesture: RawGesture) -> GestureType {
+    let gesture = interpretGesture(rawGesture, lastTouchPair: lastTouchPair)
+    if let newPair = TouchPair(rawGesture.touches) {
+      lastTouchPair = newPair
+    }
+    return gesture
+  }
 
   public mutating func resetValue(for gestureType: GestureType) {
     switch gestureType {
@@ -128,33 +127,30 @@ extension GestureStateHandler {
 
   public func interpretGesture(
     _ rawGesture: RawGesture,
-    previousPair: TouchPair?
+    lastTouchPair: TouchPair?
   ) -> GestureType {
     print(
       "Let's interpret this 'raw' gesture. It has \(rawGesture.touches.count) touches, and a gesture phase of \(rawGesture.phase.rawValue)"
     )
     let touches = rawGesture.touches
-    let phase = rawGesture.phase
+//    let phase = rawGesture.phase
 
     /// The init for `TouchPair` is failable, and checks number of touches for us
     guard let touchPair = TouchPair(touches) else {
       print("Two touches required to form a valid `TouchPair`, found \(touches.count).")
       return .none
     }
-    
-    
 
-
-    //    startTouchPair = touchPositions
-
-    guard let previousPair else {
+    guard let lastTouchPair else {
       print("Gesture: No value found for `startPositions`")
       return .none
     }
 
-    let deltaPan = touchPair.midPointBetween - previousPair.midPointBetween
-    let deltaZoom = abs(touchPair.distanceBetween - touchPair.distanceBetween)
-    let deltaAngle = abs(touchPair.angleInRadiansBetween - touchPair.angleInRadiansBetween)
+    let deltaPan = touchPair.midPointBetween - lastTouchPair.midPointBetween
+    let deltaZoom = abs(touchPair.distanceBetween - lastTouchPair.distanceBetween)
+    let deltaAngle = abs(touchPair.angleInRadiansBetween - lastTouchPair.angleInRadiansBetween)
+//    let deltaZoom = abs(touchPair.distanceBetween - touchPair.distanceBetween)
+//    let deltaAngle = abs(touchPair.angleInRadiansBetween - touchPair.angleInRadiansBetween)
 
 
     //    switch phase {
