@@ -61,16 +61,30 @@ extension GestureStateHandler {
     }
   }
 
-  public mutating func update(with touches: Set<TouchPoint>) -> RawGesture? {
+  public mutating func update(
+    with touches: [MappedTouchPoint]
+//    with touches: Set<TouchPoint>
+  ) -> RawGesture? {
     let activeTouches = touches.filter { $0.phase != .ended && $0.phase != .cancelled }
     let activeTouchIDs = Set(activeTouches.map(\.id))
 
-    /// Start a new gesture if eligible
+    /// Start a new gesture if eligible (only if not already tracking touches)
     if activeTouchIDs.count == 2 && trackedTouchIDs.isEmpty {
-      currentGestureID = UUID()
+      
+      /// Set the current gesture id to a new unique ID
+      let newGestureID = UUID()
+      currentGestureID = newGestureID
+      
+      /// Update the active Touch IDs to be tracked
       trackedTouchIDs = activeTouchIDs
-      guard let currentGestureID else { return nil }
-      return RawGesture(id: currentGestureID, phase: .began, touches: Array(activeTouches))
+      
+//      guard let currentGestureID else { return nil }
+      
+      return RawGesture(
+        id: newGestureID,
+        phase: .began,
+        touches: activeTouches
+      )
     }
 
     /// Continue gesture if touches match

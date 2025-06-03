@@ -54,7 +54,7 @@ extension NSTouch.Phase {
 public struct RawGesture: Identifiable, Hashable, Sendable {
   public let id: UUID
   public let phase: TrackpadGesturePhase
-  public let touches: [TouchPoint]
+  public let touches: [MappedTouchPoint]
 }
 
 public struct TrackpadGesture: Identifiable, Hashable, Sendable {

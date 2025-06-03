@@ -32,6 +32,7 @@ public struct MappedTouchPointsBuilder {
       let newPosition = touchPoint.position.mapped(to: mappingRect)
       return MappedTouchPoint(
         id: touchPoint.id,
+        phase: touchPoint.phase,
         position: newPosition,
         velocity: touchPoint.velocity,
         pressure: touchPoint.pressure
@@ -76,8 +77,9 @@ public struct MappedTouchPointsBuilder {
 //  }
 }
 
-public struct MappedTouchPoint: Identifiable, Codable, Equatable {
+public struct MappedTouchPoint: Identifiable, Codable, Equatable, Sendable, Hashable {
   public let id: Int
+  public let phase: TrackpadTouchPhase
   public var position: CGPoint
   public let velocity: CGVector
   public let pressure: CGFloat
