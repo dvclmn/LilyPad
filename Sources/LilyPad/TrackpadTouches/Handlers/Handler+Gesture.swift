@@ -23,7 +23,7 @@ public struct GestureStateHandler {
 
   public var lastTouchPair: TouchPair?
 
-  public var gestureType: GestureType = .none
+  public var currentGestureType: GestureType = .none
   var currentGestureID: TrackpadGesture.ID?
 
   private var trackedTouchIDs: Set<TouchPoint.ID> = []
@@ -49,15 +49,23 @@ extension GestureStateHandler {
   public var hasRotated: Bool {
     !self.rotation.isZero
   }
-  
-  public mutating func processGesture(_ rawGesture: RawGesture) -> GestureType {
-    
-    
-    let gesture = interpretGesture(rawGesture, lastTouchPair: lastTouchPair)
-    if let newPair = TouchPair(rawGesture.touches) {
-      lastTouchPair = newPair
+
+  public mutating func processGesture(_ rawGesture: RawGesture) {
+
+    let gestureType = interpretGesture(rawGesture, lastTouchPair: lastTouchPair)
+
+    if rawGesture.phase == .began {
+      self.currentGestureType = gestureType
+    } else if rawGesture.phase == .changed {
+      if gestureType != .none {
+        self.currentGestureType = gestureType
+      }
+    } else if rawGesture.phase == .ended {
+      self.currentGestureType = .none
     }
-    return gesture
+
+    /// Update previous pair for next frame
+    self.lastTouchPair = TouchPair(rawGesture.touches)
   }
 
   public mutating func resetValue(for gestureType: GestureType) {
@@ -73,15 +81,21 @@ extension GestureStateHandler {
     }
   }
 
-  public mutating func update(
-    with touches: [MappedTouchPoint]
-      //    with touches: Set<TouchPoint>
-  ) -> RawGesture? {
+  public mutating func update(with touches: [MappedTouchPoint]) -> RawGesture? {
+    /// Exiting early right up top to reduce noise
+    guard touches.count > 1 else { return nil }
+
     let activeTouches: [MappedTouchPoint] = touches.filter { $0.phase != .ended && $0.phase != .cancelled }
     let activeTouchIDs = Set(activeTouches.map(\.id))
 
+    print(
+      "Currently \(activeTouches.count) active touches. Touches with Phases `ended` or `cancelled` are being ignored.")
+
     /// Start a new gesture if eligible (only if not already tracking touches)
     if activeTouchIDs.count == 2 && trackedTouchIDs.isEmpty {
+
+      print(
+        "Confirmed that there are exactly 2 active touches, and no existing tracked touch IDs. Starting new gesture")
 
       /// Set the current gesture id to a new unique ID
       let newGestureID = UUID()
@@ -97,33 +111,109 @@ extension GestureStateHandler {
       )
     }
 
+    print(
+      "Cannot create a *new* gesture. Number of touches must be 2 (currently \(activeTouchIDs.count)), or there are touches already being tracked: \(trackedTouchIDs)."
+    )
+
     /// Continue gesture if touches match
     if activeTouchIDs == trackedTouchIDs {
 
-      guard let currentGestureID else { return nil }
+      print("The active touch IDs match the tracked touch IDs. Continuing the current \(currentGestureType) gesture.")
+      guard let currentGestureID else {
+        print("Couldn't get the `currentGestureID`")
+        return nil
+      }
       return RawGesture(
         id: currentGestureID,
         phase: .changed,
         touches: activeTouches
       )
-
     }
+
+    print("The active touch IDs do not match the tracked touch IDs. What happens next?")
 
     /// End the gesture if one or more tracked touches ended
     if !activeTouchIDs.isSuperset(of: trackedTouchIDs) {
-      guard let currentGestureID else { return nil }
-      let gesture = RawGesture(id: currentGestureID, phase: .ended, touches: Array(activeTouches))
+
+      print(
+        "Have determined that the active touch IDs are not a superset of the tracked touch IDs. Ending the current gesture."
+      )
+
+      guard let currentGestureID else {
+        print("Couldn't get the `currentGestureID` blarp")
+        return nil
+      }
+      let gesture = RawGesture(
+        id: currentGestureID,
+        phase: .ended,
+        touches: Array(activeTouches)
+      )
       resetGestures()
+
       return gesture
     }
 
     /// Default case: nothing to report
     return nil
+
+    /// Start a new gesture if eligible (only if not already tracking touches)
+    //    guard canTrackNewGesture(activeTouchIDs: activeTouchIDs) else {
+    //      print(
+    //        "Error: Cannot create a gesture. Number of touches must be 2 (currently \(activeTouchIDs.count)), or there are touches already being tracked: \(trackedTouchIDs)."
+    //      )
+    //      return nil
+    //    }
+    //
+    //    print("Confirmed that there are exactly 2 active touches, and no existing tracked touch IDs")
+    //    /// Set the current gesture id to a new unique ID
+    //    let newGestureID = UUID()
+    //    currentGestureID = newGestureID
+    //
+    //    /// Update the active Touch IDs to be tracked
+    //    trackedTouchIDs = activeTouchIDs
+    //
+    //    return RawGesture(
+    //      id: newGestureID,
+    //      phase: .began,
+    //      touches: activeTouches
+    //    )
+    //
+    //
+    //    /// Continue gesture if touches match
+    //    if activeTouchIDs == trackedTouchIDs {
+    //
+    //      guard let currentGestureID else { return nil }
+    //      return RawGesture(
+    //        id: currentGestureID,
+    //        phase: .changed,
+    //        touches: activeTouches
+    //      )
+    //    }
+    //
+    //    /// End the gesture if one or more tracked touches ended
+    //    if !activeTouchIDs.isSuperset(of: trackedTouchIDs) {
+    //      guard let currentGestureID else { return nil }
+    //      let gesture = RawGesture(id: currentGestureID, phase: .ended, touches: Array(activeTouches))
+    //      resetGestures()
+    //      return gesture
+    //    }
+    //
+    //    /// Default case: nothing to report
+    //    return nil
   }
+
+  private func canTrackNewGesture(
+    activeTouchIDs: Set<MappedTouchPoint.ID>
+  ) -> Bool {
+    return activeTouchIDs.count == 2 && trackedTouchIDs.isEmpty
+  }
+
 
   private mutating func resetGestures() {
     currentGestureID = nil
     trackedTouchIDs = []
+
+    print("Gestures were reset")
   }
 
   public func interpretGesture(
@@ -133,20 +223,20 @@ extension GestureStateHandler {
     guard let touchPair = TouchPair(rawGesture.touches) else {
       return .none
     }
-    
+
     guard let lastTouchPair else {
       return .none
     }
-    
+
     let deltaPan = touchPair.midPointBetween - lastTouchPair.midPointBetween
     let deltaZoom = abs(touchPair.distanceBetween - lastTouchPair.distanceBetween)
     let deltaAngle = abs(touchPair.angleInRadiansBetween - lastTouchPair.angleInRadiansBetween)
-    
+
     let zoomPassed = deltaZoom > zoomThreshold
     let rotatePassed = deltaAngle > rotationThreshold
     let panPassed = deltaPan.length > panThreshold
-    
-    // Priority: pan > zoom > rotate
+
+    /// Priority: pan > zoom > rotate
     if panPassed {
       return .pan
     } else if zoomPassed {
@@ -154,91 +244,8 @@ extension GestureStateHandler {
     } else if rotatePassed {
       return .rotate
     }
-    
+
     return .none
   }
-  
-
-//  public func interpretGesture(
-//    _ rawGesture: RawGesture,
-//    lastTouchPair: TouchPair?
-//  ) -> GestureType {
-//    print(
-//      "Let's interpret this 'raw' gesture. It has \(rawGesture.touches.count) touches, and a gesture phase of \(rawGesture.phase.rawValue)"
-//    )
-//    let touches = rawGesture.touches
-//
-//    /// The init for `TouchPair` is failable, and checks number of touches for us
-//    guard let touchPair = TouchPair(touches) else {
-//      print("Two touches required to form a valid `TouchPair`, found \(touches.count).")
-//      return .none
-//    }
-//
-//    guard let lastTouchPair else {
-//      print("Gesture: No value found for `startPositions`")
-//      return .none
-//    }
-//
-//    let deltaPan = touchPair.midPointBetween - lastTouchPair.midPointBetween
-//    let deltaZoom = abs(touchPair.distanceBetween - lastTouchPair.distanceBetween)
-//    let deltaAngle = abs(touchPair.angleInRadiansBetween - lastTouchPair.angleInRadiansBetween)
-//
-//    if gestureType == .none {
-//      let zoomPassed = deltaZoom > zoomThreshold
-//      let rotatePassed = deltaAngle > rotationThreshold
-//      let panPassed = deltaPan.length > panThreshold
-//
-//      /// Priority: pan > zoom > rotate
-//      if panPassed {
-//        //        gestureType = .pan
-//        print("Now Panning: Pan delta `\(deltaPan)` crossed threshold `\(panThreshold)`")
-//        return .pan
-//
-//      } else if zoomPassed {
-//        //        gestureType = .zoom
-//        print("Now Zooming: Zoom delta `\(deltaZoom)` crossed threshold `\(zoomThreshold)`")
-//        return .zoom
-//
-//      } else if rotatePassed {
-//        //        gestureType = .rotate
-//        print("Now Rotating: Rotation delta `\(deltaAngle)` crossed threshold `\(rotationThreshold)`")
-//        return .rotate
-//      }
-//    }
-//
-//    return .none
-//  }
-
-  //  public func updateGesture(event: TouchEventData) -> TrackpadGesture? {
-  //    let touches = event.touches
-  //    let activeTouches = touches.filter { $0.phase != .ended && $0.phase != .cancelled }
-  //
-  //    guard activeTouches.count == 2 else {
-  //      return nil
-  //    }
-  //
-  //    let phases = Set(activeTouches.map(\.phase))
-  //
-  //    if phases.contains(.began) {
-  //      return TrackpadGesture(id: currentGestureID, phase: .began, touches: activeTouches)
-  //    } else if phases.contains(.moved) {
-  //      return TrackpadGesture(id: currentGestureID, phase: .changed, touches: activeTouches)
-  //    } else if phases.allSatisfy({ $0 == .stationary }) {
-  //      return TrackpadGesture(id: currentGestureID, phase: .changed, touches: activeTouches)
-  //    } else {
-  //      return nil
-  //    }
-  //
-  //  }
-  //
-  //  func onTouchesChanged(event: TouchEventData) {
-  //    let touches = event.touches
-  //    let ended = touches.filter { $0.phase == .ended || $0.phase == .cancelled }
-  //
-  //    if gestureInProgress && gestureTouches.intersects(ended.map(\.id)) {
-  //      currentGesture = Gesture(id: gestureID, phase: .ended, touches: [])
-  //    }
-  //  }
-
 
 }
