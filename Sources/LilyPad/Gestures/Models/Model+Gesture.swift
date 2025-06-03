@@ -8,7 +8,7 @@
 import AppKit
 
 public enum GestureType: String, Sendable {
-  case unknown
+  case none
   case draw
   case pan
   case zoom

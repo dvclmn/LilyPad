@@ -26,8 +26,9 @@ public struct GestureStateHandler {
   #warning("I 'feel' like this is useful, but not 100% sure. Leaving here for now in case.")
   //  var currentTouchPositions: TouchPositions?
 
+  
 
-  public var gestureType: GestureType = .unknown
+  public var gestureType: GestureType = .none
   var currentGestureID: TrackpadGesture.ID?
 
   private var trackedTouchIDs: Set<TouchPoint.ID> = []
@@ -41,6 +42,18 @@ public struct GestureStateHandler {
 }
 
 extension GestureStateHandler {
+  
+  public var hasPanned: Bool {
+    !self.pan.isZero
+  }
+  
+  public var hasZoomed: Bool {
+    self.zoom != 1.0
+  }
+  
+  public var hasRotated: Bool {
+    !self.rotation.isZero
+  }
 
   #warning("This is still probably useful, but I'm doing a tidy, and hiding for simplicity for a while")
   //  public func currentTouchesMidpoint(in viewSize: CGSize) -> UnitPoint {
@@ -153,7 +166,7 @@ extension GestureStateHandler {
     //
     //
 
-    if gestureType == .unknown {
+    if gestureType == .none {
       let zoomPassed = deltaZoom > zoomThreshold
       let rotatePassed = deltaAngle > rotationThreshold
       let panPassed = deltaPan.length > panThreshold
@@ -179,7 +192,7 @@ extension GestureStateHandler {
         rotation = lastRotation + (touchPositions.angleInRadiansBetween - start.angleInRadiansBetween)
       case .pan:
         pan = lastPan + deltaPan
-      case .unknown, .draw:
+      case .none, .draw:
         break  // Wait for threshold to be crossed
     }
 
@@ -189,7 +202,7 @@ extension GestureStateHandler {
       lastRotation = rotation
       startTouchPair = nil
       //        currentTouchPositions = nil
-      gestureType = .unknown
+      gestureType = .none
       //      case .ended, .cancelled, .none:
 
       //    }

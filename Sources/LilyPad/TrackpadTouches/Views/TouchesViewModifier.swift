@@ -10,51 +10,39 @@ import BaseHelpers
 import SwiftUI
 
 public typealias TouchesModifierOutput = ([MappedTouchPoint]) -> Void
-//public typealias TouchesModifierOutput = (_ eventData: Set<TouchPoint>) -> Void
 
 public struct TrackpadTouchesModifier: ViewModifier {
-
   @State private var localMappedTouches: [MappedTouchPoint] = []
-  //  @State private var localTouches: Set<TouchPoint> = []
 
-  //  let isClickEnabled: Bool
   let shouldUseVelocity: Bool
   let shouldShowIndicators: Bool
   let mappingRect: CGRect
   let touchUpdates: TouchesModifierOutput
 
   public func body(content: Content) -> some View {
-    GeometryReader { _ in
+    GeometryReader { proxy in
       ZStack(alignment: .topLeading) {
         content
-//        if shouldShowIndicators {
-        TouchIndicatorsView(touches: localMappedTouches, mappingRect: mappingRect)
-//        }
-//
-//        TrackpadShapeGuide(rect: mappingRect)
+        if shouldShowIndicators {
+          TouchIndicatorsView(
+            touches: localMappedTouches,
+            mappingRect: mappingRect,
+            containerSize: proxy.size,
+          )
+        }
+        //
+        TrackpadShapeGuide(
+          containerSize: proxy.size,
+          rect: mappingRect
+        )
       }
       .drawingGroup()
 
+      TrackpadTouchesView(
+        shouldUseVelocity: shouldUseVelocity
+      ) { eventData in
 
-      TrackpadTouchesView(shouldUseVelocity: shouldUseVelocity) { eventData in
-
-        let touches: Set<TouchPoint>
-        
-//        if isPreview {
-//          let exampleTouches: Set<TouchPoint> = [
-//            TouchPoint.example01,
-//            TouchPoint.example02,
-//            TouchPoint.topLeading,
-//            TouchPoint.topTrailing,
-//            TouchPoint.bottomLeading,
-//            TouchPoint.bottomTrailing,
-//          ]
-//          touches = exampleTouches
-//
-//        } else {
-          touches = eventData?.touches ?? []
-//        }
-        
+        let touches = eventData?.touches ?? []
         guard mappingRect.size.isPositive else { return }
 
         let mappedTouchBuilder = MappedTouchPointsBuilder(
@@ -62,21 +50,10 @@ public struct TrackpadTouchesModifier: ViewModifier {
           mappingRect: mappingRect
         )
         let mapped = mappedTouchBuilder.mappedTouches
-        
-//        let mappedTouches = MappedTouchPoints(
-//          touches: touches,
-//          mappingRect: mappingRect
-//        )
 
         self.localMappedTouches = mapped
         touchUpdates(mapped)
       }
-      //      .background {
-      //        Color.cyan.opacity(0.2)
-      //        Text("AppKit touch tracking view")
-      //          .foregroundStyle(.cyan)
-      //          .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-      //      }
     }  // END geo reader
 
 
@@ -109,12 +86,14 @@ extension View {
 
 struct TrackpadShapeGuide: View {
   private let rounding: CGFloat = 20
+
+  let containerSize: CGSize
   let rect: CGRect
   public var body: some View {
 
     ZStack(alignment: .topLeading) {
       /// This is full-bleed, full width and height
-      Color.gray.opacity(0.05)
+      Color.gray.opacity(0.08)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
 
       /// This is the trackpad-sized cut-out
@@ -125,13 +104,14 @@ struct TrackpadShapeGuide: View {
           /// This just handles the stroke around the trackpad cut-out
           RoundedRectangle(cornerRadius: rounding)
             .fill(.clear)
-            .strokeBorder(.gray.opacity(0.08), style: .simple02)
+            .strokeBorder(.gray.opacity(0.1), style: .simple02)
         }
         .frame(
           width: rect.width,
           height: rect.height
         )
-        .position(rect.origin)
+        .position(containerSize.centrePoint)
+      //        .position(rect.origin)
 
     }
     .compositingGroup()

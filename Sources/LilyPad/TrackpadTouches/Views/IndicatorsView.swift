@@ -13,11 +13,25 @@ import SwiftUI
 public struct TouchIndicatorsView: View {
 
   let touches: [MappedTouchPoint]
-//  let touches: Set<TouchPoint>
   let mappingRect: CGRect
-  
+  let containerSize: CGSize
   let indicatorDiameter: CGFloat = 40
 
+  public init(
+    touches: [MappedTouchPoint],
+    mappingRect: CGRect,
+    containerSize: CGSize,
+  ) {
+    if isPreview {
+      let mapped = MappedTouchPoint.examplePoints(mappingRect: mappingRect)
+      self.touches = mapped
+    } else {
+      self.touches = touches
+    }
+    self.mappingRect = mappingRect
+    self.containerSize = containerSize
+  }
+  
   public var body: some View {
 
     if touches.count > 0 {
@@ -30,8 +44,7 @@ public struct TouchIndicatorsView: View {
             /// Displays info above each individual touch location
             TouchLabel(touch)
           }
-//          .position(touch.position)
-          .position(mappingRect.origin)
+          .position(touch.position)
       }
       //      .angledLine(between: touches, mappingRect: mappingRect)
       .frame(
@@ -40,7 +53,7 @@ public struct TouchIndicatorsView: View {
       )
 //      .border(Color.orange.opacity(0.1))
       //      .background(.red.opacity(0.4))
-      //      .position(mappingRect.midPoint)
+      .position(containerSize.centrePoint)
     }
 
   }
@@ -52,6 +65,7 @@ extension TouchIndicatorsView {
   func TouchLabel(_ touch: MappedTouchPoint) -> some View {
     TextGroup {
       Text(touch.position.displayString)
+      Text("\nPhase: " + touch.phase.rawValue)
       if isDuplicateID(touch) {
         Text("\nDuplicate ID")
           .foregroundStyle(.red)
