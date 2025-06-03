@@ -29,9 +29,13 @@ public struct MappedTouchPointsBuilder {
     mappingRect: CGRect
   ) -> [MappedTouchPoint] {
     let mapped: [MappedTouchPoint] = touches.map { touchPoint in
-      let position = touchPoint.position.mapped(to: mappingRect)
-      let newTouchPoint = touchPoint.withUpdatedPosition(position)
-      return MappedTouchPoint(touchPoint: newTouchPoint)
+      let newPosition = touchPoint.position.mapped(to: mappingRect)
+      return MappedTouchPoint(
+        id: touchPoint.id,
+        position: newPosition,
+        velocity: touchPoint.velocity,
+        pressure: touchPoint.pressure
+      )
     }
     return mapped
   }
@@ -44,7 +48,7 @@ public struct MappedTouchPointsBuilder {
   
   
   public func mappedTouch(withID id: TouchPoint.ID) -> MappedTouchPoint? {
-    guard let touch = mappedTouches.first(where: { $0.touchPoint.id == id }) else {
+    guard let touch = mappedTouches.first(where: { $0.id == id }) else {
       print("Couldn't find TouchPoint matching id: \(id)")
       return nil
     }
@@ -73,6 +77,9 @@ public struct MappedTouchPointsBuilder {
 }
 
 public struct MappedTouchPoint: Identifiable, Codable, Equatable {
-  public var id: Int { touchPoint.id }
-  public let touchPoint: TouchPoint
+  public let id: Int
+  public var position: CGPoint
+  public let velocity: CGVector
+  public let pressure: CGFloat
+  
 }

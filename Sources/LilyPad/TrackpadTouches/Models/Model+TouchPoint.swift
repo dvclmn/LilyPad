@@ -70,18 +70,18 @@ extension TouchPoint {
 //  public mutating func updatedPointPosition(_ newPosition: CGPoint) {
 //    self.position = newPosition
 //  }
-  public func withUpdatedPosition(_ newPosition: CGPoint) -> TouchPoint {
-//  public func newWithMappedPoint(to destination: CGRect) -> TouchPoint {
-//    let mappedPoint = self.position.mapped(to: destination)
-    return TouchPoint(
-      id: self.id,
-      phase: self.phase,
-      position: newPosition,
-      timestamp: self.timestamp,
-      velocity: self.velocity,
-      pressure: self.pressure
-    )
-  }
+//  public func withUpdatedPosition(_ newPosition: CGPoint) -> TouchPoint {
+////  public func newWithMappedPoint(to destination: CGRect) -> TouchPoint {
+////    let mappedPoint = self.position.mapped(to: destination)
+//    return TouchPoint(
+//      id: self.id,
+//      phase: self.phase,
+//      position: newPosition,
+//      timestamp: self.timestamp,
+//      velocity: self.velocity,
+//      pressure: self.pressure
+//    )
+//  }
 
   /// Whether this touch has meaningful pressure data
   public var hasPressure: Bool {

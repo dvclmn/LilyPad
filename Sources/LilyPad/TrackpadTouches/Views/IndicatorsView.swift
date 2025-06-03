@@ -51,7 +51,7 @@ extension TouchIndicatorsView {
   @ViewBuilder
   func TouchLabel(_ touch: MappedTouchPoint) -> some View {
     TextGroup {
-      Text(touch.touchPoint.position.displayString)
+      Text(touch.position.displayString)
       if isDuplicateID(touch) {
         Text("\nDuplicate ID")
           .foregroundStyle(.red)
@@ -85,7 +85,7 @@ extension TouchIndicatorsView {
   }
 
   func touchPosition(_ touch: MappedTouchPoint) -> CGPoint {
-    touch.touchPoint.position.mapped(to: mappingRect)
+    touch.position.mapped(to: mappingRect)
   }
 }
 
