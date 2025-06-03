@@ -63,23 +63,21 @@ extension GestureStateHandler {
 
   public mutating func update(
     with touches: [MappedTouchPoint]
-//    with touches: Set<TouchPoint>
+      //    with touches: Set<TouchPoint>
   ) -> RawGesture? {
-    let activeTouches = touches.filter { $0.phase != .ended && $0.phase != .cancelled }
+    let activeTouches: [MappedTouchPoint] = touches.filter { $0.phase != .ended && $0.phase != .cancelled }
     let activeTouchIDs = Set(activeTouches.map(\.id))
 
     /// Start a new gesture if eligible (only if not already tracking touches)
     if activeTouchIDs.count == 2 && trackedTouchIDs.isEmpty {
-      
+
       /// Set the current gesture id to a new unique ID
       let newGestureID = UUID()
       currentGestureID = newGestureID
-      
+
       /// Update the active Touch IDs to be tracked
       trackedTouchIDs = activeTouchIDs
-      
-//      guard let currentGestureID else { return nil }
-      
+
       return RawGesture(
         id: newGestureID,
         phase: .began,
@@ -89,11 +87,14 @@ extension GestureStateHandler {
 
     /// Continue gesture if touches match
     if activeTouchIDs == trackedTouchIDs {
-      guard activeTouches.contains(where: { $0.phase == .moved }) else {
-        guard let currentGestureID else { return nil }
-        return RawGesture(id: currentGestureID, phase: .changed, touches: Array(activeTouches))
-      }
-      return RawGesture(id: currentGestureID!, phase: .changed, touches: Array(activeTouches))
+      
+      guard let currentGestureID else { return nil }
+      return RawGesture(
+        id: currentGestureID,
+        phase: .changed,
+        touches: activeTouches
+      )
+
     }
 
     /// End the gesture if one or more tracked touches ended
@@ -117,14 +118,14 @@ extension GestureStateHandler {
   public mutating func interpretGesture(
     _ rawGesture: RawGesture,
     //    event: TouchEventData,
-    in mappingRect: CGRect
+//    in mappingRect: CGRect
   ) {
 
     let touches = rawGesture.touches
     let phase = rawGesture.phase
 
     guard touches.count == requiredTouchCount,
-      let touchPositions = TouchPair(touches, mappingRect: mappingRect)
+      let touchPositions = TouchPair(touches)
     else { return }
 
     startTouchPair = touchPositions
@@ -181,7 +182,7 @@ extension GestureStateHandler {
       case .unknown, .draw:
         break  // Wait for threshold to be crossed
     }
-    
+
     if phase == .ended || phase == .cancelled {
       lastPan = pan
       lastZoom = zoom
@@ -190,10 +191,10 @@ extension GestureStateHandler {
       //        currentTouchPositions = nil
       gestureType = .unknown
       //      case .ended, .cancelled, .none:
-      
+
       //    }
-      
-      
+
+
     }
 
 

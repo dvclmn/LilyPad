@@ -11,18 +11,18 @@ import SwiftUI
 /// I haven't yet worked out if `TouchPair`
 /// needs a `mappingRect: CGRect`
 public struct TouchPair {
-  public let first: TouchPoint
-  public let second: TouchPoint
-  public let mappingRect: CGRect
+  public let first: MappedTouchPoint
+  public let second: MappedTouchPoint
+//  public let mappingRect: CGRect
 
   public init(
-    first: TouchPoint,
-    second: TouchPoint,
-    mappingRect: CGRect
+    first: MappedTouchPoint,
+    second: MappedTouchPoint,
+//    mappingRect: CGRect
   ) {
     self.first = first
     self.second = second
-    self.mappingRect = mappingRect
+//    self.mappingRect = mappingRect
   }
 
 //  public init?(
@@ -40,8 +40,8 @@ public struct TouchPair {
 //  }
   
   public init?(
-    _ touches: [TouchPoint],
-    mappingRect: CGRect
+    _ touches: [MappedTouchPoint],
+//    mappingRect: CGRect
   ) {
 //    let sorted = touches.sorted { $0.timestamp < $1.timestamp }
     guard touches.count == 2 else {
@@ -50,7 +50,7 @@ public struct TouchPair {
     }
     self.first = touches[0]
     self.second = touches[1]
-    self.mappingRect = mappingRect
+//    self.mappingRect = mappingRect
   }
 
 }
@@ -58,11 +58,12 @@ public struct TouchPair {
 extension TouchPair {
 
   var p1: CGPoint {
-    first.position.mapped(to: mappingRect)
+    first.position
+//    first.position.mapped(to: mappingRect)
   }
   
   var p2: CGPoint {
-    second.position.mapped(to: mappingRect)
+    second.position
   }
   
   public var midPointBetween: CGPoint {
