@@ -8,55 +8,70 @@
 import BaseHelpers
 import SwiftUI
 
-/// I haven't yet worked out if `TouchPair`
-/// needs a `mappingRect: CGRect`
 public struct TouchPair {
   public let first: MappedTouchPoint
   public let second: MappedTouchPoint
-//  public let mappingRect: CGRect
 
   public init(
     first: MappedTouchPoint,
     second: MappedTouchPoint,
-//    mappingRect: CGRect
   ) {
     self.first = first
     self.second = second
-//    self.mappingRect = mappingRect
   }
 
-//  public init?(
-//    _ touches: Set<TouchPoint>,
-//    mappingRect: CGRect
-//  ) {
-//    let sorted = touches.sorted { $0.timestamp < $1.timestamp }
-//    guard sorted.count >= 2 else {
-////      print("Cannot form a TouchPair with fewer than two touches")
-//      return nil
-//    }
-//    self.first = sorted[0]
-//    self.second = sorted[1]
-//    self.mappingRect = mappingRect
-//  }
-  
   public init?(
     _ touches: [MappedTouchPoint],
-//    mappingRect: CGRect
+    referencePair: TouchPair?
   ) {
-//    let sorted = touches.sorted { $0.timestamp < $1.timestamp }
-    guard touches.count == 2 else {
-      //      print("Cannot form a TouchPair with fewer than two touches")
-      return nil
+    
+    guard touches.count == 2 else { return nil }
+    
+    guard let referencePair else {
+      self = Self.timestampSortedTouches(touches)
+      return
     }
-    self.first = touches[0]
-    self.second = touches[1]
-//    self.mappingRect = mappingRect
+    
+    let lookup = Dictionary(uniqueKeysWithValues: touches.map { ($0.id, $0) })
+    
+    guard let first = lookup[referencePair.first.id],
+          let second = lookup[referencePair.second.id] else {
+      self = Self.timestampSortedTouches(touches)
+      return
+    }
+    
+    self.first = first
+    self.second = second
   }
-
 }
 
 extension TouchPair {
   
+  private static func timestampSortedTouches(
+    _ touches: [MappedTouchPoint],
+  ) -> TouchPair {
+    let sorted = touches.sorted { $0.timestamp < $1.timestamp }
+    return TouchPair(first: sorted[0], second: sorted[1])
+  }
+
+  //  func makeStablePair(
+  //    from touches: [MappedTouchPoint],
+  //    using referencePair: TouchPair?
+  //  ) -> TouchPair {
+  //    if let referencePair {
+  //      /// Find same IDs and preserve their original ordering
+  //      let lookup = Dictionary(uniqueKeysWithValues: touches.map { ($0.id, $0) })
+  //      if let first = lookup[referencePair.first.id],
+  //         let second = lookup[referencePair.second.id] {
+  //        return TouchPair(first: first, second: second)
+  //      }
+  //    }
+  //
+  //    // Fallback: just sort by ID (or x/y position if you prefer)
+  //    let sorted = touches.sorted { $0.id < $1.id }
+  //    return TouchPair(first: sorted[0], second: sorted[1])
+  //  }
+
   public func hasSameTouchIDs(as other: TouchPair) -> Bool {
     let selfIDs = Set([first.id, second.id])
     let otherIDs = Set([other.first.id, other.second.id])
@@ -65,13 +80,12 @@ extension TouchPair {
 
   var p1: CGPoint {
     first.position
-//    first.position.mapped(to: mappingRect)
   }
-  
+
   var p2: CGPoint {
     second.position
   }
-  
+
   public var midPointBetween: CGPoint {
     return CGPoint.midPoint(from: p1, to: p1)
   }
@@ -82,11 +96,11 @@ extension TouchPair {
   public var angleBetween: Angle {
     CGPoint.angle(from: p1, to: p2)
   }
-  
+
   public var angleInRadiansBetween: CGFloat {
     CGPoint.angleInRadians(from: p1, to: p2)
   }
-  
+
 }
 
 /// This is to address the common scenario where we have a set of touches:
@@ -95,5 +109,5 @@ extension TouchPair {
 //  public func touchPair(in rect: CGRect) -> TouchPair? {
 //    TouchPair(self, mappingRect: rect)
 //  }
-//  
+//
 //}

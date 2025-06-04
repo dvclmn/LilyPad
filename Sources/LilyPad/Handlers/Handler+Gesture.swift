@@ -22,24 +22,23 @@ public struct GestureStateHandler {
   var lastRotation: CGFloat = .zero
 
   public var initialTouchPair: TouchPair?
-  public var currentTouchPair: TouchPair?
-  
   public var lastTouchPair: TouchPair?
+  public var currentTouchPair: TouchPair?
+  //  public var lastTouchPair: TouchPair?
 
   public var currentGestureType: GestureType = .none
   var currentGestureID: TrackpadGesture.ID?
 
   private var trackedTouchIDs: Set<TouchPoint.ID> = []
 
-  
-//  let requiredTouchCount: Int = 2
+
+  //  let requiredTouchCount: Int = 2
 
   public init() {}
 }
 
 extension GestureStateHandler {
-  
-  public var isPair
+
 
   public var hasPanned: Bool {
     !self.pan.isZero
@@ -53,59 +52,83 @@ extension GestureStateHandler {
     !self.rotation.isZero
   }
 
-  public mutating func processGesture(_ rawGesture: RawGesture) {
 
-    let gestureType = interpretGesture(rawGesture, lastTouchPair: lastTouchPair)
-    
-    
-    self.currentGestureType = gestureType
-    if let currentPair = TouchPair(rawGesture.touches), let lastPair = lastTouchPair {
-      switch currentGestureType {
-        case .pan:
-          let delta = currentPair.midPointBetween - lastPair.midPointBetween
-          pan += delta
-        case .zoom:
-          let delta = currentPair.distanceBetween - lastPair.distanceBetween
-          zoom += delta / lastPair.distanceBetween
-        case .rotate:
-          let delta = currentPair.angleInRadiansBetween - lastPair.angleInRadiansBetween
-          rotation += delta
-        case .none:
-          break
-      }
+  public mutating func processGesture(touches: [MappedTouchPoint]) throws {
+
+    guard
+      let currentPair = TouchPair(
+        touches,
+        referencePair: self.currentTouchPair
+      )
+    else {
+      throw GestureError.touchesNotEqualToTwo
+    }
+    /// Do we have an initial (first) pair, as a reference point
+    /// to calculate deltas, to identify gesture type
+    if let initialPair = self.initialTouchPair {
+      let gestureType = GestureType(
+        currentTouchPair: currentPair,
+        initialPair: initialPair
+      )
+    } else {
+      /// We only update the initial pair on the very first pass,
+      /// whereas `lastTouchPair`, as below, is updated every frame
+      initialTouchPair = currentPair
     }
     
-    
+    lastTouchPair = currentPair
 
-//    if rawGesture.phase == .began {
-//      self.currentGestureType = gestureType
-//    } else if rawGesture.phase == .changed {
-//      if gestureType != .none {
-////        self.currentGestureType = gestureType
-//      }
-//      
-//      
-//    } else if rawGesture.phase == .ended {
-//      self.currentGestureType = .none
-//    }
-    
+
+    //    let gestureType = interpretGesture(rawGesture, lastTouchPair: lastTouchPair)
+    //
+    //
+    //    self.currentGestureType = gestureType
+    //    if let currentPair = TouchPair(rawGesture.touches), let lastPair = lastTouchPair {
+    //      switch currentGestureType {
+    //        case .pan:
+    //          let delta = currentPair.midPointBetween - lastPair.midPointBetween
+    //          pan += delta
+    //        case .zoom:
+    //          let delta = currentPair.distanceBetween - lastPair.distanceBetween
+    //          zoom += delta / lastPair.distanceBetween
+    //        case .rotate:
+    //          let delta = currentPair.angleInRadiansBetween - lastPair.angleInRadiansBetween
+    //          rotation += delta
+    //        case .none:
+    //          break
+    //      }
+    //    }
+
+
+    //    if rawGesture.phase == .began {
+    //      self.currentGestureType = gestureType
+    //    } else if rawGesture.phase == .changed {
+    //      if gestureType != .none {
+    ////        self.currentGestureType = gestureType
+    //      }
+    //
+    //
+    //    } else if rawGesture.phase == .ended {
+    //      self.currentGestureType = .none
+    //    }
+
     // Always update the last touch pair for the next frame
     self.lastTouchPair = TouchPair(rawGesture.touches)
-    
-//    let gestureType = interpretGesture(rawGesture, lastTouchPair: lastTouchPair)
-//
-//    if rawGesture.phase == .began {
-//      self.currentGestureType = gestureType
-//    } else if rawGesture.phase == .changed {
-//      if gestureType != .none {
-//        self.currentGestureType = gestureType
-//      }
-//    } else if rawGesture.phase == .ended {
-//      self.currentGestureType = .none
-//    }
-//
-//    /// Update previous pair for next frame
-//    self.lastTouchPair = TouchPair(rawGesture.touches)
+
+    //    let gestureType = interpretGesture(rawGesture, lastTouchPair: lastTouchPair)
+    //
+    //    if rawGesture.phase == .began {
+    //      self.currentGestureType = gestureType
+    //    } else if rawGesture.phase == .changed {
+    //      if gestureType != .none {
+    //        self.currentGestureType = gestureType
+    //      }
+    //    } else if rawGesture.phase == .ended {
+    //      self.currentGestureType = .none
+    //    }
+    //
+    //    /// Update previous pair for next frame
+    //    self.lastTouchPair = TouchPair(rawGesture.touches)
   }
 
   public mutating func resetValue(for gestureType: GestureType) {
@@ -146,7 +169,7 @@ extension GestureStateHandler {
 
       return RawGesture(
         id: newGestureID,
-//        phase: .began,
+        //        phase: .began,
         touches: activeTouches
       )
     }
@@ -165,7 +188,7 @@ extension GestureStateHandler {
       }
       return RawGesture(
         id: currentGestureID,
-//        phase: .changed,
+        //        phase: .changed,
         touches: activeTouches
       )
     }
@@ -185,7 +208,7 @@ extension GestureStateHandler {
       }
       let gesture = RawGesture(
         id: currentGestureID,
-//        phase: .ended,
+        //        phase: .ended,
         touches: Array(activeTouches)
       )
       resetGestures()
@@ -211,30 +234,30 @@ extension GestureStateHandler {
     print("Gestures were reset")
   }
 
-  public func interpretGesture(
-    _ rawGesture: RawGesture,
-    lastTouchPair: TouchPair?
-  ) -> GestureType {
-    guard let touchPair = TouchPair(rawGesture.touches) else {
-      return .none
-    }
-
-    guard let lastTouchPair else {
-      return .none
-    }
-
-    
-
-    /// Priority: pan > zoom > rotate
-    if panPassed {
-      return .pan
-    } else if zoomPassed {
-      return .zoom
-    } else if rotatePassed {
-      return .rotate
-    }
-
-    return .none
-  }
+  //  public func interpretGesture(
+  //    _ rawGesture: RawGesture,
+  //    lastTouchPair: TouchPair?
+  //  ) -> GestureType {
+  //    guard let touchPair = TouchPair(rawGesture.touches) else {
+  //      return .none
+  //    }
+  //
+  //    guard let lastTouchPair else {
+  //      return .none
+  //    }
+  //
+  //
+  //
+  //    /// Priority: pan > zoom > rotate
+  //    if panPassed {
+  //      return .pan
+  //    } else if zoomPassed {
+  //      return .zoom
+  //    } else if rotatePassed {
+  //      return .rotate
+  //    }
+  //
+  //    return .none
+  //  }
 
 }

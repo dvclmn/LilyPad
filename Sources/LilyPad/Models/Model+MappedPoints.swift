@@ -6,6 +6,7 @@
 //
 
 import CoreGraphics
+import Foundation
 
 public struct MappedTouchPointsBuilder {
   public let mappedTouches: [MappedTouchPoint]
@@ -30,6 +31,7 @@ public struct MappedTouchPointsBuilder {
         id: touchPoint.id,
         phase: touchPoint.phase,
         position: newPosition,
+        timestamp: touchPoint.timestamp,
         velocity: touchPoint.velocity,
         pressure: touchPoint.pressure
       )
@@ -51,6 +53,7 @@ public struct MappedTouchPoint: Identifiable, Codable, Equatable, Sendable, Hash
   public let id: Int
   public let phase: TouchPhase
   public var position: CGPoint
+  public let timestamp: TimeInterval
   public let velocity: CGVector
   public let pressure: CGFloat
   

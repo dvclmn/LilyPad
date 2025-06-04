@@ -8,28 +8,22 @@
 import BaseHelpers
 import Foundation
 
-public struct GestureRecogniser {
-
- // ~6 degrees
-
-  /// How often, and when will this be called?
-  func interpretGesture(
-    from touches: [MappedTouchPoint],
-    lastTouchPair: TouchPair
-  ) throws -> GestureType {
-
-    guard let currentouchPair = TouchPair(touches) else { throw GestureError.touchesNotEqualToTwo }
-
-    let deltaPan = currentouchPair.midPointBetween - lastTouchPair.midPointBetween
-    let deltaZoom = abs(currentouchPair.distanceBetween - lastTouchPair.distanceBetween)
-    let deltaAngle = abs(currentouchPair.angleInRadiansBetween - lastTouchPair.angleInRadiansBetween)
-
-    
-
-  }
-
-
-}
+//public struct GestureRecogniser {
+//
+//  /// How often, and when will this be called?
+//  public static func interpretGesture(
+//    from currentTouchPair: TouchPair,
+////    from touches: [MappedTouchPoint],
+//    initialPair: TouchPair
+//  ) -> GestureType {
+////    guard let currentouchPair = TouchPair(touches) else { throw GestureError.touchesNotEqualToTwo }
+//    let gestureType = GestureType(
+//      currentTouchPair: currentTouchPair,
+//      initialPair: initialPair
+//    )
+//    return gestureType
+//  }
+//}
 
 enum GestureError: Error, LocalizedError {
   case touchesNotEqualToTwo
