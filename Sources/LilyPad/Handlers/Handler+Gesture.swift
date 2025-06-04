@@ -51,6 +51,7 @@ extension GestureStateHandler {
     !self.rotation.isZero
   }
 
+  
 
   public mutating func processGesture(touches: [MappedTouchPoint]) throws {
 
