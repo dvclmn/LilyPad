@@ -25,6 +25,4 @@ import Foundation
 //  }
 //}
 
-enum GestureError: Error, LocalizedError {
-  case touchesNotEqualToTwo
-}
+

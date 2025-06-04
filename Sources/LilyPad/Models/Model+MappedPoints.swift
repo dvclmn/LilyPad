@@ -8,6 +8,23 @@
 import CoreGraphics
 import Foundation
 
+public struct MappedTouchPoint: TrackpadTouch {
+  public let id: Int
+  public let phase: TouchPhase
+  public var position: CGPoint
+  public let timestamp: TimeInterval
+  public let velocity: CGVector
+  public let pressure: CGFloat
+  
+}
+
+extension MappedTouchPoint: CustomStringConvertible {
+  public var description: String {
+    return TouchPoint.generateDescription(for: self)
+  }
+}
+
+
 public struct MappedTouchPointsBuilder {
   public let mappedTouches: [MappedTouchPoint]
   let mappedRect: CGRect
@@ -49,12 +66,3 @@ public struct MappedTouchPointsBuilder {
 
 }
 
-public struct MappedTouchPoint: Identifiable, Codable, Equatable, Sendable, Hashable {
-  public let id: Int
-  public let phase: TouchPhase
-  public var position: CGPoint
-  public let timestamp: TimeInterval
-  public let velocity: CGVector
-  public let pressure: CGFloat
-  
-}

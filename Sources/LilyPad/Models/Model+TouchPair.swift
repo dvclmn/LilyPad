@@ -47,6 +47,14 @@ public struct TouchPair {
 
 extension TouchPair {
   
+  public var idsForComparison: String {
+    let maxLength: Int = 6
+    let firstID = first.id.string.suffix(maxLength)
+    let secondID = second.id.string.suffix(maxLength)
+    let result = "First ID: ...\(firstID), Second ID: ...\(secondID)"
+    return result
+  }
+  
   private static func timestampSortedTouches(
     _ touches: [MappedTouchPoint],
   ) -> TouchPair {
@@ -101,6 +109,22 @@ extension TouchPair {
     CGPoint.angleInRadians(from: p1, to: p2)
   }
 
+}
+
+extension TouchPair: CustomStringConvertible {
+  public var description: String {
+    let firstDesc = TouchPoint.generateDescription(for: self.first)
+    let secondDesc = TouchPoint.generateDescription(for: self.second)
+    return """
+    
+    
+    First Point: \(firstDesc)
+    
+    Second Point: \(secondDesc)
+    
+    
+    """
+  }
 }
 
 /// This is to address the common scenario where we have a set of touches:

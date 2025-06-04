@@ -24,7 +24,17 @@ import MemberwiseInit
 ///   ObjectIdentifier(touch.identity).hashValue
 /// }
 /// ```
-public struct TouchPoint: Identifiable, Sendable, Hashable, Equatable, Codable {
+
+public protocol TrackpadTouch: Identifiable, Sendable, Hashable, Equatable, Codable {
+  var id: Int { get }
+  var phase: TouchPhase { get }
+  var position: CGPoint { get set }
+  var timestamp: TimeInterval { get }
+  var velocity: CGVector { get }
+  var pressure: CGFloat { get }
+}
+
+public struct TouchPoint: TrackpadTouch {
   public let id: Int
   public let phase: TouchPhase
   /// This is normalised, comes from `NSTouch.normalisedPosition`
@@ -93,22 +103,30 @@ extension TouchPoint {
   public var normalisedPressure: CGFloat {
     return min(max(pressure, 0), 1)
   }
+  
+  public static func generateDescription(for trackpadTouch: any TrackpadTouch) -> String {
+
+    let isMapped: Bool = trackpadTouch as? MappedTouchPoint != nil
+    return """
+    /////
+    Trackpad Touch \(isMapped ? "Mapped" : "")
+      - ID: \(trackpadTouch.id)
+      - Phase: \(trackpadTouch.phase.rawValue)
+      - Position: \(trackpadTouch.position.displayString)
+      - Timestamp: \(trackpadTouch.timestamp.displayString)
+      - Velocity: \(trackpadTouch.velocity.displayString)
+      - Pressure: \(trackpadTouch.pressure.displayString)
+    /////
+    
+    
+    """
+  }
+  
 }
 
 extension TouchPoint: CustomStringConvertible {
   public var description: String {
-    """
-    /////
-    TouchPoint
-      - ID: \(id)
-      - Position: \(position.displayString)
-      - Timestamp: \(timestamp.displayString)
-      - Velocity: \(velocity.displayString)
-      - Pressure: \(pressure.displayString)
-    /////
-
-
-    """
+    return Self.generateDescription(for: self)
   }
 }
 
