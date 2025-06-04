@@ -53,19 +53,50 @@ extension GestureStateHandler {
   public mutating func processGesture(_ rawGesture: RawGesture) {
 
     let gestureType = interpretGesture(rawGesture, lastTouchPair: lastTouchPair)
-
+    
     if rawGesture.phase == .began {
       self.currentGestureType = gestureType
     } else if rawGesture.phase == .changed {
       if gestureType != .none {
         self.currentGestureType = gestureType
       }
+      
+      if let currentPair = TouchPair(rawGesture.touches), let lastPair = lastTouchPair {
+        switch currentGestureType {
+          case .pan:
+            let delta = currentPair.midPointBetween - lastPair.midPointBetween
+            pan += delta
+          case .zoom:
+            let delta = currentPair.distanceBetween - lastPair.distanceBetween
+            zoom += delta / lastPair.distanceBetween
+          case .rotate:
+            let delta = currentPair.angleInRadiansBetween - lastPair.angleInRadiansBetween
+            rotation += delta
+          case .none, .draw:
+            break
+        }
+      }
     } else if rawGesture.phase == .ended {
       self.currentGestureType = .none
     }
-
-    /// Update previous pair for next frame
+    
+    // Always update the last touch pair for the next frame
     self.lastTouchPair = TouchPair(rawGesture.touches)
+    
+//    let gestureType = interpretGesture(rawGesture, lastTouchPair: lastTouchPair)
+//
+//    if rawGesture.phase == .began {
+//      self.currentGestureType = gestureType
+//    } else if rawGesture.phase == .changed {
+//      if gestureType != .none {
+//        self.currentGestureType = gestureType
+//      }
+//    } else if rawGesture.phase == .ended {
+//      self.currentGestureType = .none
+//    }
+//
+//    /// Update previous pair for next frame
+//    self.lastTouchPair = TouchPair(rawGesture.touches)
   }
 
   public mutating func resetValue(for gestureType: GestureType) {
@@ -155,51 +186,6 @@ extension GestureStateHandler {
 
     /// Default case: nothing to report
     return nil
-
-    /// Start a new gesture if eligible (only if not already tracking touches)
-    //    guard canTrackNewGesture(activeTouchIDs: activeTouchIDs) else {
-    //      print(
-    //        "Error: Cannot create a gesture. Number of touches must be 2 (currently \(activeTouchIDs.count)), or there are touches already being tracked: \(trackedTouchIDs)."
-    //      )
-    //      return nil
-    //    }
-    //
-    //    print("Confirmed that there are exactly 2 active touches, and no existing tracked touch IDs")
-    //    /// Set the current gesture id to a new unique ID
-    //    let newGestureID = UUID()
-    //    currentGestureID = newGestureID
-    //
-    //    /// Update the active Touch IDs to be tracked
-    //    trackedTouchIDs = activeTouchIDs
-    //
-    //    return RawGesture(
-    //      id: newGestureID,
-    //      phase: .began,
-    //      touches: activeTouches
-    //    )
-    //
-    //
-    //    /// Continue gesture if touches match
-    //    if activeTouchIDs == trackedTouchIDs {
-    //
-    //      guard let currentGestureID else { return nil }
-    //      return RawGesture(
-    //        id: currentGestureID,
-    //        phase: .changed,
-    //        touches: activeTouches
-    //      )
-    //    }
-    //
-    //    /// End the gesture if one or more tracked touches ended
-    //    if !activeTouchIDs.isSuperset(of: trackedTouchIDs) {
-    //      guard let currentGestureID else { return nil }
-    //      let gesture = RawGesture(id: currentGestureID, phase: .ended, touches: Array(activeTouches))
-    //      resetGestures()
-    //      return gesture
-    //    }
-    //
-    //    /// Default case: nothing to report
-    //    return nil
   }
 
   private func canTrackNewGesture(
