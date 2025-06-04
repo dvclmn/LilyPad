@@ -59,6 +59,73 @@ extension GestureStateHandler {
 //      "Processing touches, for GestureHandler. Initial Pair should be *the same* for every frame: \(self.initialTouchPair?.idsForComparison ?? "nil")"
 //    )
     
+    do {
+      try recogniseGesture(touches: touches)
+    
+      /// We'll only be able to update any pan/zoom/rotate values,
+      /// if we have current and initial touch pairs
+      if let currentTouchPair, let lastTouchPair {
+        print("Current and last touch pairs exist")
+        switch self.currentGestureType {
+          case .none:
+            break
+          case .pan:
+            updatePan(
+              currentTouchPair: currentTouchPair,
+              lastTouchPair: lastTouchPair
+            )
+          case .zoom:
+            break
+          case .rotate:
+            break
+        }
+      } else {
+      print("Couldn't get value for currentTouchPair or initialTouchPair")
+      }
+      
+    } catch {
+//      print("Gesture Error: \(error)")
+    }
+
+  }
+  
+  private mutating func updatePan(
+    currentTouchPair: TouchPair,
+    lastTouchPair: TouchPair
+//    initialTouchPair: TouchPair,
+  ) {
+    let currentPairMidPoint: CGPoint = currentTouchPair.midPointBetween
+    let lastPairMidPoint: CGPoint = lastTouchPair.midPointBetween
+    
+//    let currentPanAmount = self.pan
+//    let newPanAmount = currentPanAmount + currentPairMidPoint - lastPairMidPoint
+//    self.pan = newPanAmount
+    
+    /// Calculate the movement since the last frame
+    let frameDelta = currentPairMidPoint - lastPairMidPoint
+    
+    /// Add this frame's movement to the current pan
+    let currentPanAmount = self.pan
+    let newPanAmount = currentPanAmount + frameDelta
+    self.pan = newPanAmount
+    
+    print("""
+    Current pan amount: \(currentPanAmount)
+    
+    Current pair midpoint: \(currentPairMidPoint)
+    Last pair midpoint: \(lastPairMidPoint)
+    
+    Updated pan amount: \(self.pan)
+    """)
+//    self.pan = CGPoint(
+//      x: currentPairMidPoint.0 - initialPairMidPoint.0,
+//      y: currentPairMidPoint.1 - initialPairMidPoint.1
+//    )
+    
+  }
+  
+  private mutating func recogniseGesture(touches: [MappedTouchPoint]) throws {
+    
     guard self.currentGestureType == .none else {
       /// There is already a Gesture in progress
       if touches.count != 2 {
@@ -81,8 +148,10 @@ extension GestureStateHandler {
       self.currentGestureType = .none
       self.initialTouchPair = nil
       throw GestureError.touchesNotEqualToTwo
-
+      
     }
+    
+    self.currentTouchPair = currentPair
     
     /// Let's check, do we have an initial (first) pair, as a reference point
     /// to calculate deltas, to identify gesture type?
@@ -102,7 +171,6 @@ extension GestureStateHandler {
     
     lastTouchPair = currentPair
     
-
   }
 
   public mutating func resetValue(for gestureType: GestureType) {
