@@ -19,10 +19,10 @@ public enum GestureType: String, Sendable {
     initialPair: TouchPair
   ) {
 
-    print("Let's determine/initialise gesture type, from a current pair and initial pair, of TouchPoints.")
+//    print("Let's determine/initialise gesture type, from a current pair and initial pair, of TouchPoints.")
 
-    print("Current Pair: \(currentTouchPair)")
-    print("Initial Pair: \(initialPair)")
+//    print("Current Pair: \(currentTouchPair)")
+//    print("Initial Pair: \(initialPair)")
 
     /// Movement across the screen. Used to detect panning
     let translationThreshold: CGFloat = 4
@@ -36,6 +36,22 @@ public enum GestureType: String, Sendable {
     let rotationThreshold: CGFloat = .pi / 6  // ≈ 18 degrees
 
 
+//    var sampler = GestureSampler()
+//    
+//    // On each frame:
+//    sampler.ingest(currentTouchPair)
+//    
+//    // Later, when deciding:
+//    if sampler.totalRotation > rotationThreshold {
+//      self = .rotate
+//    } else if sampler.totalPinchDelta > distanceThreshold {
+//      self = .zoom
+//    } else if sampler.totalTranslation > translationThreshold {
+//      self = .pan
+//    } else {
+//      self = .none
+//    }
+    
     let deltaTranslation: CGFloat = Self.translationDistance(
       from: initialPair,
       to: currentTouchPair
@@ -52,16 +68,16 @@ public enum GestureType: String, Sendable {
 
     let deltaAngle = abs(currentAngleBetween - initialAngleBetween)
     let adjustedDelta = min(deltaAngle, 2 * .pi - deltaAngle)
-    let finalAngleDelta = deltaAngle
+    let finalAngleDelta = adjustedDelta
 
     print(
       """
       
       /// Angles ///
-      Current Pair Angle Between: \(currentAngleBetween.displayString)
-      Initial Pair Angle Between: \(initialAngleBetween.displayString)
-      Angle Delta: \(deltaAngle.displayString)
-      Angle *Adjusted* Delta: \(adjustedDelta.displayString)
+      Rotation Theshold: \(rotationThreshold.toDegrees.displayString)
+      Current Pair Angle Between: \(currentAngleBetween.toDegrees.displayString)
+      Initial Pair Angle Between: \(initialAngleBetween.toDegrees.displayString)
+      Angle Delta: \(finalAngleDelta.toDegrees.displayString)
       // END Angles ///
       
       """)
@@ -71,16 +87,6 @@ public enum GestureType: String, Sendable {
     let zoomPassed: Bool = deltaPinchDistance > distanceThreshold && finalAngleDelta < rotationThreshold
     let rotatePassed: Bool = finalAngleDelta > rotationThreshold
 
-//    if rotatePassed {
-//      self = .rotate
-//    } else if zoomPassed {
-//      self = .zoom
-//    } else if panPassed {
-//      self = .pan
-//    } else {
-//      self = .none
-//    }
-    
     if panPassed {
       self = .pan
 

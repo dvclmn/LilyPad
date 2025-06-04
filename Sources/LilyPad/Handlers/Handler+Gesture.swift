@@ -54,22 +54,20 @@ extension GestureStateHandler {
 
   public mutating func processGesture(touches: [MappedTouchPoint]) throws {
 
-    print(
-      "Processing touches, for GestureHandler. Initial Pair should be *the same* for every frame: \(self.initialTouchPair?.idsForComparison ?? "nil")"
-    )
+//    print(
+//      "Processing touches, for GestureHandler. Initial Pair should be *the same* for every frame: \(self.initialTouchPair?.idsForComparison ?? "nil")"
+//    )
     
     guard self.currentGestureType == .none else {
       /// There is already a Gesture in progress
-      
       if touches.count != 2 {
         self.currentGestureType = .none
         self.initialTouchPair = nil
         throw GestureError.touchesNotEqualToTwo
       } else {
-        return        
+        return
       }
     }
-    
     
     /// Providing the current touch pair here in the TouchPair init
     /// in an attempt to keep the gesture touches stable across lifecycle

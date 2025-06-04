@@ -108,6 +108,11 @@ extension TouchPair {
   public var angleInRadiansBetween: CGFloat {
     CGPoint.angleInRadians(from: p1, to: p2)
   }
+  
+  func distance(to other: TouchPair) -> CGFloat {
+    self.midPointBetween.distance(to: other.midPointBetween)
+//    self.midpoint.distance(to: other.midpoint)
+  }
 
 }
 
