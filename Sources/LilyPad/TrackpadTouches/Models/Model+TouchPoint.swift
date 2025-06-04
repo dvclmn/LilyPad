@@ -26,7 +26,7 @@ import MemberwiseInit
 /// ```
 public struct TouchPoint: Identifiable, Sendable, Hashable, Equatable, Codable {
   public let id: Int
-  public let phase: TrackpadTouchPhase
+  public let phase: TouchPhase
   /// This is normalised, comes from `NSTouch.normalisedPosition`
   public var position: CGPoint
   public let timestamp: TimeInterval
@@ -35,7 +35,7 @@ public struct TouchPoint: Identifiable, Sendable, Hashable, Equatable, Codable {
 
   public init(
     id: Int,
-    phase: TrackpadTouchPhase,
+    phase: TouchPhase,
     position: CGPoint,
     timestamp: TimeInterval,
     velocity: CGVector,

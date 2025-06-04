@@ -19,11 +19,7 @@ public struct MappedTouchPointsBuilder {
     self.mappedTouches = mapped
     self.mappedRect = mappingRect
   }
-  
-//  public var touchCount: Int {
-//    self.mappedTouches.count
-//  }
-  
+
   private static func mapTouches(
     _ touches: Set<TouchPoint>,
     mappingRect: CGRect
@@ -40,46 +36,20 @@ public struct MappedTouchPointsBuilder {
     }
     return mapped
   }
-  
-//  public var mappedTouchPoints: [TouchPoint] {
-//    let mapped = touches.map(\.touchPoint)
-////    let mapped = mappedTouches.map(\.touchPoint)
-//    return mapped
-//  }
-  
-  
+
   public func mappedTouch(withID id: TouchPoint.ID) -> MappedTouchPoint? {
     guard let touch = mappedTouches.first(where: { $0.id == id }) else {
       print("Couldn't find TouchPoint matching id: \(id)")
       return nil
     }
     return touch
-    
-//    let newPosition: CGPoint = touch.position.mapped(to: mappedRect)
-//    let newTouchPoint = touch.withUpdatedPosition(newPosition)
-    
-//    return MappedTouchPoint(
-//      touchPoint: newTouchPoint
-//    )
   }
-  
-//  public func mappedTouch(withID id: TouchPoint.ID) -> MappedTouchPoint? {
-//    guard let touch = touches.first(where: { $0.touchPoint.id == id }) else {
-//      print("Couldn't find TouchPoint matching id: \(id)")
-//      return nil
-//    }
-//    let newPosition: CGPoint = touch.position.mapped(to: mappedRect)
-//    let newTouchPoint = touch.withUpdatedPosition(newPosition)
-//    
-//    return MappedTouchPoint(
-//      touchPoint: newTouchPoint
-//    )
-//  }
+
 }
 
 public struct MappedTouchPoint: Identifiable, Codable, Equatable, Sendable, Hashable {
   public let id: Int
-  public let phase: TrackpadTouchPhase
+  public let phase: TouchPhase
   public var position: CGPoint
   public let velocity: CGVector
   public let pressure: CGFloat

@@ -54,31 +54,37 @@ extension GestureStateHandler {
 
     let gestureType = interpretGesture(rawGesture, lastTouchPair: lastTouchPair)
     
-    if rawGesture.phase == .began {
-      self.currentGestureType = gestureType
-    } else if rawGesture.phase == .changed {
-      if gestureType != .none {
-        self.currentGestureType = gestureType
+    
+    self.currentGestureType = gestureType
+    if let currentPair = TouchPair(rawGesture.touches), let lastPair = lastTouchPair {
+      switch currentGestureType {
+        case .pan:
+          let delta = currentPair.midPointBetween - lastPair.midPointBetween
+          pan += delta
+        case .zoom:
+          let delta = currentPair.distanceBetween - lastPair.distanceBetween
+          zoom += delta / lastPair.distanceBetween
+        case .rotate:
+          let delta = currentPair.angleInRadiansBetween - lastPair.angleInRadiansBetween
+          rotation += delta
+        case .none:
+          break
       }
-      
-      if let currentPair = TouchPair(rawGesture.touches), let lastPair = lastTouchPair {
-        switch currentGestureType {
-          case .pan:
-            let delta = currentPair.midPointBetween - lastPair.midPointBetween
-            pan += delta
-          case .zoom:
-            let delta = currentPair.distanceBetween - lastPair.distanceBetween
-            zoom += delta / lastPair.distanceBetween
-          case .rotate:
-            let delta = currentPair.angleInRadiansBetween - lastPair.angleInRadiansBetween
-            rotation += delta
-          case .none, .draw:
-            break
-        }
-      }
-    } else if rawGesture.phase == .ended {
-      self.currentGestureType = .none
     }
+    
+    
+
+//    if rawGesture.phase == .began {
+//      self.currentGestureType = gestureType
+//    } else if rawGesture.phase == .changed {
+//      if gestureType != .none {
+////        self.currentGestureType = gestureType
+//      }
+//      
+//      
+//    } else if rawGesture.phase == .ended {
+//      self.currentGestureType = .none
+//    }
     
     // Always update the last touch pair for the next frame
     self.lastTouchPair = TouchPair(rawGesture.touches)
@@ -137,7 +143,7 @@ extension GestureStateHandler {
 
       return RawGesture(
         id: newGestureID,
-        phase: .began,
+//        phase: .began,
         touches: activeTouches
       )
     }
@@ -156,7 +162,7 @@ extension GestureStateHandler {
       }
       return RawGesture(
         id: currentGestureID,
-        phase: .changed,
+//        phase: .changed,
         touches: activeTouches
       )
     }
@@ -176,7 +182,7 @@ extension GestureStateHandler {
       }
       let gesture = RawGesture(
         id: currentGestureID,
-        phase: .ended,
+//        phase: .ended,
         touches: Array(activeTouches)
       )
       resetGestures()
