@@ -20,7 +20,7 @@ public enum GestureType: String, Sendable {
   ) {
 
     /// Movement across the screen. Used to detect panning
-    let translationThreshold: CGFloat = 4
+    let translationThreshold: CGFloat = 10
 
     /// Distance between fingers. Are we zooming?
     let distanceThreshold: CGFloat = 6

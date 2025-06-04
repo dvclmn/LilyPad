@@ -45,78 +45,110 @@ extension GestureStateHandler {
     !self.rotation.isZero
   }
 
-  
 
-  public mutating func processGesture(touches: [MappedTouchPoint]) throws {
+  public mutating func processGesture(
+    touches: [MappedTouchPoint],
+    zoomRange: ClosedRange<Double>
+  ) throws {
 
-    do {
-      try recogniseGesture(touches: touches)
-    
-      /// We'll only be able to update any pan/zoom/rotate values,
-      /// if we have current and initial touch pairs
-      if let currentTouchPair, let lastTouchPair {
-        print("Current and last touch pairs exist")
-        switch self.currentGestureType {
-          case .none:
-            break
-          case .pan:
-            updatePan(
-              currentTouchPair: currentTouchPair,
-              lastTouchPair: lastTouchPair
-            )
-          case .zoom:
-            break
-          case .rotate:
-            break
-        }
-      } else {
-      print("Couldn't get value for currentTouchPair or initialTouchPair")
+    try recogniseGesture(touches: touches)
+
+    /// We'll only be able to update any pan/zoom/rotate values,
+    /// if we have current and initial touch pairs
+    if let currentTouchPair, let lastTouchPair {
+      print("Current and last touch pairs exist")
+      switch self.currentGestureType {
+        case .none:
+          break
+        case .pan:
+          updatePan(
+            currentTouchPair: currentTouchPair,
+            lastTouchPair: lastTouchPair
+          )
+        case .zoom:
+          updateZoomLogarithmic(
+            currentTouchPair: currentTouchPair,
+            lastTouchPair: lastTouchPair,
+            zoomRange: zoomRange
+          )
+        case .rotate:
+          break
       }
-      
-    } catch {
-//      print("Gesture Error: \(error)")
+    } else {
+      print("Couldn't get value for currentTouchPair or initialTouchPair")
     }
-
   }
-  
+
   private mutating func updatePan(
     currentTouchPair: TouchPair,
     lastTouchPair: TouchPair
-//    initialTouchPair: TouchPair,
   ) {
     let currentPairMidPoint: CGPoint = currentTouchPair.midPointBetween
     let lastPairMidPoint: CGPoint = lastTouchPair.midPointBetween
-    
-//    let currentPanAmount = self.pan
-//    let newPanAmount = currentPanAmount + currentPairMidPoint - lastPairMidPoint
-//    self.pan = newPanAmount
-    
+
     /// Calculate the movement since the last frame
     let frameDelta = currentPairMidPoint - lastPairMidPoint
-    
+
     /// Add this frame's movement to the current pan
     let currentPanAmount = self.pan
     let newPanAmount = currentPanAmount + frameDelta
     self.pan = newPanAmount
-    
-    print("""
-    Current pan amount: \(currentPanAmount)
-    
-    Current pair midpoint: \(currentPairMidPoint)
-    Last pair midpoint: \(lastPairMidPoint)
-    
-    Updated pan amount: \(self.pan)
-    """)
-//    self.pan = CGPoint(
-//      x: currentPairMidPoint.0 - initialPairMidPoint.0,
-//      y: currentPairMidPoint.1 - initialPairMidPoint.1
-//    )
-    
+
+    print(
+      """
+      Current pan amount: \(currentPanAmount)
+
+      Current pair midpoint: \(currentPairMidPoint)
+      Last pair midpoint: \(lastPairMidPoint)
+
+      Updated pan amount: \(self.pan)
+      """)
+
   }
   
+  private mutating func updateZoomLogarithmic(
+    currentTouchPair: TouchPair,
+    lastTouchPair: TouchPair,
+    zoomRange: ClosedRange<Double>
+  ) {
+    let currentDistance = currentTouchPair.distanceBetween
+    let lastDistance = lastTouchPair.distanceBetween
+    
+    guard lastDistance > 0 else { return }
+    
+    let scaleFactor = currentDistance / lastDistance
+    
+    /// Use logarithmic scaling for more natural feel
+    let logScale = log(scaleFactor)
+    
+    /// Adjust this to taste
+    let zoomSensitivity: CGFloat = 2.4
+    
+    let currentZoom = self.zoom
+    let newZoom = currentZoom * exp(logScale * zoomSensitivity)
+    
+    self.zoom = max(zoomRange.lowerBound, min(zoomRange.upperBound, newZoom))
+  }
+  
+//  private mutating func updateZoom(
+//    currentTouchPair: TouchPair,
+//    lastTouchPair: TouchPair
+//  ) {
+//    let current = currentTouchPair.distanceBetween
+//    let last = lastTouchPair.distanceBetween
+//    
+//    /// Calculate the movement since the last frame
+//    let frameDelta = current - last
+//    
+//    /// Add this frame's movement to the current pan
+//    let currentZoom = self.zoom
+//    let newZoom = currentZoom + frameDelta
+//    self.zoom = newZoom
+//  }
+
 
   private mutating func recogniseGesture(touches: [MappedTouchPoint]) throws {
-    
+
     /// Validate touch count
     guard touches.count == 2 else {
       self.currentGestureType = .none
@@ -124,18 +156,18 @@ extension GestureStateHandler {
       self.lastTouchPair = nil
       throw GestureError.touchesNotEqualToTwo
     }
-    
+
     /// Create current touch pair
     guard let currentPair = TouchPair(touches, referencePair: self.currentTouchPair) else {
       self.currentGestureType = .none
       self.initialTouchPair = nil
       throw GestureError.touchesNotEqualToTwo
     }
-    
+
     /// Always update touch pair tracking
     self.lastTouchPair = self.currentTouchPair
     self.currentTouchPair = currentPair
-    
+
     /// Handle gesture state
     switch self.currentGestureType {
       case .none:
@@ -149,13 +181,13 @@ extension GestureStateHandler {
         } else {
           self.initialTouchPair = currentPair
         }
-        
+
       default:
         /// Gesture in progress - just continue (touch pairs already updated)
         break
     }
   }
-  
+
   public mutating func resetValue(for gestureType: GestureType) {
     switch gestureType {
       case .pan:
