@@ -56,6 +56,12 @@ public struct TouchPair {
 }
 
 extension TouchPair {
+  
+  public func hasSameTouchIDs(as other: TouchPair) -> Bool {
+    let selfIDs = Set([first.id, second.id])
+    let otherIDs = Set([other.first.id, other.second.id])
+    return selfIDs == otherIDs
+  }
 
   var p1: CGPoint {
     first.position

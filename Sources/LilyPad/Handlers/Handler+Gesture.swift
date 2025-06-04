@@ -21,6 +21,9 @@ public struct GestureStateHandler {
   var lastZoom: CGFloat = 1.0
   var lastRotation: CGFloat = .zero
 
+  public var initialTouchPair: TouchPair?
+  public var currentTouchPair: TouchPair?
+  
   public var lastTouchPair: TouchPair?
 
   public var currentGestureType: GestureType = .none
@@ -28,15 +31,15 @@ public struct GestureStateHandler {
 
   private var trackedTouchIDs: Set<TouchPoint.ID> = []
 
-  let zoomThreshold: CGFloat = 20
-  let panThreshold: CGFloat = 10
-  let rotationThreshold: CGFloat = .pi / 30  // ~6 degrees
-  let requiredTouchCount: Int = 2
+  
+//  let requiredTouchCount: Int = 2
 
   public init() {}
 }
 
 extension GestureStateHandler {
+  
+  public var isPair
 
   public var hasPanned: Bool {
     !self.pan.isZero
@@ -220,13 +223,7 @@ extension GestureStateHandler {
       return .none
     }
 
-    let deltaPan = touchPair.midPointBetween - lastTouchPair.midPointBetween
-    let deltaZoom = abs(touchPair.distanceBetween - lastTouchPair.distanceBetween)
-    let deltaAngle = abs(touchPair.angleInRadiansBetween - lastTouchPair.angleInRadiansBetween)
-
-    let zoomPassed = deltaZoom > zoomThreshold
-    let rotatePassed = deltaAngle > rotationThreshold
-    let panPassed = deltaPan.length > panThreshold
+    
 
     /// Priority: pan > zoom > rotate
     if panPassed {
