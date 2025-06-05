@@ -47,20 +47,21 @@ public struct TouchPair: Sendable, Hashable {
 
 extension TouchPair {
   
-  public var idsForComparison: String {
-    let maxLength: Int = 6
-    let firstID = first.id.string.suffix(maxLength)
-    let secondID = second.id.string.suffix(maxLength)
-    let result = "First ID: ...\(firstID), Second ID: ...\(secondID)"
-    return result
-  }
-  
   private static func timestampSortedTouches(
     _ touches: [MappedTouchPoint],
   ) -> TouchPair {
     let sorted = touches.sorted { $0.timestamp < $1.timestamp }
     return TouchPair(first: sorted[0], second: sorted[1])
   }
+
+  //  public var idsForComparison: String {
+//    let maxLength: Int = 6
+//    let firstID = first.id.string.suffix(maxLength)
+//    let secondID = second.id.string.suffix(maxLength)
+//    let result = "First ID: ...\(firstID), Second ID: ...\(secondID)"
+//    return result
+//  }
+  
 
   //  func makeStablePair(
   //    from touches: [MappedTouchPoint],
@@ -80,11 +81,11 @@ extension TouchPair {
   //    return TouchPair(first: sorted[0], second: sorted[1])
   //  }
 
-  public func hasSameTouchIDs(as other: TouchPair) -> Bool {
-    let selfIDs = Set([first.id, second.id])
-    let otherIDs = Set([other.first.id, other.second.id])
-    return selfIDs == otherIDs
-  }
+//  public func hasSameTouchIDs(as other: TouchPair) -> Bool {
+//    let selfIDs = Set([first.id, second.id])
+//    let otherIDs = Set([other.first.id, other.second.id])
+//    return selfIDs == otherIDs
+//  }
 
   var p1: CGPoint {
     first.position

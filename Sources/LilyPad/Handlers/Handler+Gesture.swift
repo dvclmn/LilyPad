@@ -26,14 +26,13 @@ public struct GestureStateHandler {
   public var currentTouchPair: TouchPair?
 
   public var currentGesture: TrackpadGesture?
-  //  public var currentGestureType: GestureType = .none
+
 
   public init() {}
 }
 
 extension GestureStateHandler {
 
-  
   public mutating func processGesture(
     touches: [MappedTouchPoint],
     zoomRange: ClosedRange<Double>
@@ -146,7 +145,7 @@ extension GestureStateHandler {
 
     /// Create current touch pair
     guard
-      let currentPair = TouchPair(
+      let newCurrentPair = TouchPair(
         touches,
         referencePair: self.currentTouchPair
       )
@@ -158,7 +157,7 @@ extension GestureStateHandler {
 
     /// Always update touch pair tracking
     self.lastTouchPair = self.currentTouchPair
-    self.currentTouchPair = currentPair
+    self.currentTouchPair = newCurrentPair
 
     /// Handle gesture state
     //    switch self.currentGesture?.type {
@@ -167,7 +166,7 @@ extension GestureStateHandler {
       /// Try to recognize a new gesture
       if let initialPair = self.initialTouchPair,
         let gestureType = GestureType(
-          currentTouchPair: currentPair,
+          currentTouchPair: newCurrentPair,
           initialPair: initialPair
         )
       {
@@ -176,10 +175,10 @@ extension GestureStateHandler {
           id: UUID(),
           type: gestureType,
           phase: .moved,
-          touches: currentPair
+          touches: newCurrentPair
         )
       } else {
-        self.initialTouchPair = currentPair
+        self.initialTouchPair = newCurrentPair
       }
     }
 

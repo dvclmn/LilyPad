@@ -15,7 +15,6 @@ public struct MappedTouchPoint: TrackpadTouch {
   public let timestamp: TimeInterval
   public let velocity: CGVector
   public let pressure: CGFloat
-  
 }
 
 extension MappedTouchPoint: CustomStringConvertible {
