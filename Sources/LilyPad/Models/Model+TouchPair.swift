@@ -8,7 +8,7 @@
 import BaseHelpers
 import SwiftUI
 
-public struct TouchPair {
+public struct TouchPair: Sendable, Hashable {
   public let first: MappedTouchPoint
   public let second: MappedTouchPoint
 

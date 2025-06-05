@@ -9,12 +9,11 @@ import AppKit
 import BaseHelpers
 
 public enum GestureType: String, Sendable {
-  case none
   case pan
   case zoom
   case rotate
 
-  init(
+  init?(
     currentTouchPair: TouchPair,
     initialPair: TouchPair
   ) {
@@ -23,7 +22,7 @@ public enum GestureType: String, Sendable {
     let translationThreshold: CGFloat = 10
 
     /// Distance between fingers. Are we zooming?
-    let distanceThreshold: CGFloat = 6
+    let distanceThreshold: CGFloat = 14
 
     /// Change in rotation of line drawn between fingers
     /// Experiment with values between `π/12 (~15°)` and `π/8 (~22.5°)`
@@ -77,20 +76,20 @@ public enum GestureType: String, Sendable {
     
 //    let finalAngleDelta = abs(deltaAngle)
     
-    print(
-    """
-    
-    /// Angles ///
-    Rotation Threshold: \(rotationThreshold.toDegrees.displayString)
-    Current Pair Angle Between: \(currentAngleBetween.toDegrees.displayString)
-    Initial Pair Angle Between: \(initialAngleBetween.toDegrees.displayString)
-    Raw Delta: \((currentAngleBetween - initialAngleBetween).toDegrees.displayString)
-    Final Angle Delta: \(finalAngleDelta.toDegrees.displayString)
-    // END Angles ///
-    
-    
-    """)
-    
+//    print(
+//    """
+//    
+//    /// Angles ///
+//    Rotation Threshold: \(rotationThreshold.toDegrees.displayString)
+//    Current Pair Angle Between: \(currentAngleBetween.toDegrees.displayString)
+//    Initial Pair Angle Between: \(initialAngleBetween.toDegrees.displayString)
+//    Raw Delta: \((currentAngleBetween - initialAngleBetween).toDegrees.displayString)
+//    Final Angle Delta: \(finalAngleDelta.toDegrees.displayString)
+//    // END Angles ///
+//    
+//    
+//    """)
+//    
     let panPassed: Bool = deltaTranslation > translationThreshold
     let zoomPassed: Bool = deltaPinchDistance > distanceThreshold
     let rotatePassed: Bool = finalAngleDelta > rotationThreshold
@@ -105,7 +104,7 @@ public enum GestureType: String, Sendable {
       self = .rotate
 
     } else {
-      self = .none
+      return nil
     }
   }
 
@@ -126,21 +125,9 @@ enum GestureError: Error, LocalizedError {
 }
 
 
-public struct RawGesture: Identifiable, Hashable, Sendable {
-  public let id: UUID
-  //  public let phase: TrackpadGesturePhase
-  public let touches: [MappedTouchPoint]
-}
-
-public struct TrackpadGesture: Identifiable, Hashable, Sendable {
-  public let id: UUID
-  public let type: GestureType
-  //  public let phase: TrackpadGesturePhase
-  //  public let touches: [TouchPoint]
-
-  public static let none = TrackpadGesture(
-    id: UUID(),
-    type: .none,
-    //    phase: .none
-  )
-}
+//public struct RawGesture: Identifiable, Hashable, Sendable {
+//  public let id: UUID
+//  //  public let phase: TrackpadGesturePhase
+//  public let touches: [MappedTouchPoint]
+//}
+//
