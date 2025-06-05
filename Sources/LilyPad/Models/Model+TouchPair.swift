@@ -33,34 +33,7 @@ public struct TouchPair: Sendable, Hashable {
     self.first = first
     self.second = second
   }
-  
-//  public init?(
-//    _ touches: [MappedTouchPoint],
-//    previousPair: TouchPair? // For reference, comparison
-//  ) {
-//    
-//    guard touches.count == 2 else { return nil }
-//    
-//    guard let previousPair else {
-//      self = Self.timestampSortedTouches(touches)
-//      return
-//    }
-//    
-//    guard touches.map(\.id).sorted() == [previousPair.first.id, previousPair.second.id].sorted() else {
-//      return nil
-//    }
-//    
-//    let lookup = Dictionary(uniqueKeysWithValues: touches.map { ($0.id, $0) })
-//    
-//    guard let first = lookup[previousPair.first.id],
-//          let second = lookup[previousPair.second.id] else {
-//      self = Self.timestampSortedTouches(touches)
-//      return
-//    }
-//    
-//    self.first = first
-//    self.second = second
-//  }
+
 }
 
 extension TouchPair {
@@ -74,39 +47,6 @@ extension TouchPair {
     }
     return TouchPair(first: sorted[0], second: sorted[1])
   }
-
-  //  public var idsForComparison: String {
-//    let maxLength: Int = 6
-//    let firstID = first.id.string.suffix(maxLength)
-//    let secondID = second.id.string.suffix(maxLength)
-//    let result = "First ID: ...\(firstID), Second ID: ...\(secondID)"
-//    return result
-//  }
-  
-
-  //  func makeStablePair(
-  //    from touches: [MappedTouchPoint],
-  //    using referencePair: TouchPair?
-  //  ) -> TouchPair {
-  //    if let referencePair {
-  //      /// Find same IDs and preserve their original ordering
-  //      let lookup = Dictionary(uniqueKeysWithValues: touches.map { ($0.id, $0) })
-  //      if let first = lookup[referencePair.first.id],
-  //         let second = lookup[referencePair.second.id] {
-  //        return TouchPair(first: first, second: second)
-  //      }
-  //    }
-  //
-  //    // Fallback: just sort by ID (or x/y position if you prefer)
-  //    let sorted = touches.sorted { $0.id < $1.id }
-  //    return TouchPair(first: sorted[0], second: sorted[1])
-  //  }
-
-//  public func hasSameTouchIDs(as other: TouchPair) -> Bool {
-//    let selfIDs = Set([first.id, second.id])
-//    let otherIDs = Set([other.first.id, other.second.id])
-//    return selfIDs == otherIDs
-//  }
 
   var p1: CGPoint {
     first.position
@@ -133,7 +73,6 @@ extension TouchPair {
   
   func distance(to other: TouchPair) -> CGFloat {
     self.midPointBetween.distance(to: other.midPointBetween)
-//    self.midpoint.distance(to: other.midpoint)
   }
 
 }
