@@ -72,8 +72,6 @@ extension TouchPair {
     let sorted = touches.sorted {
       $0.timestamp == $1.timestamp ? $0.id < $1.id : $0.timestamp < $1.timestamp
     }
-    
-//    let sorted = touches.sorted { $0.timestamp < $1.timestamp }
     return TouchPair(first: sorted[0], second: sorted[1])
   }
 
@@ -155,12 +153,3 @@ extension TouchPair: CustomStringConvertible {
     """
   }
 }
-
-/// This is to address the common scenario where we have a set of touches:
-/// `Set<TouchPoint>`, and want to know the order in which they were invoked
-//extension Set where Element == TouchPoint {
-//  public func touchPair(in rect: CGRect) -> TouchPair? {
-//    TouchPair(self, mappingRect: rect)
-//  }
-//
-//}
