@@ -44,8 +44,7 @@ extension GestureStateHandler {
     /// if we have current and initial touch pairs
     if let currentTouchPair, let lastTouchPair {
       switch self.currentGesture?.type {
-        case .none:
-          break
+       
         case .pan:
           updatePan(
             currentTouchPair: currentTouchPair,
@@ -57,8 +56,9 @@ extension GestureStateHandler {
             lastTouchPair: lastTouchPair,
             zoomRange: zoomRange
           )
-        case .rotate:
+        case .rotate, .none:
           break
+          
       }
     } else {
       print("Couldn't get value for currentTouchPair or initialTouchPair")
@@ -147,7 +147,7 @@ extension GestureStateHandler {
     guard
       let newCurrentPair = TouchPair(
         touches,
-        referencePair: self.currentTouchPair
+        previousPair: self.currentTouchPair
       )
     else {
       self.currentGesture = nil

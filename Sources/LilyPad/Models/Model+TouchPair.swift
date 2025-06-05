@@ -22,20 +22,24 @@ public struct TouchPair: Sendable, Hashable {
 
   public init?(
     _ touches: [MappedTouchPoint],
-    referencePair: TouchPair?
+    previousPair: TouchPair? // For reference, comparison
   ) {
     
     guard touches.count == 2 else { return nil }
     
-    guard let referencePair else {
+    guard let previousPair else {
       self = Self.timestampSortedTouches(touches)
       return
     }
     
+    guard touches.map(\.id).sorted() == [previousPair.first.id, previousPair.second.id].sorted() else {
+      return nil
+    }
+    
     let lookup = Dictionary(uniqueKeysWithValues: touches.map { ($0.id, $0) })
     
-    guard let first = lookup[referencePair.first.id],
-          let second = lookup[referencePair.second.id] else {
+    guard let first = lookup[previousPair.first.id],
+          let second = lookup[previousPair.second.id] else {
       self = Self.timestampSortedTouches(touches)
       return
     }
@@ -50,7 +54,12 @@ extension TouchPair {
   private static func timestampSortedTouches(
     _ touches: [MappedTouchPoint],
   ) -> TouchPair {
-    let sorted = touches.sorted { $0.timestamp < $1.timestamp }
+    
+    let sorted = touches.sorted {
+      $0.timestamp == $1.timestamp ? $0.id < $1.id : $0.timestamp < $1.timestamp
+    }
+    
+//    let sorted = touches.sorted { $0.timestamp < $1.timestamp }
     return TouchPair(first: sorted[0], second: sorted[1])
   }
 
