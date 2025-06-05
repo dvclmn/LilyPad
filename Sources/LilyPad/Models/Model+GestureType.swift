@@ -122,6 +122,7 @@ public enum GestureType: String, Sendable {
 
 enum GestureError: Error, LocalizedError {
   case touchesNotEqualToTwo
+  case touchIDsChanged
 }
 
 

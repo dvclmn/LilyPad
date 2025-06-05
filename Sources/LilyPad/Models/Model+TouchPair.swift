@@ -20,38 +20,52 @@ public struct TouchPair: Sendable, Hashable {
     self.second = second
   }
 
-  public init?(
-    _ touches: [MappedTouchPoint],
-    previousPair: TouchPair? // For reference, comparison
-  ) {
-    
+  public init?(_ touches: [MappedTouchPoint], strictReferencePair: TouchPair) {
     guard touches.count == 2 else { return nil }
-    
-    guard let previousPair else {
-      self = Self.timestampSortedTouches(touches)
-      return
-    }
-    
-    guard touches.map(\.id).sorted() == [previousPair.first.id, previousPair.second.id].sorted() else {
-      return nil
-    }
     
     let lookup = Dictionary(uniqueKeysWithValues: touches.map { ($0.id, $0) })
     
-    guard let first = lookup[previousPair.first.id],
-          let second = lookup[previousPair.second.id] else {
-      self = Self.timestampSortedTouches(touches)
-      return
+    guard let first = lookup[strictReferencePair.first.id],
+          let second = lookup[strictReferencePair.second.id] else {
+      return nil
     }
     
     self.first = first
     self.second = second
   }
+  
+//  public init?(
+//    _ touches: [MappedTouchPoint],
+//    previousPair: TouchPair? // For reference, comparison
+//  ) {
+//    
+//    guard touches.count == 2 else { return nil }
+//    
+//    guard let previousPair else {
+//      self = Self.timestampSortedTouches(touches)
+//      return
+//    }
+//    
+//    guard touches.map(\.id).sorted() == [previousPair.first.id, previousPair.second.id].sorted() else {
+//      return nil
+//    }
+//    
+//    let lookup = Dictionary(uniqueKeysWithValues: touches.map { ($0.id, $0) })
+//    
+//    guard let first = lookup[previousPair.first.id],
+//          let second = lookup[previousPair.second.id] else {
+//      self = Self.timestampSortedTouches(touches)
+//      return
+//    }
+//    
+//    self.first = first
+//    self.second = second
+//  }
 }
 
 extension TouchPair {
   
-  private static func timestampSortedTouches(
+  public static func timestampSortedTouches(
     _ touches: [MappedTouchPoint],
   ) -> TouchPair {
     

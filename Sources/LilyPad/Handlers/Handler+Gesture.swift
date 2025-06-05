@@ -44,7 +44,7 @@ extension GestureStateHandler {
     /// if we have current and initial touch pairs
     if let currentTouchPair, let lastTouchPair {
       switch self.currentGesture?.type {
-       
+
         case .pan:
           updatePan(
             currentTouchPair: currentTouchPair,
@@ -58,7 +58,7 @@ extension GestureStateHandler {
           )
         case .rotate, .none:
           break
-          
+
       }
     } else {
       print("Couldn't get value for currentTouchPair or initialTouchPair")
@@ -137,23 +137,52 @@ extension GestureStateHandler {
 
     /// Validate touch count
     guard touches.count == 2 else {
-      self.currentGesture = nil
-      self.initialTouchPair = nil
-      self.lastTouchPair = nil
+      cancelCurrentGesture()
       throw GestureError.touchesNotEqualToTwo
+      //      self.currentGesture = nil
+      //      self.initialTouchPair = nil
+      //      self.lastTouchPair = nil
     }
 
+
     /// Create current touch pair
-    guard
-      let newCurrentPair = TouchPair(
-        touches,
-        previousPair: self.currentTouchPair
-      )
-    else {
-      self.currentGesture = nil
-      self.initialTouchPair = nil
-      throw GestureError.touchesNotEqualToTwo
+    guard let newCurrentPair: TouchPair = makeTouchPair(from: touches) else {
+      print("Gesture `\(currentGesture?.type.rawValue ?? "none found")` cancelled due to mismatch in touch IDs")
+      cancelCurrentGesture()
+      throw GestureError.touchIDsChanged
     }
+    //
+    //    if let referencePair = self.currentTouchPair {
+    //      guard let strictPair = TouchPair(touches, strictReferencePair: referencePair) else {
+    //        cancelCurrentGesture()
+    //        throw GestureError.touchIDsChanged
+    //      }
+    //      newCurrentPair = strictPair
+    //    } else {
+    //      /// First gesture frame — no reference yet
+    //      newCurrentPair = TouchPair.timestampSortedTouches(touches)
+    //    }
+
+    //    guard
+    //      let newCurrentPair = TouchPair(
+    //        touches,
+    //        strictReferencePair: self.currentTouchPair
+    //      )
+    //    else {
+    //      print("Gesture `\(currentGesture?.type.rawValue ?? "none found")` cancelled due to mismatch in touch IDs")
+    //      cancelCurrentGesture()
+    //      throw GestureError.touchIDsChanged
+    //    }
+    //    guard
+    //      let newCurrentPair = TouchPair(
+    //        touches,
+    //        previousPair: self.currentTouchPair
+    //      )
+    //    else {
+    //      self.currentGesture = nil
+    //      self.initialTouchPair = nil
+    //      throw GestureError.touchesNotEqualToTwo
+    //    }
 
     /// Always update touch pair tracking
     self.lastTouchPair = self.currentTouchPair
@@ -188,6 +217,13 @@ extension GestureStateHandler {
     //    }
   }
 
+  private mutating func cancelCurrentGesture() {
+    self.currentGesture = nil
+    self.initialTouchPair = nil
+    self.lastTouchPair = nil
+    self.currentTouchPair = nil
+  }
+
   public mutating func resetValue(for gestureType: GestureType) {
     switch gestureType {
       case .pan:
@@ -201,14 +237,23 @@ extension GestureStateHandler {
     }
   }
 
+  private func makeTouchPair(
+    from touches: [MappedTouchPoint]
+  ) -> TouchPair? {
+    guard let reference = self.currentTouchPair else {
+      return TouchPair.timestampSortedTouches(touches)
+    }
+    return TouchPair(touches, strictReferencePair: reference)
+  }
+
   public var hasPanned: Bool {
     !self.pan.isZero
   }
-  
+
   public var hasZoomed: Bool {
     self.zoom != 1.0
   }
-  
+
   public var hasRotated: Bool {
     !self.rotation.isZero
   }
