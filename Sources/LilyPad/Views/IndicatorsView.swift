@@ -22,12 +22,12 @@ public struct TouchIndicatorsView: View {
     mappingRect: CGRect,
     containerSize: CGSize,
   ) {
-    if isPreview {
-      let mapped = MappedTouchPoint.examplePoints(mappingRect: mappingRect)
-      self.touches = mapped
-    } else {
+//    if isPreview {
+//      let mapped = MappedTouchPoint.examplePoints(mappingRect: mappingRect)
+//      self.touches = mapped
+//    } else {
       self.touches = touches
-    }
+//    }
     self.mappingRect = mappingRect
     self.containerSize = containerSize
   }

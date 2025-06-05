@@ -33,7 +33,6 @@ public struct TouchPair: Sendable, Hashable {
     self.first = first
     self.second = second
   }
-
 }
 
 extension TouchPair {

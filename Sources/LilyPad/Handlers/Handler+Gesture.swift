@@ -71,54 +71,17 @@ extension GestureStateHandler {
     guard touches.count == 2 else {
       cancelCurrentGesture()
       throw GestureError.touchesNotEqualToTwo
-      //      self.currentGesture = nil
-      //      self.initialTouchPair = nil
-      //      self.lastTouchPair = nil
     }
 
 
     /// Create current touch pair
     let newCurrentPair: TouchPair = try makeTouchPair(from: touches)
-    //
-    //    if let referencePair = self.currentTouchPair {
-    //      guard let strictPair = TouchPair(touches, strictReferencePair: referencePair) else {
-    //        cancelCurrentGesture()
-    //        throw GestureError.touchIDsChanged
-    //      }
-    //      newCurrentPair = strictPair
-    //    } else {
-    //      /// First gesture frame — no reference yet
-    //      newCurrentPair = TouchPair.timestampSortedTouches(touches)
-    //    }
-
-    //    guard
-    //      let newCurrentPair = TouchPair(
-    //        touches,
-    //        strictReferencePair: self.currentTouchPair
-    //      )
-    //    else {
-    //      print("Gesture `\(currentGesture?.type.rawValue ?? "none found")` cancelled due to mismatch in touch IDs")
-    //      cancelCurrentGesture()
-    //      throw GestureError.touchIDsChanged
-    //    }
-    //    guard
-    //      let newCurrentPair = TouchPair(
-    //        touches,
-    //        previousPair: self.currentTouchPair
-    //      )
-    //    else {
-    //      self.currentGesture = nil
-    //      self.initialTouchPair = nil
-    //      throw GestureError.touchesNotEqualToTwo
-    //    }
-
+    
     /// Always update touch pair tracking
     self.lastTouchPair = self.currentTouchPair
     self.currentTouchPair = newCurrentPair
 
     /// Handle gesture state
-    //    switch self.currentGesture?.type {
-    //      case .none:
     if self.currentGesture == nil {
       /// Try to recognize a new gesture
       if let initialPair = self.initialTouchPair,
@@ -138,11 +101,6 @@ extension GestureStateHandler {
         self.initialTouchPair = newCurrentPair
       }
     }
-
-    //      default:
-    /// Gesture in progress - just continue (touch pairs already updated)
-    //        break
-    //    }
   }
 
   private mutating func cancelCurrentGesture() {
@@ -160,8 +118,6 @@ extension GestureStateHandler {
         zoom = 1.0
       case .rotate:
         rotation = .zero
-    //      default:
-    //        break
     }
   }
 
