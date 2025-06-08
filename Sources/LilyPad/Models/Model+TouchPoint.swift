@@ -10,21 +10,6 @@ import CoreGraphics
 import Foundation
 import MemberwiseInit
 
-/// Velocity describes the motion between two sampled positions over time.
-/// We're storing a motion vector associated with a timestamped position sample.
-/// `velocity`: How fast the touch was moving when it arrived at `position`
-
-/// The ID comes from `NSTouch` identity:
-/// ```
-/// var identity: any NSCopying & NSObjectProtocol { get }
-/// ```
-/// and is constructed as below:
-/// ```
-/// func id(for touch: NSTouch) -> Int {
-///   ObjectIdentifier(touch.identity).hashValue
-/// }
-/// ```
-
 public protocol TrackpadTouch: Identifiable, Sendable, Hashable, Equatable, Codable {
   var id: Int { get }
   var phase: TouchPhase { get }
@@ -77,27 +62,10 @@ extension TouchPoint {
     return atan2(velocity.dy, velocity.dx)
   }
 
-//  public mutating func updatedPointPosition(_ newPosition: CGPoint) {
-//    self.position = newPosition
-//  }
-//  public func withUpdatedPosition(_ newPosition: CGPoint) -> TouchPoint {
-////  public func newWithMappedPoint(to destination: CGRect) -> TouchPoint {
-////    let mappedPoint = self.position.mapped(to: destination)
-//    return TouchPoint(
-//      id: self.id,
-//      phase: self.phase,
-//      position: newPosition,
-//      timestamp: self.timestamp,
-//      velocity: self.velocity,
-//      pressure: self.pressure
-//    )
-//  }
-
   /// Whether this touch has meaningful pressure data
   public var hasPressure: Bool {
     return pressure > 0
   }
-
 
   /// Normalized pressure between 0 and 1 for drawing operations
   public var normalisedPressure: CGFloat {
@@ -121,7 +89,6 @@ extension TouchPoint {
     
     """
   }
-  
 }
 
 extension TouchPoint: CustomStringConvertible {
@@ -132,13 +99,6 @@ extension TouchPoint: CustomStringConvertible {
 
 
 extension Array where Element == TouchPoint {
-//  public func mappedPoints(in rect: CGRect) -> [TouchPoint] {
-//    let result = self.map { point in
-//      point.mapPoint(to: rect)
-//    }
-//    return result
-//  }
-
   public func hasFourPoints() -> Bool {
     return self.count == 4
   }

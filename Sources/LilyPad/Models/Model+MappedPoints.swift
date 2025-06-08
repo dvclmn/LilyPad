@@ -27,14 +27,21 @@ extension MappedTouchPoint: CustomStringConvertible {
 public struct MappedTouchPointsBuilder {
   public let mappedTouches: [MappedTouchPoint]
   let mappedRect: CGRect
-  
+
   public init(
-    touches: Set<TouchPoint> = [],
-    mappingRect: CGRect = .zero
+    touches: Set<TouchPoint>,
+    in mappingRect: CGRect
   ) {
     let mapped = Self.mapTouches(touches, mappingRect: mappingRect)
     self.mappedTouches = mapped
     self.mappedRect = mappingRect
+  }
+
+  public init(
+    touches: [TouchPoint],
+    in mappingRect: CGRect
+  ) {
+    self.init(touches: Set(touches), in: mappingRect)
   }
 
   private static func mapTouches(
@@ -64,4 +71,3 @@ public struct MappedTouchPointsBuilder {
   }
 
 }
-

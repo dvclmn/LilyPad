@@ -54,6 +54,7 @@ public struct TrackpadTouchesModifier: ViewModifier {
         self.localMappedTouches = mapped
         touchUpdates(mapped)
       }
+//      .allowsHitTesting(false)
     }  // END geo reader
 
 

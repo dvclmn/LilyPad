@@ -49,10 +49,10 @@ public enum GestureType: String, Sendable {
       from: initialPair,
       to: currentTouchPair
     )
-    print("Translation Delta: \(deltaTranslation.displayString)")
+//    print("Translation Delta: \(deltaTranslation.displayString)")
 
     let deltaPinchDistance: CGFloat = abs(currentTouchPair.distanceBetween - initialPair.distanceBetween)
-    print("Pinch-Distance Delta: \(deltaPinchDistance.displayString)")
+//    print("Pinch-Distance Delta: \(deltaPinchDistance.displayString)")
 
     let currentAngleBetween = currentTouchPair.angleInRadiansBetween
     let initialAngleBetween = initialPair.angleInRadiansBetween

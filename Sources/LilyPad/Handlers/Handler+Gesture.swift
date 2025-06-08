@@ -9,7 +9,7 @@ import BaseHelpers
 import Foundation
 import SwiftUI
 
-public struct GestureStateHandler {
+public struct GestureHandler {
 
   /// Current values
   public var pan: CGPoint = .zero
@@ -30,7 +30,7 @@ public struct GestureStateHandler {
   public init() {}
 }
 
-extension GestureStateHandler {
+extension GestureHandler {
 
   public mutating func processGesture(
     touches: [MappedTouchPoint],
