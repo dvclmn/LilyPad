@@ -33,14 +33,15 @@ public class TrackpadTouchManager {
   private let maxVelocity: Double = 10.0
 
   func processCapturedTouches(
-    _ touches: Set<NSTouch>,
+    _ touches: [NSTouch: CGFloat],
+//    _ touches: Set<NSTouch>,
     timestamp: TimeInterval,
-    includeVelocity: Bool = false
+    
   ) -> TouchEventData? {
 
     var updatedTouches = Set<TouchPoint>()
 
-    for touch in touches {
+    for (touch, pressure) in touches {
       let touchId = touch.identity.hash
       let phase = touch.phase
 

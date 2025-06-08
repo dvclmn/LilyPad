@@ -11,12 +11,20 @@ import SwiftUI
 
 public typealias TouchesModifierOutput = ([MappedTouchPoint]) -> Void
 
+extension TrackpadTouchesView {
+  public static let trackpadAspectRatio: CGFloat = 10.0 / 16.0
+  public static var trackpadRect: CGRect {
+    let width: CGFloat = 700
+    let height: CGFloat = width * trackpadAspectRatio
+    return CGRect(x: 0, y: 0, width: width, height: height)
+  }
+}
+
 public struct TrackpadTouchesModifier: ViewModifier {
   @State private var localMappedTouches: [MappedTouchPoint] = []
 
-//  let shouldUseVelocity: Bool
   let shouldShowIndicators: Bool
-  let mappingRect: CGRect
+//  let mappingRect: CGRect
   let touchUpdates: TouchesModifierOutput
 
   public func body(content: Content) -> some View {
@@ -26,14 +34,14 @@ public struct TrackpadTouchesModifier: ViewModifier {
         if shouldShowIndicators {
           TouchIndicatorsView(
             touches: localMappedTouches,
-            mappingRect: mappingRect,
+            mappingRect: TrackpadTouchesView.trackpadRect,
             containerSize: proxy.size,
           )
         }
         //
         TrackpadShapeGuide(
           containerSize: proxy.size,
-          rect: mappingRect
+          rect: TrackpadTouchesView.trackpadRect
         )
       }
       .drawingGroup()
@@ -43,18 +51,21 @@ public struct TrackpadTouchesModifier: ViewModifier {
       ) { eventData in
 
         let touches = eventData?.touches ?? []
+        
+        /// Handle touches for local views
         guard mappingRect.size.isPositive else { return }
 
         let mappedTouchBuilder = MappedTouchPointsBuilder(
           touches: touches,
-          mappingRect: mappingRect
+          in: mappingRect
         )
         let mapped = mappedTouchBuilder.mappedTouches
 
         self.localMappedTouches = mapped
+        
+        /// Handle touches for View using the modifier
         touchUpdates(mapped)
       }
-//      .allowsHitTesting(false)
     }  // END geo reader
 
 
@@ -66,16 +77,12 @@ extension View {
   /// strokes/gestures won't line up.
   /// It's used in this modifier for the touch indicators only
   public func touches(
-    //    isClickEnabled: Bool,
-//    shouldUseVelocity: Bool = true,
     showIndicators: Bool = true,
     mappedTo mappingRect: CGRect,
     touchUpdates: @escaping TouchesModifierOutput
   ) -> some View {
     self.modifier(
       TrackpadTouchesModifier(
-        //        isClickEnabled: isClickEnabled,
-//        shouldUseVelocity: shouldUseVelocity,
         shouldShowIndicators: showIndicators,
         mappingRect: mappingRect,
         touchUpdates: touchUpdates
@@ -112,7 +119,6 @@ struct TrackpadShapeGuide: View {
           height: rect.height
         )
         .position(containerSize.centrePoint)
-      //        .position(rect.origin)
 
     }
     .compositingGroup()
@@ -120,36 +126,3 @@ struct TrackpadShapeGuide: View {
 
   }
 }
-
-
-//public struct TouchesModifierExampleView: View {
-//
-//  public var body: some View {
-//
-//    GeometryReader { proxy in
-//      Text("Hello")
-//        .touches(
-//          shouldUseVelocity: true,
-//          showIndicators: true,
-//          mappedTo: mappingRect(proxy.size)
-//        ) { eventData in
-//          //
-//        }
-//    }
-//    .background(.black.secondary)
-//
-//  }
-//}
-//extension TouchesModifierExampleView {
-//  func mappingRect(_ containerSize: CGSize) -> CGRect {
-//    let exampleSize: CGSize = .init(width: 400, height: 300)
-//    let rect: CGRect = exampleSize.toCGRect(in: containerSize)
-//    return rect
-//  }
-//}
-//#if DEBUG
-//@available(macOS 15, iOS 18, *)
-//#Preview(traits: .size(.normal)) {
-//  TouchesModifierExampleView()
-//}
-//#endif

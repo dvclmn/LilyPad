@@ -40,18 +40,16 @@ public class TrackpadTouchesNSView: NSView {
 
   }
 
-  private func processFirstTouches(
-    with event: NSEvent,
-//    phase: NSTouch.Phase
-  ) {
+  private func processFirstTouches(with event: NSEvent) {
 
     let touches = event.allTouches()
+    let pressure = CGFloat(event.pressure)
+
+    var touchesWithPressure: [NSTouch: CGFloat] = [:]
 
     let eventData = touchManager.processCapturedTouches(
-      touches,
+      touchesWithPressure,
       timestamp: event.timestamp,
-      includeVelocity: shouldUseVelocity
-//      pressure: CGFloat(event.pressure)
     )
 
     /// ⬇️ Important: If no touches remain,  should notify with nil

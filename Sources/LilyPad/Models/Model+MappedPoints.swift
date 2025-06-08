@@ -15,6 +15,44 @@ public struct MappedTouchPoint: TrackpadTouch {
   public let timestamp: TimeInterval
   public let velocity: CGVector
   public let pressure: CGFloat
+  
+  /// This is stored here to allow subsequent remapping if needed
+  public let mappedRect: CGRect
+  
+  init(
+    id: Int,
+    phase: TouchPhase,
+    position: CGPoint,
+    timestamp: TimeInterval,
+    velocity: CGVector,
+    pressure: CGFloat,
+    mappedRect: CGRect
+  ) {
+    self.id = id
+    self.phase = phase
+    self.position = position
+    self.timestamp = timestamp
+    self.velocity = velocity
+    self.pressure = pressure
+    self.mappedRect = mappedRect
+  }
+  
+  public init(
+    previousPoint: Self,
+    newMappingRect: CGRect,
+  ) {
+    let newPoint: CGPoint = previousPoint.position.remapped(
+      from: previousPoint.mappedRect,
+      to: newMappingRect
+    )
+    self.id = previousPoint.id
+    self.phase = previousPoint.phase
+    self.position = newPoint
+    self.timestamp = previousPoint.timestamp
+    self.velocity = previousPoint.velocity
+    self.pressure = previousPoint.pressure
+    self.mappedRect = newMappingRect
+  }
 }
 
 extension MappedTouchPoint: CustomStringConvertible {
@@ -22,7 +60,6 @@ extension MappedTouchPoint: CustomStringConvertible {
     return TouchPoint.generateDescription(for: self)
   }
 }
-
 
 public struct MappedTouchPointsBuilder {
   public let mappedTouches: [MappedTouchPoint]
@@ -56,7 +93,8 @@ public struct MappedTouchPointsBuilder {
         position: newPosition,
         timestamp: touchPoint.timestamp,
         velocity: touchPoint.velocity,
-        pressure: touchPoint.pressure
+        pressure: touchPoint.pressure,
+        mappedRect: mappingRect
       )
     }
     return mapped
