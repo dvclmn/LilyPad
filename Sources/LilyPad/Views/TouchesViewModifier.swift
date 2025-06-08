@@ -9,7 +9,7 @@ import BaseComponents
 import BaseHelpers
 import SwiftUI
 
-public typealias TouchesModifierOutput = ([MappedTouchPoint]) -> Void
+public typealias TouchesModifierOutput = (Set<TouchPoint>) -> Void
 
 extension TrackpadTouchesView {
   public static let trackpadAspectRatio: CGFloat = 10.0 / 16.0
@@ -52,19 +52,18 @@ public struct TrackpadTouchesModifier: ViewModifier {
 
         let touches = eventData?.touches ?? []
         
-        /// Handle touches for local views
-        guard mappingRect.size.isPositive else { return }
-
-        let mappedTouchBuilder = MappedTouchPointsBuilder(
-          touches: touches,
-          in: mappingRect
-        )
-        let mapped = mappedTouchBuilder.mappedTouches
-
-        self.localMappedTouches = mapped
+        if shouldShowIndicators {
+          /// Handle touches for local views
+          let mappedTouchBuilder = MappedTouchPointsBuilder(
+            touches: touches,
+            in: TrackpadTouchesView.trackpadRect
+          )
+          let mapped = mappedTouchBuilder.mappedTouches
+          self.localMappedTouches = mapped
+        }
         
         /// Handle touches for View using the modifier
-        touchUpdates(mapped)
+        touchUpdates(touches)
       }
     }  // END geo reader
 
@@ -78,13 +77,13 @@ extension View {
   /// It's used in this modifier for the touch indicators only
   public func touches(
     showIndicators: Bool = true,
-    mappedTo mappingRect: CGRect,
+//    mappedTo mappingRect: CGRect,
     touchUpdates: @escaping TouchesModifierOutput
   ) -> some View {
     self.modifier(
       TrackpadTouchesModifier(
         shouldShowIndicators: showIndicators,
-        mappingRect: mappingRect,
+//        mappingRect: mappingRect,
         touchUpdates: touchUpdates
       )
     )

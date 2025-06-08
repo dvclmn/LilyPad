@@ -43,21 +43,26 @@ public class TrackpadTouchesNSView: NSView {
   private func processFirstTouches(with event: NSEvent) {
 
     let touches = event.allTouches()
-    let pressure = CGFloat(event.pressure)
-
+//    let pressure = CGFloat(event.pressure)
+    
     var touchesWithPressure: [NSTouch: CGFloat] = [:]
-
+    
+    for touch in touches {
+      touchesWithPressure[touch] = .zero
+    }
+    
     let eventData = touchManager.processCapturedTouches(
       touchesWithPressure,
-      timestamp: event.timestamp,
+      timestamp: event.timestamp
     )
-
+    
     /// ⬇️ Important: If no touches remain,  should notify with nil
     if touchManager.activeTouches.isEmpty {
       touchesDelegate?.touchesView(self, didUpdate: nil)
     } else {
       touchesDelegate?.touchesView(self, didUpdate: eventData)
     }
+
   }
 
   // MARK: - Touch Event Handlers
@@ -73,14 +78,6 @@ public class TrackpadTouchesNSView: NSView {
   public override func touchesCancelled(with event: NSEvent) {
     processFirstTouches(with: event)
   }
-  //  public override func pressureChange(with event: NSEvent) {
-  //    processPressure(event)
-  //  }
-
-  //  public override func addGestureRecognizer(_ gestureRecognizer: NSGestureRecognizer) {
-  //    <#code#>
-  //  }
-
 }
 
 extension NSTouch {

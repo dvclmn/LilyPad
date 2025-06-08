@@ -34,9 +34,9 @@ public class TrackpadTouchManager {
 
   func processCapturedTouches(
     _ touches: [NSTouch: CGFloat],
-//    _ touches: Set<NSTouch>,
+    //    _ touches: Set<NSTouch>,
     timestamp: TimeInterval,
-    
+
   ) -> TouchEventData? {
 
     var updatedTouches = Set<TouchPoint>()
@@ -44,6 +44,7 @@ public class TrackpadTouchManager {
     for (touch, pressure) in touches {
       let touchId = touch.identity.hash
       let phase = touch.phase
+      let location = touch.normalizedPosition
 
       /// Handle touch lifecycle
       switch phase {
@@ -65,25 +66,20 @@ public class TrackpadTouchManager {
         from: touch,
         touchId: touchId,
         phase: phase,
-        timestamp: timestamp
+        timestamp: timestamp,
+        pressure: pressure
       )
 
       /// Update history
       updateTouchHistory(touchId: touchId, touchPoint: rawTouch)
-      
-      if includeVelocity {
-        /// Compute velocity based on history
-        let velocity = computeWeightedVelocity(for: touchId)
-        
-        /// Create final touch with computed velocity
-        let enrichedTouch = rawTouch.withVelocity(velocity)
-        updatedTouches.insert(enrichedTouch)
-        lastTouches[touchId] = enrichedTouch
-        
-      } else {
-        updatedTouches.insert(rawTouch)
-        lastTouches[touchId] = rawTouch
-      }
+
+      /// Compute velocity based on history
+      let velocity = computeWeightedVelocity(for: touchId)
+
+      /// Create final touch with computed velocity
+      let enrichedTouch = rawTouch.withVelocity(velocity)
+      updatedTouches.insert(enrichedTouch)
+      lastTouches[touchId] = enrichedTouch
 
     }
 
@@ -174,7 +170,8 @@ public class TrackpadTouchManager {
     from nsTouch: NSTouch,
     touchId: Int,
     phase: NSTouch.Phase,
-    timestamp: TimeInterval
+    timestamp: TimeInterval,
+    pressure: CGFloat,
   ) -> TouchPoint {
     let position = CGPoint(
       x: nsTouch.normalizedPosition.x,
@@ -190,71 +187,7 @@ public class TrackpadTouchManager {
       position: position,
       timestamp: timestamp,
       velocity: CGVector.zero,  // Will be populated by withVelocity()
-      pressure: .zero
+      pressure: pressure
     )
   }
-
-  // MARK: - Public Utilities
-
-  /// Get current velocity for a specific touch (useful for debugging/visualization)
-  public func getCurrentVelocity(for touchId: Int) -> CGVector? {
-    return lastTouches[touchId]?.velocity
-  }
-
-  /// Get touch history count for a specific touch (useful for debugging)
-  public func getHistoryCount(for touchId: Int) -> Int {
-    return touchHistories[touchId]?.count ?? 0
-  }
-
-  /// Clear all touch data (useful for app state changes)
-  public func clearAllTouches() {
-    activeTouches.removeAll()
-    lastTouches.removeAll()
-    touchHistories.removeAll()
-  }
-  //  private func makeTouchPoint(
-  //    from nsTouch: NSTouch,
-  //    touchId: Int,
-  //    phase: NSTouch.Phase,
-  //    timestamp: TimeInterval,
-  //  ) -> TouchPoint {
-  //
-  //    let position = CGPoint(
-  //      x: nsTouch.normalizedPosition.x,
-  //      y: 1.0 - nsTouch.normalizedPosition.y  // Flip Y
-  //    )
-  //
-  //    let result = TouchPoint(
-  //      id: touchId,
-  //      phase: phase.toDomainPhase,
-  //      position: position,
-  //      timestamp: timestamp,
-  //      velocity: CGVector.zero,  // Will be populated by withVelocity()
-  //      pressure: .zero
-  //    )
-  //
-  //    return result
-  //  }
-  //
-  ////  func id(for touch: NSTouch) -> Int {
-  ////    ObjectIdentifier(touch.identity).hashValue
-  ////  }
-  //
-  //  private func computeVelocity(for history: [TouchPoint]) -> CGVector {
-  //    guard history.count >= 2 else { return .zero }
-  //
-  //    let a = history[history.count - 2]
-  //    let b = history[history.count - 1]
-  //    let dt = b.timestamp - a.timestamp
-  //
-  //    guard dt > 0 else { return .zero }
-  //
-  //    /// Replace with BaseHelpers `CGVector.between()`
-  //    /// at some point
-  //    return CGVector(
-  //      dx: (b.position.x - a.position.x) / dt,
-  //      dy: (b.position.y - a.position.y) / dt
-  //    )
-  //  }
-
 }
