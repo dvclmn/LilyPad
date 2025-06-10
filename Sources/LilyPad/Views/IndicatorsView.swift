@@ -75,7 +75,7 @@ extension TouchIndicatorsView {
     .monospaced()
     .font(.caption2)
     .fixedSize()
-    .roundedBackground(Styles.sizeNano, colour: AnyShapeStyle(.black.opacity(0.6)))
+    .quickBackground(Styles.sizeNano, colour: AnyShapeStyle(.black.opacity(0.6)))
     .offset(y: -indicatorDiameter * 1.15)
   }
 

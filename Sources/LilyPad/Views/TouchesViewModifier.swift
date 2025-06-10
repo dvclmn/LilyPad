@@ -39,10 +39,10 @@ public struct TrackpadTouchesModifier: ViewModifier {
           )
         }
         //
-        TrackpadShapeGuide(
-          containerSize: proxy.size,
-          rect: TrackpadTouchesView.trackpadRect
-        )
+//        TrackpadShapeGuide(
+//          containerSize: proxy.size,
+//          rect: TrackpadTouchesView.trackpadRect
+//        )
       }
       .drawingGroup()
 

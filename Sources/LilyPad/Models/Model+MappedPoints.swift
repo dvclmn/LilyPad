@@ -15,10 +15,10 @@ public struct MappedTouchPoint: TrackpadTouch {
   public let timestamp: TimeInterval
   public let velocity: CGVector
   public let pressure: CGFloat
-  
+
   /// This is stored here to allow subsequent remapping if needed
   public let mappedRect: CGRect
-  
+
   init(
     id: Int,
     phase: TouchPhase,
@@ -36,7 +36,7 @@ public struct MappedTouchPoint: TrackpadTouch {
     self.pressure = pressure
     self.mappedRect = mappedRect
   }
-  
+
   public init(
     previousPoint: Self,
     newMappingRect: CGRect,
@@ -108,4 +108,10 @@ public struct MappedTouchPointsBuilder {
     return touch
   }
 
+}
+
+extension Array where Element == MappedTouchPoint {
+  public var cgPoints: [CGPoint] {
+    return self.map(\.position)
+  }
 }
