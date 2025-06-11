@@ -13,10 +13,10 @@ public typealias TouchesModifierOutput = (Set<TouchPoint>) -> Void
 
 extension TrackpadTouchesView {
   public static let trackpadAspectRatio: CGFloat = 10.0 / 16.0
-  public static var trackpadRect: CGRect {
+  public static var trackpadSize: CGSize {
     let width: CGFloat = 700
     let height: CGFloat = width * trackpadAspectRatio
-    return CGRect(x: 0, y: 0, width: width, height: height)
+    return CGSize(width: width, height: height)
   }
 }
 
@@ -24,7 +24,7 @@ public struct TrackpadTouchesModifier: ViewModifier {
   @State private var localMappedTouches: [MappedTouchPoint] = []
 
   let shouldShowIndicators: Bool
-//  let mappingRect: CGRect
+  //  let mappingRect: CGRect
   let touchUpdates: TouchesModifierOutput
 
   public func body(content: Content) -> some View {
@@ -34,15 +34,15 @@ public struct TrackpadTouchesModifier: ViewModifier {
         if shouldShowIndicators {
           TouchIndicatorsView(
             touches: localMappedTouches,
-            mappingRect: TrackpadTouchesView.trackpadRect,
+            mappingSize: TrackpadTouchesView.trackpadRect,
             containerSize: proxy.size,
           )
         }
         //
-//        TrackpadShapeGuide(
-//          containerSize: proxy.size,
-//          rect: TrackpadTouchesView.trackpadRect
-//        )
+        TrackpadShapeGuide(
+          containerSize: proxy.size,
+          rect: TrackpadTouchesView.trackpadRect
+        )
       }
       .drawingGroup()
 
@@ -51,7 +51,7 @@ public struct TrackpadTouchesModifier: ViewModifier {
       ) { eventData in
 
         let touches = eventData?.touches ?? []
-        
+
         if shouldShowIndicators {
           /// Handle touches for local views
           let mappedTouchBuilder = MappedTouchPointsBuilder(
@@ -61,7 +61,7 @@ public struct TrackpadTouchesModifier: ViewModifier {
           let mapped = mappedTouchBuilder.mappedTouches
           self.localMappedTouches = mapped
         }
-        
+
         /// Handle touches for View using the modifier
         touchUpdates(touches)
       }
@@ -77,13 +77,13 @@ extension View {
   /// It's used in this modifier for the touch indicators only
   public func touches(
     showIndicators: Bool = true,
-//    mappedTo mappingRect: CGRect,
+    //    mappedTo mappingRect: CGRect,
     touchUpdates: @escaping TouchesModifierOutput
   ) -> some View {
     self.modifier(
       TrackpadTouchesModifier(
         shouldShowIndicators: showIndicators,
-//        mappingRect: mappingRect,
+        //        mappingRect: mappingRect,
         touchUpdates: touchUpdates
       )
     )
