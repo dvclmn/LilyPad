@@ -17,7 +17,7 @@ public struct MappedTouchPoint: TrackpadTouch {
   public let pressure: CGFloat
 
   /// This is stored here to allow subsequent remapping if needed
-  public let mappedRect: CGRect
+  public let mappedSize: CGSize
 
   init(
     id: Int,
@@ -26,7 +26,7 @@ public struct MappedTouchPoint: TrackpadTouch {
     timestamp: TimeInterval,
     velocity: CGVector,
     pressure: CGFloat,
-    mappedRect: CGRect
+    mappedSize: CGSize
   ) {
     self.id = id
     self.phase = phase
@@ -34,16 +34,16 @@ public struct MappedTouchPoint: TrackpadTouch {
     self.timestamp = timestamp
     self.velocity = velocity
     self.pressure = pressure
-    self.mappedRect = mappedRect
+    self.mappedSize = mappedSize
   }
 
   public init(
     previousPoint: Self,
-    newMappingRect: CGRect,
+    newMappingSize: CGSize,
   ) {
     let newPoint: CGPoint = previousPoint.position.remapped(
-      from: previousPoint.mappedRect,
-      to: newMappingRect
+      from: previousPoint.mappedSize.toCGRectZeroOrigin,
+      to: newMappingSize.toCGRectZeroOrigin
     )
     self.id = previousPoint.id
     self.phase = previousPoint.phase
@@ -51,7 +51,7 @@ public struct MappedTouchPoint: TrackpadTouch {
     self.timestamp = previousPoint.timestamp
     self.velocity = previousPoint.velocity
     self.pressure = previousPoint.pressure
-    self.mappedRect = newMappingRect
+    self.mappedSize = newMappingSize
   }
 }
 
@@ -63,30 +63,30 @@ extension MappedTouchPoint: CustomStringConvertible {
 
 public struct MappedTouchPointsBuilder {
   public let mappedTouches: [MappedTouchPoint]
-  let mappedRect: CGRect
+  let mappedSize: CGSize
 
   public init(
     touches: Set<TouchPoint>,
-    in mappingRect: CGRect
+    in mappingSize: CGSize
   ) {
-    let mapped = Self.mapTouches(touches, mappingRect: mappingRect)
+    let mapped = Self.mapTouches(touches, mappingSize: mappingSize)
     self.mappedTouches = mapped
-    self.mappedRect = mappingRect
+    self.mappedSize = mappingSize
   }
 
   public init(
     touches: [TouchPoint],
-    in mappingRect: CGRect
+    in mappingSize: CGSize
   ) {
-    self.init(touches: Set(touches), in: mappingRect)
+    self.init(touches: Set(touches), in: mappingSize)
   }
 
   private static func mapTouches(
     _ touches: Set<TouchPoint>,
-    mappingRect: CGRect
+    mappingSize: CGSize
   ) -> [MappedTouchPoint] {
     let mapped: [MappedTouchPoint] = touches.map { touchPoint in
-      let newPosition = touchPoint.position.mapped(to: mappingRect)
+      let newPosition = touchPoint.position.mapped(to: mappingSize.toCGRectZeroOrigin)
       return MappedTouchPoint(
         id: touchPoint.id,
         phase: touchPoint.phase,
@@ -94,7 +94,7 @@ public struct MappedTouchPointsBuilder {
         timestamp: touchPoint.timestamp,
         velocity: touchPoint.velocity,
         pressure: touchPoint.pressure,
-        mappedRect: mappingRect
+        mappedSize: mappingSize
       )
     }
     return mapped

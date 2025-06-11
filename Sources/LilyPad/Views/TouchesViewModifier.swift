@@ -34,14 +34,14 @@ public struct TrackpadTouchesModifier: ViewModifier {
         if shouldShowIndicators {
           TouchIndicatorsView(
             touches: localMappedTouches,
-            mappingSize: TrackpadTouchesView.trackpadRect,
+            mappingSize: TrackpadTouchesView.trackpadSize,
             containerSize: proxy.size,
           )
         }
         //
         TrackpadShapeGuide(
           containerSize: proxy.size,
-          rect: TrackpadTouchesView.trackpadRect
+          trackpadSize: TrackpadTouchesView.trackpadSize
         )
       }
       .drawingGroup()
@@ -56,7 +56,7 @@ public struct TrackpadTouchesModifier: ViewModifier {
           /// Handle touches for local views
           let mappedTouchBuilder = MappedTouchPointsBuilder(
             touches: touches,
-            in: TrackpadTouchesView.trackpadRect
+            in: TrackpadTouchesView.trackpadSize
           )
           let mapped = mappedTouchBuilder.mappedTouches
           self.localMappedTouches = mapped
@@ -95,7 +95,7 @@ struct TrackpadShapeGuide: View {
   private let rounding: CGFloat = 20
 
   let containerSize: CGSize
-  let rect: CGRect
+  let trackpadSize: CGSize
   public var body: some View {
 
     ZStack(alignment: .topLeading) {
@@ -114,8 +114,8 @@ struct TrackpadShapeGuide: View {
             .strokeBorder(.gray.opacity(0.1), style: .simple02)
         }
         .frame(
-          width: rect.width,
-          height: rect.height
+          width: trackpadSize.width,
+          height: trackpadSize.height
         )
         .position(containerSize.centrePoint)
 
