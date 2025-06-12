@@ -7,21 +7,6 @@
 
 import Foundation
 
-//extension MappedTouchPoint {
-//
-//  public static func examplePoints(
-//    points: [TouchPoint],
-//    in mappingRect: CGRect
-//  ) -> [MappedTouchPoint] {
-////    let normalisedPoints = TouchPoint.allExamplePoints
-//
-//    let builder = MappedTouchPointsBuilder(
-//      touches: Set(points),
-//      mappingRect: mappingRect
-//    )
-//    return builder.mappedTouches
-//  }
-//}
 extension TouchPoint {
 
   public static let exampleGroup: [TouchPoint] = [

@@ -39,7 +39,6 @@ public struct TouchIndicatorsView: View {
         Circle()
           .fill(indicatorColour(touch))
           .frame(width: indicatorDiameter)
-//          .aspectRatio(1, contentMode: .fill)
           .overlay(alignment: .bottom) {
             /// Displays info above each individual touch location
             TouchLabel(touch)
@@ -51,8 +50,6 @@ public struct TouchIndicatorsView: View {
         width: mappingSize.width,
         height: mappingSize.height
       )
-//      .border(Color.orange.opacity(0.1))
-      //      .background(.red.opacity(0.4))
       .position(containerSize.centrePoint)
     }
 
@@ -79,10 +76,6 @@ extension TouchIndicatorsView {
     .offset(y: -indicatorDiameter * 1.15)
   }
 
-  //  func touchLabel(_ touch: TouchPoint) -> String {
-
-  //  }
-
   func isDuplicateID(_ touch: MappedTouchPoint) -> Bool {
     let matchingIdsCount =
     touches.filter { point in
@@ -102,22 +95,3 @@ extension TouchIndicatorsView {
     touch.position.mapped(to: mappingSize.toCGRectZeroOrigin)
   }
 }
-
-//#if DEBUG
-//@available(macOS 15, iOS 18, *)
-//#Preview(traits: .size(.normal)) {
-//  GeometryReader { _ in
-//    TouchIndicatorsView(
-//      touches: [
-//        TouchPoint.example01,
-//        TouchPoint.topLeading,
-//        TouchPoint.topTrailing,
-//        TouchPoint.bottomLeading,
-//        TouchPoint.bottomTrailing,
-//      ],
-//      mappingRect: CGRect(x: 0, y: 0, width: 400, height: 200)
-//    )
-//  }
-//  .padding()
-//}
-//#endif

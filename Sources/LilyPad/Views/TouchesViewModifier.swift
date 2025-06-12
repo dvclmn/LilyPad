@@ -24,7 +24,6 @@ public struct TrackpadTouchesModifier: ViewModifier {
   @State private var localMappedTouches: [MappedTouchPoint] = []
 
   let shouldShowIndicators: Bool
-  //  let mappingRect: CGRect
   let touchUpdates: TouchesModifierOutput
 
   public func body(content: Content) -> some View {
@@ -71,19 +70,14 @@ public struct TrackpadTouchesModifier: ViewModifier {
   }
 }
 extension View {
-  /// `mappingRect` should (I think) be the same as what constrains touches
-  /// out in the view using the touches. Otherwise the indicators and the actual
-  /// strokes/gestures won't line up.
-  /// It's used in this modifier for the touch indicators only
+
   public func touches(
     showIndicators: Bool = true,
-    //    mappedTo mappingRect: CGRect,
     touchUpdates: @escaping TouchesModifierOutput
   ) -> some View {
     self.modifier(
       TrackpadTouchesModifier(
         shouldShowIndicators: showIndicators,
-        //        mappingRect: mappingRect,
         touchUpdates: touchUpdates
       )
     )
