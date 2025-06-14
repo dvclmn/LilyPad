@@ -63,16 +63,16 @@ extension TouchIndicatorsView {
     TextGroup {
       Text(touch.position.displayString)
       Text("\nPhase: " + touch.phase.rawValue)
-      if isDuplicateID(touch) {
-        Text("\nDuplicate ID")
-          .foregroundStyle(.red)
-          .fontWeight(.bold)
-      }
+//      if isDuplicateID(touch) {
+//        Text("\nDuplicate ID")
+//          .foregroundStyle(.red)
+//          .fontWeight(.bold)
+//      }
     }
     .monospaced()
     .font(.caption2)
     .fixedSize()
-    .quickBackground(Styles.sizeNano, colour: AnyShapeStyle(.black.opacity(0.6)))
+    .quickBackground(padding: Styles.sizeNano, colour: AnyShapeStyle(.black.opacity(0.6)))
     .offset(y: -indicatorDiameter * 1.15)
   }
 
