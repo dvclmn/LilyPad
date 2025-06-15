@@ -24,11 +24,12 @@ public struct TrackpadTouchesModifier: ViewModifier {
   @State private var localMappedTouches: [MappedTouchPoint] = []
 
   let shouldShowIndicators: Bool
+  let shouldShowOverlay: Bool
   let touchUpdates: TouchesModifierOutput
 
   public func body(content: Content) -> some View {
     GeometryReader { proxy in
-      ZStack(alignment: .topLeading) {
+//      ZStack(alignment: .topLeading) {
         content
         if shouldShowIndicators {
           TouchIndicatorsView(
@@ -37,13 +38,14 @@ public struct TrackpadTouchesModifier: ViewModifier {
             containerSize: proxy.size,
           )
         }
-        //
-        TrackpadShapeGuide(
-          containerSize: proxy.size,
-          trackpadSize: TrackpadTouchesView.trackpadSize
-        )
-      }
-      .drawingGroup()
+        if shouldShowOverlay {
+          TrackpadShapeGuide(
+            containerSize: proxy.size,
+            trackpadSize: TrackpadTouchesView.trackpadSize
+          )
+        }
+//      }
+//      .drawingGroup()
 
       TrackpadTouchesView(
         shouldUseVelocity: true
@@ -73,11 +75,13 @@ extension View {
 
   public func touches(
     showIndicators: Bool = true,
+    shouldShowOverlay: Bool = true,
     touchUpdates: @escaping TouchesModifierOutput
   ) -> some View {
     self.modifier(
       TrackpadTouchesModifier(
         shouldShowIndicators: showIndicators,
+        shouldShowOverlay: shouldShowOverlay,
         touchUpdates: touchUpdates
       )
     )
@@ -94,7 +98,7 @@ struct TrackpadShapeGuide: View {
 
     ZStack(alignment: .topLeading) {
       /// This is full-bleed, full width and height
-      Color.gray.opacity(0.08)
+      Color.gray.opacity(0.07)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
 
       /// This is the trackpad-sized cut-out
