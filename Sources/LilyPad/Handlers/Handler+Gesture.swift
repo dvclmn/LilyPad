@@ -60,9 +60,10 @@ extension GestureHandler {
           break
 
       }
-    } else {
-      print("Couldn't get value for currentTouchPair or initialTouchPair")
     }
+//    else {
+//      print("Couldn't get value for currentTouchPair or initialTouchPair")
+//    }
   }
 
   private mutating func recogniseGesture(touches: [MappedTouchPoint]) throws {
@@ -162,15 +163,15 @@ extension GestureHandler {
     let newPanAmount = currentPanAmount + frameDelta
     self.pan = newPanAmount
     
-    print(
-      """
-      Current pan amount: \(currentPanAmount)
-      
-      Current pair midpoint: \(currentPairMidPoint)
-      Last pair midpoint: \(lastPairMidPoint)
-      
-      Updated pan amount: \(self.pan)
-      """)
+//    print(
+//      """
+//      Current pan amount: \(currentPanAmount)
+//      
+//      Current pair midpoint: \(currentPairMidPoint)
+//      Last pair midpoint: \(lastPairMidPoint)
+//      
+//      Updated pan amount: \(self.pan)
+//      """)
     
   }
   

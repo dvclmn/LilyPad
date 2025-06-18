@@ -1,0 +1,57 @@
+//
+//  Model+MappedBuilder.swift
+//  LilyPad
+//
+//  Created by Dave Coleman on 18/6/2025.
+//
+
+import Foundation
+
+public struct MappedTouchPointsBuilder {
+  public let mappedTouches: [MappedTouchPoint]
+  let mappedSize: CGSize
+  
+  public init(
+    touches: Set<TouchPoint>,
+    in mappingSize: CGSize
+  ) {
+    let mapped = Self.mapTouches(touches, mappingSize: mappingSize)
+    self.mappedTouches = mapped
+    self.mappedSize = mappingSize
+  }
+  
+  public init(
+    touches: [TouchPoint],
+    in mappingSize: CGSize
+  ) {
+    self.init(touches: Set(touches), in: mappingSize)
+  }
+  
+  private static func mapTouches(
+    _ touches: Set<TouchPoint>,
+    mappingSize: CGSize
+  ) -> [MappedTouchPoint] {
+    let mapped: [MappedTouchPoint] = touches.map { touchPoint in
+      let newPosition = touchPoint.position.mapped(to: mappingSize.toCGRectZeroOrigin)
+      return MappedTouchPoint(
+        id: touchPoint.id,
+        phase: touchPoint.phase,
+        position: newPosition,
+        timestamp: touchPoint.timestamp,
+        velocity: touchPoint.velocity,
+        pressure: touchPoint.pressure,
+        mappedSize: mappingSize
+      )
+    }
+    return mapped
+  }
+  
+  public func mappedTouch(withID id: TouchPoint.ID) -> MappedTouchPoint? {
+    guard let touch = mappedTouches.first(where: { $0.id == id }) else {
+      print("Couldn't find TouchPoint matching id: \(id)")
+      return nil
+    }
+    return touch
+  }
+  
+}
