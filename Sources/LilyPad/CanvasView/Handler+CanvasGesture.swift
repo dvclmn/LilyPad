@@ -10,18 +10,21 @@ import SwiftUI
 @Observable
 final class CanvasGestureHandler {
   
-  
+  /// Zoom
   var zoom: CGFloat = 1
-  /// I have switched to using `CGSize`, as this better
-  /// expresses; *offset*. Not an absolute location
-  var pan: CGSize = .zero
-  var rotation: CGFloat = 0
-
-
-  var hoveredPoint: CGPoint?
+  var lastZoomAnchor: UnitPoint?
   let zoomRange: ClosedRange<Double>
+  
+  /// Pan
+  var pan: CGSize = .zero
   var currentPanPhase: PanPhase = .inactive
   var totalPanDistance: CGFloat = 0
+  
+  /// Rotate
+  var rotation: CGFloat = 0
+
+/// Hover
+  var hoveredPoint: CGPoint?
 
   init(zoomRange: ClosedRange<Double> = 0.1...10) {
     self.zoomRange = zoomRange

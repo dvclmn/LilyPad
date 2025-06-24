@@ -13,22 +13,31 @@ public struct CanvasDebugView: View {
   @Bindable var store: CanvasGestureHandler
   public var body: some View {
 
-    Text(
-      """
-      
-      // Zoom //
-      Level: \(store.zoom.toPercentString(within: store.zoomRange.toCGFloatRange))
-      Range: \(store.zoomRange.toCGFloatRange)
-      
-      // Pan //
-      Offset: \(store.pan.displayString)
-      Phase: \(store.pan.displayString)
-      Total Distance: \(store.totalPanDistance)
-      
-      
-      
-      """
-    )
+    Form {
+
+      Section("Zoom") {
+        Text(
+          """
+          Level: \(store.zoom.toPercentString(within: store.zoomRange.toCGFloatRange))
+          Range: \(store.zoomRange.toCGFloatRange)
+          """
+        )
+      }
+
+      Section("Pan") {
+        Text(
+          """
+          Offset: \(store.pan.displayString)
+          Phase: \(store.pan.displayString)
+          Total Distance: \(store.totalPanDistance.displayString)
+          """
+        )
+      }
+    }
+    .formStyle(.grouped)
+    .monospacedDigit()
+    .frame(width: 260, height: 300)
+    .scrollContentBackground(.hidden)
     .background {
       RoundedRectangle(cornerRadius: 8)
         .fill(.regularMaterial)
