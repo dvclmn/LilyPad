@@ -11,7 +11,7 @@ import SwiftUI
 /// The idea here is to provide a view that can Pan and Zoom any View
 public struct CanvasView<Content: View>: View {
 
-  @State private var handler = CanvasGestureHandler()
+  @State private var store = CanvasGestureHandler()
 
   let content: Content
 
@@ -32,14 +32,22 @@ public struct CanvasView<Content: View>: View {
       /// constrained to the trackpad size. Can check it out
       /// with a debug border to see. Just good to know.
       content
-        .scaleEffect(handler.zoom)
+        .scaleEffect(store.zoom)
         .position(proxy.size.midpoint)
-        .offset(handler.pan.toCGSize)
+        .offset(store.pan.toCGSize)
         .rotationEffect(
-          Angle(radians: handler.rotation)
+          Angle(radians: store.rotation)
         )
+      /// This may or may not be correct
+        .allowsHitTesting(false)
+        .animation(.easeOut(duration: 0.1), value: store.pan)
     }  // END geo reader
     .drawingGroup()
+    
+    .onPanGesture { phase in
+      store.handlePanPhase(phase)
+    }
+    .simultaneousGesture(store.zoomGesture(), isEnabled: true)
 
 
   }
