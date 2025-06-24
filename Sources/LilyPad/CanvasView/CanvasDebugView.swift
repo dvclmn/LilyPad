@@ -34,10 +34,18 @@ public struct CanvasDebugView: View {
           """
         )
       }
+      
+      Section("Hover") {
+        Text(
+          """
+          Hovered Point \(store.hoveredPoint?.displayString ?? "nil")
+          """
+        )
+      }
     }
     .formStyle(.grouped)
     .monospacedDigit()
-    .frame(width: 260, height: 300)
+    .frame(width: 260, height: 400)
     .scrollContentBackground(.hidden)
     .background {
       RoundedRectangle(cornerRadius: 8)

@@ -8,21 +8,26 @@
 import BaseHelpers
 import SwiftUI
 
+
 /// The idea here is to provide a view that can Pan and Zoom any View
 public struct CanvasView<Content: View>: View {
+  
+  public typealias CanvasOutput = (_ hoveredPoint: CGPoint?) -> Content
 
   @State private var store: CanvasGestureHandler
 
-//  let zoomRange: ClosedRange<Double>
-  let content: Content
+  let isDragPanEnabled: Bool
+  let content: CanvasOutput
 
   public init(
     zoomRange: ClosedRange<Double>,
-    @ViewBuilder content: @escaping () -> Content,
+    isDragPanEnabled: Bool = false,
+    @ViewBuilder content: @escaping CanvasOutput
   ) {
     self._store = State(initialValue: CanvasGestureHandler(zoomRange: zoomRange))
-//    self.zoomRange = zoomRange
-    self.content = content()
+    //    self.zoomRange = zoomRange
+    self.isDragPanEnabled = isDragPanEnabled
+    self.content = content
   }
 
   public var body: some View {
@@ -35,7 +40,7 @@ public struct CanvasView<Content: View>: View {
       /// Worth noting: this is not 'full-bleed' right here, this is
       /// constrained to the trackpad size. Can check it out
       /// with a debug border to see. Just good to know.
-      content
+      content(store.hoveredPoint)
         .scaleEffect(store.zoom)
         .position(proxy.size.midpoint)
         .offset(store.pan)
@@ -48,13 +53,6 @@ public struct CanvasView<Content: View>: View {
         .allowsHitTesting(false)
         .drawingGroup()
 
-
-      //        .mappedHoverLocation(
-      //          isEnabled: true,
-      //          mappingSize: proxy.size
-      //        ) { point in
-      //          store.hoveredPoint = point
-      //        }
     }  // END geo reader
 
     .onPanGesture { phase in
@@ -67,9 +65,16 @@ public struct CanvasView<Content: View>: View {
     ) { anchor in
       store.lastZoomAnchor = anchor
     }
+    
+    .mappedHoverLocation(
+      isEnabled: true,
+      mappingSize: nil
+    ) { point in
+      store.hoveredPoint = point
+    }
 
     //    #warning("Link this up correctly")
-    .dragItemGesture(isEnabled: true) { dragValue, initialPoint in
+    .dragItemGesture(isEnabled: isDragPanEnabled) { dragValue, initialPoint in
       print("Performing Pan Tool Gesture")
       store.pan.width = initialPoint.x + dragValue.translation.width
       store.pan.height = initialPoint.y + dragValue.translation.height
@@ -79,9 +84,9 @@ public struct CanvasView<Content: View>: View {
         y: initialPoint.y + dragValue.translation.height
       )
     }
-    //    .simultaneousGesture(store.zoomGesture(), isEnabled: true)
     .overlay(alignment: .topLeading) {
       CanvasDebugView(store: store)
+        .allowsHitTesting(false)
     }
 
   }

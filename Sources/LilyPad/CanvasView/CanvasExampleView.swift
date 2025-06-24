@@ -11,7 +11,7 @@ struct CanvasExampleView: View {
 
   var body: some View {
 
-    CanvasView(zoomRange: 0.01...4.0) {
+    CanvasView(zoomRange: 0.01...4.0) { _ in
 
       Circle()
         .fill(Color.red)
