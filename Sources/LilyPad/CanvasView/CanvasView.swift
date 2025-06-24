@@ -8,7 +8,7 @@
 import BaseHelpers
 import SwiftUI
 
-public enum CanvasPhase {
+public enum CanvasPhase: Equatable {
   case isHovering(CGPoint)
   case isDrawing(Set<MappedTouchPoint>)
   case idle
@@ -52,6 +52,10 @@ public struct CanvasView<Content: View>: View {
       /// with a debug border to see. Just good to know.
       ZStack {
         content(currentCanvasPhase)
+          .frame(
+            width: mapStrategy.size(for: proxy.size).width,
+            height: mapStrategy.size(for: proxy.size).height
+          )
           .scaleEffect(store.zoom)
           .position(proxy.size.midpoint)
           .offset(store.pan)
@@ -60,8 +64,9 @@ public struct CanvasView<Content: View>: View {
           )
           .allowsHitTesting(false)
           .drawingGroup()
+        
       } // END zstack
-      .frame(maxWidth: .infinity, maxHeight: .infinity)
+//      .frame(maxWidth: .infinity, maxHeight: .infinity)
       //        .animation(.easeOut(duration: 0.1), value: store.pan)
       .touches(
         mapStrategy: mapStrategy,

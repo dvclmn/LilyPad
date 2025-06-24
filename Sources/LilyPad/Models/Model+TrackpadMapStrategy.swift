@@ -37,7 +37,7 @@ public enum TrackpadMapStrategy {
     Self.trackpadAspectRatio
   }
 
-  func size(for containerSize: CGSize) -> CGSize {
+  public func size(for containerSize: CGSize) -> CGSize {
     switch self {
       case .scaleToFit:
         let widthBased = CGSize(

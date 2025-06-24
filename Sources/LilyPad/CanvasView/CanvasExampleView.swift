@@ -7,39 +7,39 @@
 
 import SwiftUI
 
-struct CanvasExampleView: View {
-
-  var body: some View {
-
-    CanvasView(zoomRange: 0.01...4.0) { _ in
-
-      Circle()
-        .fill(Color.red)
-        .frame(width: 20, height: 20)
-      //            .offset(canvasOffset.toCGSize)
-
-
-    }
-    .background(.blue.quinary)
-    //    .overlay(alignment: .bottom) {
-    //      VStack(alignment: .leading, spacing: 8) {
-    //        Text("Canvas Offset: (\(canvasOffset.x, specifier: "%.1f"), \(canvasOffset.y, specifier: "%.1f"))")
-    //        Text("Current Phase: \(currentPhase)")
-    //        Text("Total Distance: \(totalDistance, specifier: "%.1f")")
-    //      }
-    //      .padding()
-    //      .background(Color.gray.opacity(0.1))
-    //      .cornerRadius(8)
-    //    }
-
-  }
-}
-#if DEBUG
-@available(macOS 15, iOS 18, *)
-#Preview(traits: .size(.normal)) {
-  CanvasExampleView()
-}
-#endif
+//struct CanvasExampleView: View {
+//
+//  var body: some View {
+//
+//    CanvasView(zoomRange: 0.01...4.0) { _ in
+//
+//      Circle()
+//        .fill(Color.red)
+//        .frame(width: 20, height: 20)
+//      //            .offset(canvasOffset.toCGSize)
+//
+//
+//    }
+//    .background(.blue.quinary)
+//    //    .overlay(alignment: .bottom) {
+//    //      VStack(alignment: .leading, spacing: 8) {
+//    //        Text("Canvas Offset: (\(canvasOffset.x, specifier: "%.1f"), \(canvasOffset.y, specifier: "%.1f"))")
+//    //        Text("Current Phase: \(currentPhase)")
+//    //        Text("Total Distance: \(totalDistance, specifier: "%.1f")")
+//    //      }
+//    //      .padding()
+//    //      .background(Color.gray.opacity(0.1))
+//    //      .cornerRadius(8)
+//    //    }
+//
+//  }
+//}
+//#if DEBUG
+//@available(macOS 15, iOS 18, *)
+//#Preview(traits: .size(.normal)) {
+//  CanvasExampleView()
+//}
+//#endif
 
 
 // MARK: - Simple Usage Example
