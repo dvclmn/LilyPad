@@ -9,6 +9,9 @@ import SwiftUI
 
 @Observable
 final class CanvasGestureHandler {
+  
+  var hoveredPoint: CGPoint?
+  
   var zoom: CGFloat = 1
   
   /// I have switched to using `CGSize`, as this better

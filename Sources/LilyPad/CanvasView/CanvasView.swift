@@ -34,33 +34,41 @@ public struct CanvasView<Content: View>: View {
       content
         .scaleEffect(store.zoom)
         .position(proxy.size.midpoint)
-        .offset(store.pan.toCGSize)
+        .offset(store.pan)
         .rotationEffect(
           Angle(radians: store.rotation)
         )
-      /// This may or may not be correct
+        .drawingGroup()
+        /// This may or may not be correct
         .allowsHitTesting(false)
         .animation(.easeOut(duration: 0.1), value: store.pan)
+
+
+        .onPanGesture { phase in
+          store.handlePanPhase(phase)
+        }
+
+        //    #warning("Link this up correctly")
+        .dragItemGesture(isEnabled: true) { dragValue, initialPoint in
+          print("Performing Pan Tool Gesture")
+          store.pan.width = initialPoint.x + dragValue.translation.width
+          store.pan.height = initialPoint.y + dragValue.translation.height
+        } onDragEnded: { dragValue, initialPoint in
+          CGPoint(
+            x: initialPoint.x + dragValue.translation.width,
+            y: initialPoint.y + dragValue.translation.height
+          )
+        }
+
+        .mappedHoverLocation(
+          isEnabled: true,
+          mappingSize: proxy.size
+        ) { point in
+          store.hoveredPoint = point
+        }
     }  // END geo reader
-    .drawingGroup()
-    
-    .onPanGesture { phase in
-      store.handlePanPhase(phase)
-    }
-    
-//    #warning("Link this up correctly")
-    .dragItemGesture(isEnabled: true) { dragValue, initialPoint in
-      print("Performing Pan Tool Gesture")
-      store.pan.x = initialPoint.x + dragValue.translation.width
-      store.pan.y = initialPoint.y + dragValue.translation.height
-    } onDragEnded: { dragValue, initialPoint in
-      CGPoint(
-        x: initialPoint.x + dragValue.translation.width,
-        y: initialPoint.y + dragValue.translation.height
-      )
-    }
-    
-//    .simultaneousGesture(store.zoomGesture(), isEnabled: true)
+
+    //    .simultaneousGesture(store.zoomGesture(), isEnabled: true)
 
 
   }
