@@ -15,7 +15,7 @@ public typealias TouchesModifierOutput = (Set<TouchPoint>) -> Void
 
 public struct TrackpadTouchesModifier: ViewModifier {
   
-  @State private var localMappedTouches: [MappedTouchPoint] = []
+  @State private var localMappedTouches: Set<MappedTouchPoint> = []
 
   let mapStrategy: TrackpadMapStrategy
   let shouldShowIndicators: Bool
@@ -27,15 +27,16 @@ public struct TrackpadTouchesModifier: ViewModifier {
       content
       if shouldShowIndicators {
         TouchIndicatorsView(
-          touches: localMappedTouches,
-          mappingSize: TrackpadTouchesView.trackpadSize,
+          touches: localMappedTouches.toArray,
+          mappingStrategy: mapStrategy,
+//          mappingSize: TrackpadTouchesView.trackpadSize,
           containerSize: proxy.size,
         )
       }
       if shouldShowOverlay {
         TrackpadShapeGuide(
           containerSize: proxy.size,
-          trackpadSize: TrackpadTouchesView.trackpadSize
+          mappingStrategy: mapStrategy
         )
       }
 
@@ -49,7 +50,7 @@ public struct TrackpadTouchesModifier: ViewModifier {
           /// Handle touches for local views
           let mappedTouchBuilder = MappedTouchPointsBuilder(
             touches: touches,
-            in: TrackpadTouchesView.trackpadSize
+            in: mapStrategy.size(for: proxy.size)
           )
           let mapped = mappedTouchBuilder.mappedTouches
           self.localMappedTouches = mapped
@@ -66,7 +67,7 @@ public struct TrackpadTouchesModifier: ViewModifier {
 extension View {
 
   public func touches(
-    mapStrategy: TrackpadMapStrategy = .scaleToFit,
+    mapStrategy: TrackpadMapStrategy,
     showIndicators: Bool = true,
     shouldShowOverlay: Bool = true,
     touchUpdates: @escaping TouchesModifierOutput
@@ -89,7 +90,8 @@ struct TrackpadShapeGuide: View {
   private let rounding: CGFloat = 20
 
   let containerSize: CGSize
-  let trackpadSize: CGSize
+  let mappingStrategy: TrackpadMapStrategy
+//  let trackpadSize: CGSize
   public var body: some View {
 
     ZStack(alignment: .topLeading) {
@@ -108,8 +110,8 @@ struct TrackpadShapeGuide: View {
             .strokeBorder(.gray.opacity(0.06), style: .simple01)
         }
         .frame(
-          width: trackpadSize.width,
-          height: trackpadSize.height
+          width: mappingStrategy.size(for: containerSize).width,
+          height: mappingStrategy.size(for: containerSize).height
         )
         .position(containerSize.midpoint)
 

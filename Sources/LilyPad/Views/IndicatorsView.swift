@@ -13,13 +13,14 @@ import SwiftUI
 public struct TouchIndicatorsView: View {
 
   let touches: [MappedTouchPoint]
-  let mappingSize: CGSize
+  let mappingStrategy: TrackpadMapStrategy
   let containerSize: CGSize
   let indicatorDiameter: CGFloat = 40
 
   public init(
     touches: [MappedTouchPoint],
-    mappingSize: CGSize,
+    mappingStrategy: TrackpadMapStrategy,
+//    mappingSize: CGSize,
     containerSize: CGSize,
   ) {
 //    if isPreview {
@@ -28,7 +29,7 @@ public struct TouchIndicatorsView: View {
 //    } else {
       self.touches = touches
 //    }
-    self.mappingSize = mappingSize
+    self.mappingStrategy = mappingStrategy
     self.containerSize = containerSize
   }
   
@@ -47,8 +48,8 @@ public struct TouchIndicatorsView: View {
       }
       //      .angledLine(between: touches, mappingRect: mappingRect)
       .frame(
-        width: mappingSize.width,
-        height: mappingSize.height
+        width: mappingStrategy.size(for: containerSize).width,
+        height: mappingStrategy.size(for: containerSize).height
       )
       .position(containerSize.midpoint)
     }
@@ -92,6 +93,6 @@ extension TouchIndicatorsView {
   }
 
   func touchPosition(_ touch: MappedTouchPoint) -> CGPoint {
-    touch.position.mapped(to: mappingSize.toCGRectZeroOrigin)
+    touch.position.mapped(to: mappingStrategy.size(for: containerSize).toCGRectZeroOrigin)
   }
 }

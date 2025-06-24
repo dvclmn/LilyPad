@@ -66,3 +66,9 @@ extension Array where Element == MappedTouchPoint {
     return self.map(\.position)
   }
 }
+
+extension Set where Element == MappedTouchPoint {
+  public var cgPoints: [CGPoint] {
+    return self.map(\.position)
+  }
+}

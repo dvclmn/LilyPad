@@ -7,18 +7,22 @@
 
 import SwiftUI
 
-public struct TrackpadFrameSizeModifier: ViewModifier {
-  
-  public func body(content: Content) -> some View {
-    content
-      .frame(
-        width: TrackpadTouchesView.trackpadSize.width,
-        height: TrackpadTouchesView.trackpadSize.height
-      )
-  }
-}
-extension View {
-  public func trackpadFrameSize() -> some View {
-    self.modifier(TrackpadFrameSizeModifier())
-  }
-}
+//public struct TrackpadFrameSizeModifier: ViewModifier {
+//  
+//  let mapStrategy: TrackpadMapStrategy
+//  let containerSize: CGSize
+//  
+//  
+//  public func body(content: Content) -> some View {
+//    content
+//      .frame(
+//        width: mapStrategy.size(for: containerSize).width,
+//        height: mapStrategy.size(for: containerSize).height
+//      )
+//  }
+//}
+//extension View {
+//  public func trackpadFrameSize() -> some View {
+//    self.modifier(TrackpadFrameSizeModifier())
+//  }
+//}

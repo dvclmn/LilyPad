@@ -10,29 +10,33 @@ import SwiftUI
 
 public enum CanvasPhase {
   case isHovering(CGPoint)
-  case isDrawing([MappedTouchPoint])
+  case isDrawing(Set<MappedTouchPoint>)
   case idle
 }
 
 /// The idea here is to provide a view that can Pan and Zoom any View
 public struct CanvasView<Content: View>: View {
-  
+
   public typealias CanvasPhaseOutput = (_ canvasPhase: CanvasPhase) -> Content
 
   @State private var store: CanvasGestureHandler
 
+  let mapStrategy: TrackpadMapStrategy
   let isDrawingEnabled: Bool
   let isDragPanEnabled: Bool
   let content: CanvasPhaseOutput
 
   public init(
+    mapStrategy: TrackpadMapStrategy,
+    isDrawingEnabled: Bool,
     zoomRange: ClosedRange<Double>,
     isDragPanEnabled: Bool = false,
     @ViewBuilder content: @escaping CanvasPhaseOutput
   ) {
     self._store = State(initialValue: CanvasGestureHandler(zoomRange: zoomRange))
-    //    self.zoomRange = zoomRange
+    self.mapStrategy = mapStrategy
     self.isDragPanEnabled = isDragPanEnabled
+    self.isDrawingEnabled = isDrawingEnabled
     self.content = content
   }
 
@@ -46,36 +50,44 @@ public struct CanvasView<Content: View>: View {
       /// Worth noting: this is not 'full-bleed' right here, this is
       /// constrained to the trackpad size. Can check it out
       /// with a debug border to see. Just good to know.
-      content()
-        .scaleEffect(store.zoom)
-        .position(proxy.size.midpoint)
-        .offset(store.pan)
-        .rotationEffect(
-          Angle(radians: store.rotation)
+      ZStack {
+        content(currentCanvasPhase)
+          .scaleEffect(store.zoom)
+          .position(proxy.size.midpoint)
+          .offset(store.pan)
+          .rotationEffect(
+            Angle(radians: store.rotation)
+          )
+          .allowsHitTesting(false)
+          .drawingGroup()
+      } // END zstack
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
+      //        .animation(.easeOut(duration: 0.1), value: store.pan)
+      .touches(
+        mapStrategy: mapStrategy,
+        showIndicators: false,
+        shouldShowOverlay: true
+        //        shouldShowOverlay: store.preferences.isShowingTrackpadOverlay
+      ) { rawTouches in
+        
+        guard isDrawingEnabled else { return }
+        let trackpadMapBuilder = MappedTouchPointsBuilder(
+          touches: rawTouches,
+          in: proxy.size
         )
-        //        .animation(.easeOut(duration: 0.1), value: store.pan)
+//        let trackpadMapBuilder = MappedTouchPointsBuilder(
+//          touches: touches,
+//          in: mapStrategy.size(for: proxy.size)
+//        )
+        let mapped = trackpadMapBuilder.mappedTouches
+        
+              store.mappedTouches = mapped
+        //      handleEventData(mappedTouches)
+      }
 
-        /// This may or may not be correct
-        .allowsHitTesting(false)
-        .drawingGroup()
+      /// This may or may not be correct
 
     }  // END geo reader
-    .touches(
-      showIndicators: false,
-      shouldShowOverlay: false
-      //        shouldShowOverlay: store.preferences.isShowingTrackpadOverlay
-    ) { mappedTouches in
-      
-      guard isDrawingEnabled else { return }
-      let trackpadMapBuilder = MappedTouchPointsBuilder(
-        touches: touches,
-        in: TrackpadTouchesView.trackpadSize
-      )
-      let trackpadMapped = trackpadMapBuilder.mappedTouches
-      
-//      store.mappedTouches = mappedTouches
-//      handleEventData(mappedTouches)
-    }
 
     .onPanGesture { phase in
       store.handlePanPhase(phase)
@@ -87,7 +99,7 @@ public struct CanvasView<Content: View>: View {
     ) { anchor in
       store.lastZoomAnchor = anchor
     }
-    
+
     .mappedHoverLocation(
       isEnabled: true,
       mappingSize: nil
@@ -106,15 +118,30 @@ public struct CanvasView<Content: View>: View {
         y: initialPoint.y + dragValue.translation.height
       )
     }
-//    .overlay(alignment: .topLeading) {
-//      CanvasDebugView(store: store)
-//        .allowsHitTesting(false)
-//    }
+    //    .overlay(alignment: .topLeading) {
+    //      CanvasDebugView(store: store)
+    //        .allowsHitTesting(false)
+    //    }
 
   }
 }
 
 extension CanvasView {
 
+  private var currentCanvasPhase: CanvasPhase {
+    if isDrawingEnabled {
+      return .isDrawing(store.mappedTouches)
+    }
+
+    if let hoverPoint = store.hoveredPoint, !isDragPanEnabled && !isDrawingEnabled {
+      return .isHovering(hoverPoint)
+    }
+
+    return .idle
+
+    //    if isDragPanEnabled {
+    //
+    //    }
+  }
 
 }

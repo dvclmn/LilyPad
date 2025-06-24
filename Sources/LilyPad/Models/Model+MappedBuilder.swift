@@ -8,7 +8,7 @@
 import Foundation
 
 public struct MappedTouchPointsBuilder {
-  public let mappedTouches: [MappedTouchPoint]
+  public let mappedTouches: Set<MappedTouchPoint>
   let mappedSize: CGSize
   
   public init(
@@ -30,7 +30,7 @@ public struct MappedTouchPointsBuilder {
   private static func mapTouches(
     _ touches: Set<TouchPoint>,
     mappingSize: CGSize
-  ) -> [MappedTouchPoint] {
+  ) -> Set<MappedTouchPoint> {
     let mapped: [MappedTouchPoint] = touches.map { touchPoint in
       let newPosition = touchPoint.position.mapped(to: mappingSize.toCGRectZeroOrigin)
       return MappedTouchPoint(
@@ -43,7 +43,7 @@ public struct MappedTouchPointsBuilder {
         mappedSize: mappingSize
       )
     }
-    return mapped
+    return Set(mapped)
   }
   
   public func mappedTouch(withID id: TouchPoint.ID) -> MappedTouchPoint? {

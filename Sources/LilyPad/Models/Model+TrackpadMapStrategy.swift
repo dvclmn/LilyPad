@@ -5,37 +5,38 @@
 //  Created by Dave Coleman on 24/6/2025.
 //
 
-import Foundation
+import SwiftUICore
 
-public enum CustomMapStrategy {
-
-  /// Respect trackpad aspect ratio, scale to fixed width
-  case width(CGFloat)
-  
-  /// Respect trackpad aspect ratio, scale to fixed height
-  case height(CGFloat)
-}
+//public enum CustomMapStrategy {
+//
+//  /// Respect trackpad aspect ratio, scale to fixed width
+//  case width(CGFloat)
+//
+//  /// Respect trackpad aspect ratio, scale to fixed height
+//  case height(CGFloat)
+//}
 
 public enum TrackpadMapStrategy {
-  
+
   /// Fit trackpad within container width and height.
   /// Respects trackpad aspect ratio
-  case scaleToFit(CGSize)
-  
+  case scaleToFit
+
   /// Fill container with trackpad
   /// Respects trackpad aspect ratio.
-  case scaleToFill(CGSize)
-  
+  case scaleToFill
+
   /// Ignore trackpad aspect ratio, stretch
   /// to fill entirety of supplied container size
-  case stretch(CGSize)
-  
-  case custom(CustomMapStrategy)
-  
+  case stretch
+
+  case customFixed(CGFloat, axis: Axis)
+  //  case custom(CustomMapStrategy)
+
   private var aspectRatio: CGFloat {
     Self.trackpadAspectRatio
   }
-  
+
   func size(for containerSize: CGSize) -> CGSize {
     switch self {
       case .scaleToFit:
@@ -43,44 +44,44 @@ public enum TrackpadMapStrategy {
           width: containerSize.width,
           height: containerSize.width * aspectRatio
         )
-        
-        if widthBased.height <= containerSize.height {
-          return widthBased
-        } else {
+
+        guard widthBased.height <= containerSize.height else {
           return CGSize(
             width: containerSize.height / aspectRatio,
             height: containerSize.height
           )
         }
-//        return CGSize(
-//          width: containerSize.width,
-//          height: containerSize.width * aspectRatio
-//        )
-        
+        return widthBased
+
       case .scaleToFill:
         let containerRatio = containerSize.height / containerSize.width
-        if containerRatio > aspectRatio {
-          // Container is taller than trackpad → match height
-          return CGSize(
-            width: containerSize.height / aspectRatio,
-            height: containerSize.height
-          )
-        } else {
-          // Container is wider than trackpad → match width
+        guard containerRatio > aspectRatio else {
+          /// Container is wider than trackpad → match width
           return CGSize(
             width: containerSize.width,
             height: containerSize.width * aspectRatio
           )
         }
-        
+        /// Container is taller than trackpad → match height
+        return CGSize(
+          width: containerSize.height / aspectRatio,
+          height: containerSize.height
+        )
+
       case .stretch:
         return containerSize
-        
-//      case .customWidth(let width):
-//        return CGSize(
-//          width: width,
-//          height: width * aspectRatio
-//        )
+
+      case .customFixed(let length, let axis):
+        switch axis {
+          case .horizontal:
+            let width = length
+            let height = length * aspectRatio
+            return CGSize(width: width, height: height)
+          case .vertical:
+            let height = length
+            let width = length / aspectRatio
+            return CGSize(width: width, height: height)
+        }
     }
   }
 }
@@ -92,6 +93,6 @@ extension TrackpadMapStrategy {
     let height: CGFloat = width * trackpadAspectRatio
     return CGSize(width: width, height: height)
   }
-  
-//  public static generateSize
+
+  //  public static generateSize
 }
