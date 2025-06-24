@@ -29,23 +29,20 @@ public struct TrackpadTouchesModifier: ViewModifier {
 
   public func body(content: Content) -> some View {
     GeometryReader { proxy in
-//      ZStack(alignment: .topLeading) {
-        content
-        if shouldShowIndicators {
-          TouchIndicatorsView(
-            touches: localMappedTouches,
-            mappingSize: TrackpadTouchesView.trackpadSize,
-            containerSize: proxy.size,
-          )
-        }
-        if shouldShowOverlay {
-          TrackpadShapeGuide(
-            containerSize: proxy.size,
-            trackpadSize: TrackpadTouchesView.trackpadSize
-          )
-        }
-//      }
-//      .drawingGroup()
+      content
+      if shouldShowIndicators {
+        TouchIndicatorsView(
+          touches: localMappedTouches,
+          mappingSize: TrackpadTouchesView.trackpadSize,
+          containerSize: proxy.size,
+        )
+      }
+      if shouldShowOverlay {
+        TrackpadShapeGuide(
+          containerSize: proxy.size,
+          trackpadSize: TrackpadTouchesView.trackpadSize
+        )
+      }
 
       TrackpadTouchesView(
         shouldUseVelocity: true
@@ -98,7 +95,7 @@ struct TrackpadShapeGuide: View {
 
     ZStack(alignment: .topLeading) {
       /// This is full-bleed, full width and height
-      Color.gray.opacity(0.07)
+      Color.gray.opacity(0.02)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
 
       /// This is the trackpad-sized cut-out
@@ -109,13 +106,13 @@ struct TrackpadShapeGuide: View {
           /// This just handles the stroke around the trackpad cut-out
           RoundedRectangle(cornerRadius: rounding)
             .fill(.clear)
-            .strokeBorder(.gray.opacity(0.1), style: .simple02)
+            .strokeBorder(.gray.opacity(0.06), style: .simple01)
         }
         .frame(
           width: trackpadSize.width,
           height: trackpadSize.height
         )
-        .position(containerSize.centrePoint)
+        .position(containerSize.midpoint)
 
     }
     .compositingGroup()

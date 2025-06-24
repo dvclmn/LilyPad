@@ -50,7 +50,7 @@ public struct TouchIndicatorsView: View {
         width: mappingSize.width,
         height: mappingSize.height
       )
-      .position(containerSize.centrePoint)
+      .position(containerSize.midpoint)
     }
 
   }
