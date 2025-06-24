@@ -8,21 +8,27 @@
 import BaseHelpers
 import SwiftUI
 
+public enum CanvasPhase {
+  case isHovering(CGPoint)
+  case isDrawing([MappedTouchPoint])
+  case idle
+}
 
 /// The idea here is to provide a view that can Pan and Zoom any View
 public struct CanvasView<Content: View>: View {
   
-  public typealias CanvasOutput = (_ hoveredPoint: CGPoint?) -> Content
+  public typealias CanvasPhaseOutput = (_ canvasPhase: CanvasPhase) -> Content
 
   @State private var store: CanvasGestureHandler
 
+  let isDrawingEnabled: Bool
   let isDragPanEnabled: Bool
-  let content: CanvasOutput
+  let content: CanvasPhaseOutput
 
   public init(
     zoomRange: ClosedRange<Double>,
     isDragPanEnabled: Bool = false,
-    @ViewBuilder content: @escaping CanvasOutput
+    @ViewBuilder content: @escaping CanvasPhaseOutput
   ) {
     self._store = State(initialValue: CanvasGestureHandler(zoomRange: zoomRange))
     //    self.zoomRange = zoomRange
@@ -40,7 +46,7 @@ public struct CanvasView<Content: View>: View {
       /// Worth noting: this is not 'full-bleed' right here, this is
       /// constrained to the trackpad size. Can check it out
       /// with a debug border to see. Just good to know.
-      content(store.hoveredPoint)
+      content()
         .scaleEffect(store.zoom)
         .position(proxy.size.midpoint)
         .offset(store.pan)
@@ -54,6 +60,22 @@ public struct CanvasView<Content: View>: View {
         .drawingGroup()
 
     }  // END geo reader
+    .touches(
+      showIndicators: false,
+      shouldShowOverlay: false
+      //        shouldShowOverlay: store.preferences.isShowingTrackpadOverlay
+    ) { mappedTouches in
+      
+      guard isDrawingEnabled else { return }
+      let trackpadMapBuilder = MappedTouchPointsBuilder(
+        touches: touches,
+        in: TrackpadTouchesView.trackpadSize
+      )
+      let trackpadMapped = trackpadMapBuilder.mappedTouches
+      
+//      store.mappedTouches = mappedTouches
+//      handleEventData(mappedTouches)
+    }
 
     .onPanGesture { phase in
       store.handlePanPhase(phase)
@@ -84,10 +106,10 @@ public struct CanvasView<Content: View>: View {
         y: initialPoint.y + dragValue.translation.height
       )
     }
-    .overlay(alignment: .topLeading) {
-      CanvasDebugView(store: store)
-        .allowsHitTesting(false)
-    }
+//    .overlay(alignment: .topLeading) {
+//      CanvasDebugView(store: store)
+//        .allowsHitTesting(false)
+//    }
 
   }
 }

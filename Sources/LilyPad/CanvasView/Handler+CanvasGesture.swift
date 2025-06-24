@@ -10,6 +10,11 @@ import SwiftUI
 @Observable
 final class CanvasGestureHandler {
 
+  /// Mapped touches
+  var mappedTouches: Set<MappedTouchPoint> = []
+  
+  var canvasPhase: CanvasPhase = .idle
+  
   /// Zoom
   var zoom: CGFloat = 1
   var lastZoomAnchor: UnitPoint?

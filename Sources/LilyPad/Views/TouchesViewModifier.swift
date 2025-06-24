@@ -9,20 +9,15 @@ import BaseComponents
 import BaseHelpers
 import SwiftUI
 
+
+
 public typealias TouchesModifierOutput = (Set<TouchPoint>) -> Void
 
-extension TrackpadTouchesView {
-  public static let trackpadAspectRatio: CGFloat = 10.0 / 16.0
-  public static var trackpadSize: CGSize {
-    let width: CGFloat = 700
-    let height: CGFloat = width * trackpadAspectRatio
-    return CGSize(width: width, height: height)
-  }
-}
-
 public struct TrackpadTouchesModifier: ViewModifier {
+  
   @State private var localMappedTouches: [MappedTouchPoint] = []
 
+  let mapStrategy: TrackpadMapStrategy
   let shouldShowIndicators: Bool
   let shouldShowOverlay: Bool
   let touchUpdates: TouchesModifierOutput
@@ -71,12 +66,14 @@ public struct TrackpadTouchesModifier: ViewModifier {
 extension View {
 
   public func touches(
+    mapStrategy: TrackpadMapStrategy = .scaleToFit,
     showIndicators: Bool = true,
     shouldShowOverlay: Bool = true,
     touchUpdates: @escaping TouchesModifierOutput
   ) -> some View {
     self.modifier(
       TrackpadTouchesModifier(
+        mapStrategy: mapStrategy,
         shouldShowIndicators: showIndicators,
         shouldShowOverlay: shouldShowOverlay,
         touchUpdates: touchUpdates
@@ -84,6 +81,8 @@ extension View {
     )
   }
 }
+
+
 
 
 struct TrackpadShapeGuide: View {
