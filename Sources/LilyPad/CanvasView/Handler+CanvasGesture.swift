@@ -10,21 +10,21 @@ import SwiftUI
 @Observable
 final class CanvasGestureHandler {
   
-  var hoveredPoint: CGPoint?
   
   var zoom: CGFloat = 1
-  
   /// I have switched to using `CGSize`, as this better
   /// expresses; *offset*. Not an absolute location
   var pan: CGSize = .zero
   var rotation: CGFloat = 0
 
-  /// Pan
+
+  var hoveredPoint: CGPoint?
+  let zoomRange: ClosedRange<Double>
   var currentPanPhase: PanPhase = .inactive
-  var totalDistance: CGFloat = 0
+  var totalPanDistance: CGFloat = 0
 
-  init() {
-
+  init(zoomRange: ClosedRange<Double> = 0.1...10) {
+    self.zoomRange = zoomRange
   }
 }
 
@@ -40,7 +40,7 @@ break
 
         /// Track total distance for analytics/gesture recognition
         let distance = sqrt(delta.x * delta.x + delta.y * delta.y)
-        totalDistance += distance
+        totalPanDistance += distance
 
       case .ended(let finalDelta):
         /// Apply final delta

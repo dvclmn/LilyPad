@@ -12,17 +12,15 @@ struct CanvasExampleView: View {
   var body: some View {
 
     CanvasView(zoomRange: 0.01...4.0) {
-      Rectangle()
-        .fill(Color.blue.opacity(0.1))
 
-        .overlay(
-          Circle()
-            .fill(Color.red)
-            .frame(width: 20, height: 20)
-            //            .offset(canvasOffset.toCGSize)
-        )
+      Circle()
+        .fill(Color.red)
+        .frame(width: 20, height: 20)
+      //            .offset(canvasOffset.toCGSize)
+
 
     }
+    .background(.blue.quinary)
     //    .overlay(alignment: .bottom) {
     //      VStack(alignment: .leading, spacing: 8) {
     //        Text("Canvas Offset: (\(canvasOffset.x, specifier: "%.1f"), \(canvasOffset.y, specifier: "%.1f"))")

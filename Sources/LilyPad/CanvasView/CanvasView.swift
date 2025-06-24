@@ -11,16 +11,17 @@ import SwiftUI
 /// The idea here is to provide a view that can Pan and Zoom any View
 public struct CanvasView<Content: View>: View {
 
-  @State private var store = CanvasGestureHandler()
+  @State private var store: CanvasGestureHandler
 
-  let zoomRange: ClosedRange<Double>
+//  let zoomRange: ClosedRange<Double>
   let content: Content
 
   public init(
     zoomRange: ClosedRange<Double>,
     @ViewBuilder content: @escaping () -> Content,
   ) {
-    self.zoomRange = zoomRange
+    self._store = State(initialValue: CanvasGestureHandler(zoomRange: zoomRange))
+//    self.zoomRange = zoomRange
     self.content = content()
   }
 
@@ -62,7 +63,7 @@ public struct CanvasView<Content: View>: View {
     .onZoomGesture(
       zoom: $store.zoom,
       pan: $store.pan,
-      zoomRange: zoomRange
+      zoomRange: store.zoomRange
     )
 
     //    #warning("Link this up correctly")
@@ -77,7 +78,9 @@ public struct CanvasView<Content: View>: View {
       )
     }
     //    .simultaneousGesture(store.zoomGesture(), isEnabled: true)
-
+    .overlay(alignment: .topLeading) {
+      CanvasDebugView(store: store)
+    }
 
   }
 }
