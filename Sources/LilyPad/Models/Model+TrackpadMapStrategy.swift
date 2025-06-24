@@ -7,11 +7,30 @@
 
 import Foundation
 
+public enum CustomMapStrategy {
+
+  /// Respect trackpad aspect ratio, scale to fixed width
+  case width(CGFloat)
+  
+  /// Respect trackpad aspect ratio, scale to fixed height
+  case height(CGFloat)
+}
+
 public enum TrackpadMapStrategy {
-  case scaleToFit
-  case scaleToFill
-  case stretch
-  case customWidth(CGFloat)
+  
+  /// Fit trackpad within container width and height.
+  /// Respects trackpad aspect ratio
+  case scaleToFit(CGSize)
+  
+  /// Fill container with trackpad
+  /// Respects trackpad aspect ratio.
+  case scaleToFill(CGSize)
+  
+  /// Ignore trackpad aspect ratio, stretch
+  /// to fill entirety of supplied container size
+  case stretch(CGSize)
+  
+  case custom(CustomMapStrategy)
   
   private var aspectRatio: CGFloat {
     Self.trackpadAspectRatio
@@ -20,16 +39,48 @@ public enum TrackpadMapStrategy {
   func size(for containerSize: CGSize) -> CGSize {
     switch self {
       case .scaleToFit:
-        return CGSize(
+        let widthBased = CGSize(
           width: containerSize.width,
           height: containerSize.width * aspectRatio
         )
+        
+        if widthBased.height <= containerSize.height {
+          return widthBased
+        } else {
+          return CGSize(
+            width: containerSize.height / aspectRatio,
+            height: containerSize.height
+          )
+        }
+//        return CGSize(
+//          width: containerSize.width,
+//          height: containerSize.width * aspectRatio
+//        )
+        
       case .scaleToFill:
-        <#code#>
+        let containerRatio = containerSize.height / containerSize.width
+        if containerRatio > aspectRatio {
+          // Container is taller than trackpad → match height
+          return CGSize(
+            width: containerSize.height / aspectRatio,
+            height: containerSize.height
+          )
+        } else {
+          // Container is wider than trackpad → match width
+          return CGSize(
+            width: containerSize.width,
+            height: containerSize.width * aspectRatio
+          )
+        }
+        
       case .stretch:
-        <#code#>
-      case .customWidth(let width):
-        <#code#>
+        return containerSize
+        
+//      case .customWidth(let width):
+//        return CGSize(
+//          width: width,
+//          height: width * aspectRatio
+//        )
     }
   }
 }
