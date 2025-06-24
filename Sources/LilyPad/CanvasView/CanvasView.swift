@@ -8,37 +8,37 @@
 import BaseHelpers
 import SwiftUI
 
-//public enum CanvasPhase: Equatable {
-//  case isHovering(CGPoint)
-////  case isDrawing(Set<MappedTouchPoint>)
-//  case idle
-//}
+public enum CanvasPhase: Equatable {
+  case isHovering(CGPoint)
+  //  case isDrawing(Set<MappedTouchPoint>)
+  case idle
+}
 
 /// The idea here is to provide a view that can Pan and Zoom any View
 public struct CanvasView<Content: View>: View {
 
-  public typealias CanvasPhaseOutput = (_ hoverPoint: CGPoint?) -> Content
-//  public typealias CanvasPhaseOutput = (_ canvasPhase: CanvasPhase) -> Content
+  public typealias CanvasOutput = (_ hoverPoint: CGPoint?) -> Void
+//  public typealias CanvasOutput = (_ hoverPoint: CGPoint?, _ touches: Set<TouchPoint>) -> Void
 
   @State private var store: CanvasGestureHandler
 
   let mapStrategy: TrackpadMapStrategy
-//  let isDrawingEnabled: Bool
   let isDragPanEnabled: Bool
-  let content: CanvasPhaseOutput
+  let canvasOutput: CanvasOutput
+  let content: Content
 
   public init(
     mapStrategy: TrackpadMapStrategy,
-//    isDrawingEnabled: Bool,
     zoomRange: ClosedRange<Double>,
     isDragPanEnabled: Bool = false,
-    @ViewBuilder content: @escaping CanvasPhaseOutput
+    canvasOutput: @escaping CanvasOutput,
+    @ViewBuilder content: @escaping () -> Content
   ) {
     self._store = State(initialValue: CanvasGestureHandler(zoomRange: zoomRange))
     self.mapStrategy = mapStrategy
     self.isDragPanEnabled = isDragPanEnabled
-//    self.isDrawingEnabled = isDrawingEnabled
-    self.content = content
+    self.canvasOutput = canvasOutput
+    self.content = content()
   }
 
   public var body: some View {
@@ -52,7 +52,7 @@ public struct CanvasView<Content: View>: View {
       /// constrained to the trackpad size. Can check it out
       /// with a debug border to see. Just good to know.
       ZStack {
-        content(store.hoveredPoint)
+        content
           .frame(
             width: mapStrategy.size(for: proxy.size).width,
             height: mapStrategy.size(for: proxy.size).height
@@ -65,37 +65,19 @@ public struct CanvasView<Content: View>: View {
           )
           .allowsHitTesting(false)
           .drawingGroup()
-        
-      } // END zstack
-//      .frame(maxWidth: .infinity, maxHeight: .infinity)
-      //        .animation(.easeOut(duration: 0.1), value: store.pan)
-//      .touches(
-//        mapStrategy: mapStrategy,
-//        showIndicators: false,
-//        shouldShowOverlay: true
-//        //        shouldShowOverlay: store.preferences.isShowingTrackpadOverlay
-//      ) { rawTouches in
-//        
-//        guard isDrawingEnabled else { return }
-//        
-//        print("Did we get past the drawing mode guard?")
-//        let trackpadMapBuilder = MappedTouchPointsBuilder(
-//          touches: rawTouches,
-//          in: proxy.size
-//        )
-////        let trackpadMapBuilder = MappedTouchPointsBuilder(
-////          touches: touches,
-////          in: mapStrategy.size(for: proxy.size)
-////        )
-//        let mapped = trackpadMapBuilder.mappedTouches
-//        
-//              store.mappedTouches = mapped
-//        //      handleEventData(mappedTouches)
-//      }
 
-      /// This may or may not be correct
-
+      }  // END zstack
     }  // END geo reader
+
+//    .touches(
+//      mapStrategy: mapStrategy,
+//      showIndicators: false,
+//      shouldShowOverlay: true
+//        //      shouldShowOverlay: store.preferences.isShowingTrackpadOverlay
+//    ) { rawTouches in
+//      store.rawTouches = rawTouches
+//      //      handleDrawingTouches(rawTouches)
+//    }
 
     .onPanGesture { phase in
       store.handlePanPhase(phase)
@@ -115,16 +97,18 @@ public struct CanvasView<Content: View>: View {
       store.hoveredPoint = point
     }
 
-    .dragItemGesture(isEnabled: isDragPanEnabled) { dragValue, initialPoint in
-      print("Performing Pan Tool Gesture")
-      store.pan.width = initialPoint.x + dragValue.translation.width
-      store.pan.height = initialPoint.y + dragValue.translation.height
-    } onDragEnded: { dragValue, initialPoint in
-      CGPoint(
-        x: initialPoint.x + dragValue.translation.width,
-        y: initialPoint.y + dragValue.translation.height
-      )
-    }
+//    .dragItemGesture(isEnabled: isDragPanEnabled) { dragValue, initialPoint in
+//      print("Performing Pan Tool Gesture")
+//      store.pan.width = initialPoint.x + dragValue.translation.width
+//      store.pan.height = initialPoint.y + dragValue.translation.height
+//    } onDragEnded: { dragValue, initialPoint in
+//      CGPoint(
+//        x: initialPoint.x + dragValue.translation.width,
+//        y: initialPoint.y + dragValue.translation.height
+//      )
+//    }
+    
+    #warning("Turn dragItemGesture back on, for panning tool")
     //    .overlay(alignment: .topLeading) {
     //      CanvasDebugView(store: store)
     //        .allowsHitTesting(false)
@@ -135,13 +119,13 @@ public struct CanvasView<Content: View>: View {
 
 extension CanvasView {
 
-//  private var currentCanvasPhase: CanvasPhase {
-//    if let hoverPoint = store.hoveredPoint, !isDragPanEnabled {
-//      return .isHovering(hoverPoint)
-//    } else {
-//      return .idle
-//    }
+  //  private var currentCanvasPhase: CanvasPhase {
+  //    if let hoverPoint = store.hoveredPoint, !isDragPanEnabled {
+  //      return .isHovering(hoverPoint)
+  //    } else {
+  //      return .idle
+  //    }
 
-//  }
+  //  }
 
 }
