@@ -10,7 +10,10 @@ import SwiftUI
 @Observable
 final class CanvasGestureHandler {
   var zoom: CGFloat = 1
-  var pan: CGPoint = .zero
+  
+  /// I have switched to using `CGSize`, as this better
+  /// expresses; *offset*. Not an absolute location
+  var pan: CGSize = .zero
   var rotation: CGFloat = 0
 
   /// Pan
@@ -29,8 +32,8 @@ extension CanvasGestureHandler {
 break
       case .active(let delta):
         /// Apply delta to canvas offset for real-time panning
-        pan.x += delta.x
-        pan.y += delta.y
+        pan.width += delta.x
+        pan.height += delta.y
 
         /// Track total distance for analytics/gesture recognition
         let distance = sqrt(delta.x * delta.x + delta.y * delta.y)
@@ -38,8 +41,8 @@ break
 
       case .ended(let finalDelta):
         /// Apply final delta
-        pan.x += finalDelta.x
-        pan.y += finalDelta.y
+        pan.width += finalDelta.x
+        pan.height += finalDelta.y
 
         /// Could add momentum/deceleration here
         print("Pan gesture ended. Total distance: \(totalDistance)")

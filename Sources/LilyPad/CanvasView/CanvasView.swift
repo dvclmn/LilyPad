@@ -47,7 +47,20 @@ public struct CanvasView<Content: View>: View {
     .onPanGesture { phase in
       store.handlePanPhase(phase)
     }
-    .simultaneousGesture(store.zoomGesture(), isEnabled: true)
+    
+//    #warning("Link this up correctly")
+    .dragItemGesture(isEnabled: true) { dragValue, initialPoint in
+      print("Performing Pan Tool Gesture")
+      store.pan.x = initialPoint.x + dragValue.translation.width
+      store.pan.y = initialPoint.y + dragValue.translation.height
+    } onDragEnded: { dragValue, initialPoint in
+      CGPoint(
+        x: initialPoint.x + dragValue.translation.width,
+        y: initialPoint.y + dragValue.translation.height
+      )
+    }
+    
+//    .simultaneousGesture(store.zoomGesture(), isEnabled: true)
 
 
   }
