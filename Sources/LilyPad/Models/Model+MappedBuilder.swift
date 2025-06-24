@@ -21,8 +21,8 @@ public struct MappedTouchPointsBuilder {
   }
   
   public init(
-    touches: [TouchPoint],
-    in mappingSize: CGSize
+    touches: Set<TouchPoint>,
+    mappedTo mappingSize: CGSize
   ) {
     self.init(touches: Set(touches), in: mappingSize)
   }

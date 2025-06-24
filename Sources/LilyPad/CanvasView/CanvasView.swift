@@ -68,27 +68,29 @@ public struct CanvasView<Content: View>: View {
       } // END zstack
 //      .frame(maxWidth: .infinity, maxHeight: .infinity)
       //        .animation(.easeOut(duration: 0.1), value: store.pan)
-      .touches(
-        mapStrategy: mapStrategy,
-        showIndicators: false,
-        shouldShowOverlay: true
-        //        shouldShowOverlay: store.preferences.isShowingTrackpadOverlay
-      ) { rawTouches in
-        
-        guard isDrawingEnabled else { return }
-        let trackpadMapBuilder = MappedTouchPointsBuilder(
-          touches: rawTouches,
-          in: proxy.size
-        )
+//      .touches(
+//        mapStrategy: mapStrategy,
+//        showIndicators: false,
+//        shouldShowOverlay: true
+//        //        shouldShowOverlay: store.preferences.isShowingTrackpadOverlay
+//      ) { rawTouches in
+//        
+//        guard isDrawingEnabled else { return }
+//        
+//        print("Did we get past the drawing mode guard?")
 //        let trackpadMapBuilder = MappedTouchPointsBuilder(
-//          touches: touches,
-//          in: mapStrategy.size(for: proxy.size)
+//          touches: rawTouches,
+//          in: proxy.size
 //        )
-        let mapped = trackpadMapBuilder.mappedTouches
-        
-              store.mappedTouches = mapped
-        //      handleEventData(mappedTouches)
-      }
+////        let trackpadMapBuilder = MappedTouchPointsBuilder(
+////          touches: touches,
+////          in: mapStrategy.size(for: proxy.size)
+////        )
+//        let mapped = trackpadMapBuilder.mappedTouches
+//        
+//              store.mappedTouches = mapped
+//        //      handleEventData(mappedTouches)
+//      }
 
       /// This may or may not be correct
 
