@@ -64,7 +64,9 @@ public struct CanvasView<Content: View>: View {
       zoom: $store.zoom,
       pan: $store.pan,
       zoomRange: store.zoomRange
-    )
+    ) { anchor in
+      store.lastZoomAnchor = anchor
+    }
 
     //    #warning("Link this up correctly")
     .dragItemGesture(isEnabled: true) { dragValue, initialPoint in

@@ -20,6 +20,7 @@ public struct CanvasDebugView: View {
           """
           Level: \(store.zoom.toPercentString(within: store.zoomRange.toCGFloatRange))
           Range: \(store.zoomRange.toCGFloatRange)
+          Start Anchor: \(store.lastZoomAnchor?.displayString ?? "nil")
           """
         )
       }

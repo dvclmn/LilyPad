@@ -8,6 +8,8 @@
 import BaseHelpers
 import SwiftUI
 
+public typealias StartAnchorUpdate = (_ startAnchor: UnitPoint) -> Void
+
 public struct ZoomViewModifier: ViewModifier {
 
   @State private var ratioTracker: RatioTracker
@@ -16,14 +18,17 @@ public struct ZoomViewModifier: ViewModifier {
 
   @Binding var zoom: CGFloat
   @Binding var pan: CGSize
+  let didUpdateZoom: StartAnchorUpdate
 
   public init(
     zoom: Binding<CGFloat>,
     pan: Binding<CGSize>,
     zoomRange: ClosedRange<Double>,
+    didUpdateZoom: @escaping StartAnchorUpdate
   ) {
     self._zoom = zoom
     self._pan = pan
+    self.didUpdateZoom = didUpdateZoom
     
     let tracker = RatioTracker(range: zoomRange)
     self._ratioTracker = State(initialValue: tracker)
@@ -44,6 +49,7 @@ extension ZoomViewModifier {
       }
       .updating($zoomGestureAnchor) { value, state, _ in
         state = value.startAnchor
+        didUpdateZoom(value.startAnchor)
       }
       .onChanged { value in
         let scale = ratioTracker.ratio(from: value.magnification)
@@ -80,12 +86,14 @@ extension View {
     zoom: Binding<CGFloat>,
     pan: Binding<CGSize>,
     zoomRange: ClosedRange<Double>,
+    didUpdateZoom: @escaping StartAnchorUpdate = { _ in }
   ) -> some View {
     self.modifier(
       ZoomViewModifier(
         zoom: zoom,
         pan: pan,
-        zoomRange: zoomRange
+        zoomRange: zoomRange,
+        didUpdateZoom: didUpdateZoom
       )
     )
   }

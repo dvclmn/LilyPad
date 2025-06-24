@@ -9,21 +9,21 @@ import SwiftUI
 
 @Observable
 final class CanvasGestureHandler {
-  
+
   /// Zoom
   var zoom: CGFloat = 1
   var lastZoomAnchor: UnitPoint?
   let zoomRange: ClosedRange<Double>
-  
+
   /// Pan
   var pan: CGSize = .zero
   var currentPanPhase: PanPhase = .inactive
   var totalPanDistance: CGFloat = 0
-  
+
   /// Rotate
   var rotation: CGFloat = 0
 
-/// Hover
+  /// Hover
   var hoveredPoint: CGPoint?
 
   init(zoomRange: ClosedRange<Double> = 0.1...10) {
@@ -35,7 +35,7 @@ extension CanvasGestureHandler {
   func handlePanPhase(_ phase: PanPhase) {
     switch phase {
       case .inactive:
-break
+        break
       case .active(let delta):
         /// Apply delta to canvas offset for real-time panning
         pan.width += delta.x
@@ -50,14 +50,14 @@ break
         pan.width += finalDelta.x
         pan.height += finalDelta.y
 
-        /// Could add momentum/deceleration here
-//        print("Pan gesture ended. Total distance: \(totalDistance)")
+      /// Could add momentum/deceleration here
+      //        print("Pan gesture ended. Total distance: \(totalDistance)")
 
       case .cancelled:
         /// Could revert to previous state or handle cancellation
         print("Pan gesture cancelled")
     }
   }
-  
-  
+
+
 }
