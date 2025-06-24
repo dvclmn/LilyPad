@@ -38,10 +38,11 @@ public struct CanvasView<Content: View>: View {
         .rotationEffect(
           Angle(radians: store.rotation)
         )
-        .drawingGroup()
+        //        .animation(.easeOut(duration: 0.1), value: store.pan)
+
         /// This may or may not be correct
         .allowsHitTesting(false)
-        .animation(.easeOut(duration: 0.1), value: store.pan)
+        .drawingGroup()
 
 
         .onPanGesture { phase in

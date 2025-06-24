@@ -48,7 +48,7 @@ break
         pan.height += finalDelta.y
 
         /// Could add momentum/deceleration here
-        print("Pan gesture ended. Total distance: \(totalDistance)")
+//        print("Pan gesture ended. Total distance: \(totalDistance)")
 
       case .cancelled:
         /// Could revert to previous state or handle cancellation
