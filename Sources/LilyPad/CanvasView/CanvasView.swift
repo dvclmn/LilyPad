@@ -10,7 +10,7 @@ import SwiftUI
 
 public enum CanvasPhase: Equatable {
   case isHovering(CGPoint)
-  case isDrawing(Set<MappedTouchPoint>)
+//  case isDrawing(Set<MappedTouchPoint>)
   case idle
 }
 
@@ -22,13 +22,13 @@ public struct CanvasView<Content: View>: View {
   @State private var store: CanvasGestureHandler
 
   let mapStrategy: TrackpadMapStrategy
-  let isDrawingEnabled: Bool
+//  let isDrawingEnabled: Bool
   let isDragPanEnabled: Bool
   let content: CanvasPhaseOutput
 
   public init(
     mapStrategy: TrackpadMapStrategy,
-    isDrawingEnabled: Bool,
+//    isDrawingEnabled: Bool,
     zoomRange: ClosedRange<Double>,
     isDragPanEnabled: Bool = false,
     @ViewBuilder content: @escaping CanvasPhaseOutput
@@ -36,7 +36,7 @@ public struct CanvasView<Content: View>: View {
     self._store = State(initialValue: CanvasGestureHandler(zoomRange: zoomRange))
     self.mapStrategy = mapStrategy
     self.isDragPanEnabled = isDragPanEnabled
-    self.isDrawingEnabled = isDrawingEnabled
+//    self.isDrawingEnabled = isDrawingEnabled
     self.content = content
   }
 
@@ -114,7 +114,6 @@ public struct CanvasView<Content: View>: View {
       store.hoveredPoint = point
     }
 
-    //    #warning("Link this up correctly")
     .dragItemGesture(isEnabled: isDragPanEnabled) { dragValue, initialPoint in
       print("Performing Pan Tool Gesture")
       store.pan.width = initialPoint.x + dragValue.translation.width
@@ -136,19 +135,12 @@ public struct CanvasView<Content: View>: View {
 extension CanvasView {
 
   private var currentCanvasPhase: CanvasPhase {
-    if isDrawingEnabled {
-      return .isDrawing(store.mappedTouches)
-    }
-
-    if let hoverPoint = store.hoveredPoint, !isDragPanEnabled && !isDrawingEnabled {
+    if let hoverPoint = store.hoveredPoint, !isDragPanEnabled {
       return .isHovering(hoverPoint)
+    } else {
+      return .idle
     }
 
-    return .idle
-
-    //    if isDragPanEnabled {
-    //
-    //    }
   }
 
 }
