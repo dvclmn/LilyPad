@@ -9,17 +9,6 @@
 import SwiftUI
 import BaseHelpers
 
-
-
-// MARK: - Pan Phase Enum with Associated Values
-public enum PanPhase {
-  case inactive
-  case active(delta: CGPoint)
-  case ended(finalDelta: CGPoint)
-  case cancelled
-}
-
-// MARK: - View Modifier for Pan Gestures
 public struct PanGestureModifier: ViewModifier {
   let action: (PanPhase) -> Void
 
@@ -33,8 +22,6 @@ public struct PanGestureModifier: ViewModifier {
     }
   }
 }
-
-// MARK: - SwiftUI Extension
 extension View {
   public func onPanGesture(_ action: @escaping (PanPhase) -> Void) -> some View {
     modifier(PanGestureModifier(action: action))
@@ -42,14 +29,17 @@ extension View {
 }
 
 
-
-// MARK: - Advanced Usage Example
-struct DrawingCanvasView: View {
+public struct DrawingCanvasView: View {
   @State private var canvasOffset: CGPoint = .zero
   @State private var currentPhase: String = "Inactive"
   @State private var totalDistance: CGFloat = 0
 
-  var body: some View {
+  public init() {
+//    self.canvasOffset = canvasOffset
+//    self.currentPhase = currentPhase
+//    self.totalDistance = totalDistance
+  }
+  public var body: some View {
     VStack {
       Text("SwiftUI-Style Pan Gesture API")
         .font(.title)
@@ -65,6 +55,7 @@ struct DrawingCanvasView: View {
             .frame(width: 20, height: 20)
             .offset(canvasOffset.toCGSize)
             .animation(.easeOut(duration: 0.1), value: canvasOffset)
+            .allowsHitTesting(false)
         )
         .onPanGesture { phase in
           handlePanPhase(phase)
@@ -116,10 +107,11 @@ struct DrawingCanvasView: View {
 }
 
 // MARK: - Simple Usage Example
-struct SimpleUsageExample: View {
+public struct SimpleUsageExample: View {
   @State private var panInfo = "No pan gesture"
 
-  var body: some View {
+  public init() {}
+  public var body: some View {
     Rectangle()
       .fill(Color.green.opacity(0.3))
       .frame(width: 200, height: 150)
