@@ -13,16 +13,19 @@ public struct CanvasView<Content: View>: View {
 
   @State private var store = CanvasGestureHandler()
 
+  let zoomRange: ClosedRange<Double>
   let content: Content
 
   public init(
-    @ViewBuilder content: @escaping () -> Content
+    zoomRange: ClosedRange<Double>,
+    @ViewBuilder content: @escaping () -> Content,
   ) {
+    self.zoomRange = zoomRange
     self.content = content()
   }
 
   public var body: some View {
-
+    @Bindable var store = store
     /// This reader should cover the entirety of the 'drawing'
     /// or active Canvas area of the app. But not the UI portion,
     /// such as any sidebars or Inspectors, or even InfoBar etc.
@@ -45,30 +48,34 @@ public struct CanvasView<Content: View>: View {
         .drawingGroup()
 
 
-        .onPanGesture { phase in
-          store.handlePanPhase(phase)
-        }
-
-        //    #warning("Link this up correctly")
-        .dragItemGesture(isEnabled: true) { dragValue, initialPoint in
-          print("Performing Pan Tool Gesture")
-          store.pan.width = initialPoint.x + dragValue.translation.width
-          store.pan.height = initialPoint.y + dragValue.translation.height
-        } onDragEnded: { dragValue, initialPoint in
-          CGPoint(
-            x: initialPoint.x + dragValue.translation.width,
-            y: initialPoint.y + dragValue.translation.height
-          )
-        }
-
-        .mappedHoverLocation(
-          isEnabled: true,
-          mappingSize: proxy.size
-        ) { point in
-          store.hoveredPoint = point
-        }
+      //        .mappedHoverLocation(
+      //          isEnabled: true,
+      //          mappingSize: proxy.size
+      //        ) { point in
+      //          store.hoveredPoint = point
+      //        }
     }  // END geo reader
 
+    .onPanGesture { phase in
+      store.handlePanPhase(phase)
+    }
+    .onZoomGesture(
+      zoom: $store.zoom,
+      pan: $store.pan,
+      zoomRange: zoomRange
+    )
+
+    //    #warning("Link this up correctly")
+    .dragItemGesture(isEnabled: true) { dragValue, initialPoint in
+      print("Performing Pan Tool Gesture")
+      store.pan.width = initialPoint.x + dragValue.translation.width
+      store.pan.height = initialPoint.y + dragValue.translation.height
+    } onDragEnded: { dragValue, initialPoint in
+      CGPoint(
+        x: initialPoint.x + dragValue.translation.width,
+        y: initialPoint.y + dragValue.translation.height
+      )
+    }
     //    .simultaneousGesture(store.zoomGesture(), isEnabled: true)
 
 

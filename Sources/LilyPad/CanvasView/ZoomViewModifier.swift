@@ -15,11 +15,11 @@ public struct ZoomViewModifier: ViewModifier {
   @GestureState private var zoomGestureAnchor: UnitPoint = .center
 
   @Binding var zoom: CGFloat
-  @Binding var pan: CGPoint
+  @Binding var pan: CGSize
 
   public init(
     zoom: Binding<CGFloat>,
-    pan: Binding<CGPoint>,
+    pan: Binding<CGSize>,
     zoomRange: ClosedRange<Double>,
   ) {
     self._zoom = zoom
@@ -56,14 +56,14 @@ extension ZoomViewModifier {
 
         /// Position of anchor in canvas space before zooming
         let anchorCanvasPositionBefore = CGPoint(
-          x: (anchorPoint.x - pan.x) / zoom,
-          y: (anchorPoint.y - pan.y) / zoom
+          x: (anchorPoint.x - pan.width) / zoom,
+          y: (anchorPoint.y - pan.height) / zoom
         )
 
         /// New pan that keeps that canvas point under anchorPoint
-        let newPan = CGPoint(
-          x: anchorPoint.x - anchorCanvasPositionBefore.x * newZoom,
-          y: anchorPoint.y - anchorCanvasPositionBefore.y * newZoom
+        let newPan = CGSize(
+          width: anchorPoint.x - anchorCanvasPositionBefore.x * newZoom,
+          height: anchorPoint.y - anchorCanvasPositionBefore.y * newZoom
         )
 
         zoom = newZoom
@@ -76,9 +76,9 @@ extension ZoomViewModifier {
 
 }
 extension View {
-  public func zoomView(
+  public func onZoomGesture(
     zoom: Binding<CGFloat>,
-    pan: Binding<CGPoint>,
+    pan: Binding<CGSize>,
     zoomRange: ClosedRange<Double>,
   ) -> some View {
     self.modifier(

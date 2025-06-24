@@ -11,7 +11,7 @@ struct CanvasExampleView: View {
 
   var body: some View {
 
-    CanvasView {
+    CanvasView(zoomRange: 0.01...4.0) {
       Rectangle()
         .fill(Color.blue.opacity(0.1))
 
