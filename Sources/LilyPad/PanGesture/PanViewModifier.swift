@@ -5,7 +5,6 @@
 //  Created by Dave Coleman on 24/6/2025.
 //
 
-//import AppKit
 import SwiftUI
 import BaseHelpers
 
@@ -29,7 +28,7 @@ extension View {
 }
 
 
-public struct DrawingCanvasView: View {
+public struct CanvasExampleView: View {
   @State private var canvasOffset: CGPoint = .zero
   @State private var currentPhase: String = "Inactive"
   @State private var totalDistance: CGFloat = 0
@@ -95,12 +94,12 @@ public struct DrawingCanvasView: View {
         canvasOffset.x += finalDelta.x
         canvasOffset.y += finalDelta.y
 
-        // Could add momentum/deceleration here
+        /// Could add momentum/deceleration here
         print("Pan gesture ended. Total distance: \(totalDistance)")
 
       case .cancelled:
         currentPhase = "Cancelled"
-        // Could revert to previous state or handle cancellation
+        /// Could revert to previous state or handle cancellation
         print("Pan gesture cancelled")
     }
   }
@@ -133,187 +132,3 @@ public struct SimpleUsageExample: View {
       )
   }
 }
-
-// MARK: - Demo App
-//struct ContentView: View {
-//  var body: some View {
-//    TabView {
-//      DrawingCanvasView()
-//        .tabItem {
-//          Label("Advanced", systemImage: "paintbrush")
-//        }
-//
-//      SimpleUsageExample()
-//        .tabItem {
-//          Label("Simple", systemImage: "hand.tap")
-//        }
-//    }
-//  }
-//}
-
-
-//
-//// MARK: - SwiftUI Representable
-//struct PanGestureView: NSViewRepresentable {
-//  let onPanGesture: (CGPoint, NSEvent.Phase) -> Void
-//
-//  func makeNSView(context: Context) -> PanTrackingView {
-//    let view = PanTrackingView()
-//    view.onPanGesture = onPanGesture
-//    return view
-//  }
-//
-//  func updateNSView(_ nsView: PanTrackingView, context: Context) {
-//    nsView.onPanGesture = onPanGesture
-//  }
-//}
-//
-//// MARK: - Custom NSView for Pan Tracking
-//class PanTrackingView: NSView {
-//  var onPanGesture: ((CGPoint, NSEvent.Phase) -> Void)?
-//
-//  override init(frame frameRect: NSRect) {
-//    super.init(frame: frameRect)
-//    setupView()
-//  }
-//
-//  required init?(coder: NSCoder) {
-//    super.init(coder: coder)
-//    setupView()
-//  }
-//
-//  private func setupView() {
-//    // Accept first responder to receive scroll events
-////    wantsLayer = true
-////    layer?.backgroundColor = NSColor.controlBackgroundColor.cgColor
-//  }
-//
-//  override var acceptsFirstResponder: Bool {
-//    return true
-//  }
-//
-//  override func viewDidMoveToWindow() {
-//    super.viewDidMoveToWindow()
-//    // Ensure we can become first responder
-//    window?.makeFirstResponder(self)
-//  }
-//
-//  // MARK: - Two-Finger Pan via ScrollWheel
-//  override func scrollWheel(with event: NSEvent) {
-//    // Filter for trackpad events (two-finger gestures)
-//    guard event.subtype == .touch else {
-//      super.scrollWheel(with: event)
-//      return
-//    }
-//
-//    // Get the scroll delta
-//    let deltaX = event.scrollingDeltaX
-//    let deltaY = event.scrollingDeltaY
-//    let delta = CGPoint(x: deltaX, y: deltaY)
-//
-//    // Get the gesture phase
-//    let phase = event.phase
-//
-//    // Call the callback with delta and phase
-//    onPanGesture?(delta, phase)
-//
-//    // Uncomment to prevent the event from propagating further
-//    // Don't call super.scrollWheel(with: event)
-//  }
-//
-//  // MARK: - Alternative: Using NSPanGestureRecognizer
-////  private func setupPanGestureRecognizer() {
-////    let panGesture = NSPanGestureRecognizer(target: self, action: #selector(handlePanGesture(_:)))
-////    panGesture.buttonMask = 0x1 // Primary button
-////    addGestureRecognizer(panGesture)
-////  }
-////
-////  @objc private func handlePanGesture(_ gesture: NSPanGestureRecognizer) {
-////    let translation = gesture.translation(in: self)
-////
-////    // Convert NSGestureRecognizer.State to NSEvent.Phase for consistency
-////    let phase: NSEvent.Phase
-////    switch gesture.state {
-////      case .began:
-////        phase = .began
-////      case .changed:
-////        phase = .changed
-////      case .ended:
-////        phase = .ended
-////      case .cancelled:
-////        phase = .cancelled
-////      default:
-////        return
-////    }
-////
-////    onPanGesture?(translation, phase)
-////
-////    // Reset translation to get delta for next event
-////    gesture.setTranslation(.zero, in: self)
-////  }
-//}
-//
-//import SwiftUI
-//
-//public struct ExampleModifier: ViewModifier {
-//
-//  @State private var panOffset: CGPoint = .zero
-//  @State private var currentPhase: NSEvent.Phase = .stationary
-//
-//  public func body(content: Content) -> some View {
-//    PanGestureView { delta, phase in
-//      handlePanGesture(delta: delta, phase: phase)
-//    }
-////    VStack {
-////      Text("Two-Finger Pan Gesture")
-////        .font(.title)
-////
-////      .frame(width: 400, height: 300)
-////      .border(Color.gray)
-////
-////      VStack(alignment: .leading) {
-////        Text("Pan Offset: \(panOffset.x, specifier: "%.1f"), \(panOffset.y, specifier: "%.1f")")
-////        Text("Phase: \(phaseDescription(currentPhase))")
-////      }
-////      .padding()
-////    }
-////    .padding()
-////    content
-//  }
-//}
-//extension ExampleModifier {
-//  private func handlePanGesture(delta: CGPoint, phase: NSEvent.Phase) {
-//    currentPhase = phase
-//
-//    switch phase {
-//      case .began:
-//        // Reset or initialize pan state
-//        break
-//      case .changed:
-//        // Accumulate the pan offset for drawing
-//        panOffset.x += delta.x
-//        panOffset.y += delta.y
-//      case .ended, .cancelled:
-//        // Finalize or reset pan state
-//        break
-//      default:
-//        break
-//    }
-//  }
-//
-//  private func phaseDescription(_ phase: NSEvent.Phase) -> String {
-//    switch phase {
-//      case .began: return "Began"
-//      case .changed: return "Changed"
-//      case .ended: return "Ended"
-//      case .cancelled: return "Cancelled"
-//      case .stationary: return "Stationary"
-//      default: return "Unknown"
-//    }
-//  }
-//}
-////extension View {
-////  public func example() -> some View {
-////    self.modifier(ExampleModifier())
-////  }
-////}
