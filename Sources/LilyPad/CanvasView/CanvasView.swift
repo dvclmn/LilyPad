@@ -8,16 +8,17 @@
 import BaseHelpers
 import SwiftUI
 
-public enum CanvasPhase: Equatable {
-  case isHovering(CGPoint)
-//  case isDrawing(Set<MappedTouchPoint>)
-  case idle
-}
+//public enum CanvasPhase: Equatable {
+//  case isHovering(CGPoint)
+////  case isDrawing(Set<MappedTouchPoint>)
+//  case idle
+//}
 
 /// The idea here is to provide a view that can Pan and Zoom any View
 public struct CanvasView<Content: View>: View {
 
-  public typealias CanvasPhaseOutput = (_ canvasPhase: CanvasPhase) -> Content
+  public typealias CanvasPhaseOutput = (_ hoverPoint: CGPoint?) -> Content
+//  public typealias CanvasPhaseOutput = (_ canvasPhase: CanvasPhase) -> Content
 
   @State private var store: CanvasGestureHandler
 
@@ -51,7 +52,7 @@ public struct CanvasView<Content: View>: View {
       /// constrained to the trackpad size. Can check it out
       /// with a debug border to see. Just good to know.
       ZStack {
-        content(currentCanvasPhase)
+        content(store.hoveredPoint)
           .frame(
             width: mapStrategy.size(for: proxy.size).width,
             height: mapStrategy.size(for: proxy.size).height
@@ -134,13 +135,13 @@ public struct CanvasView<Content: View>: View {
 
 extension CanvasView {
 
-  private var currentCanvasPhase: CanvasPhase {
-    if let hoverPoint = store.hoveredPoint, !isDragPanEnabled {
-      return .isHovering(hoverPoint)
-    } else {
-      return .idle
-    }
+//  private var currentCanvasPhase: CanvasPhase {
+//    if let hoverPoint = store.hoveredPoint, !isDragPanEnabled {
+//      return .isHovering(hoverPoint)
+//    } else {
+//      return .idle
+//    }
 
-  }
+//  }
 
 }

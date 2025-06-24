@@ -14,7 +14,7 @@ final class CanvasGestureHandler {
 //  var mapStrategy: TrackpadMapStrategy = .scaleToFit
   var mappedTouches: Set<MappedTouchPoint> = []
   
-  var canvasPhase: CanvasPhase = .idle
+//  var canvasPhase: CanvasPhase = .idle
   
   /// Zoom
   var zoom: CGFloat = 1
