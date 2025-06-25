@@ -22,12 +22,14 @@ public struct CanvasView<Content: View>: View {
 
   @State private var store: CanvasGestureHandler
 
+  let canvasSize: CGSize
   let mapStrategy: TrackpadMapStrategy
   let isDragPanEnabled: Bool
   let canvasOutput: CanvasOutput
   let content: Content
 
   public init(
+    canvasSize: CGSize,
     mapStrategy: TrackpadMapStrategy,
     zoomRange: ClosedRange<Double>,
     isDragPanEnabled: Bool = false,
@@ -35,6 +37,7 @@ public struct CanvasView<Content: View>: View {
     @ViewBuilder content: @escaping () -> Content
   ) {
     self._store = State(initialValue: CanvasGestureHandler(zoomRange: zoomRange))
+    self.canvasSize = canvasSize
     self.mapStrategy = mapStrategy
     self.isDragPanEnabled = isDragPanEnabled
     self.canvasOutput = canvasOutput
@@ -53,10 +56,16 @@ public struct CanvasView<Content: View>: View {
       /// with a debug border to see. Just good to know.
       ZStack {
         content
-          .frame(
-            width: mapStrategy.size(for: proxy.size).width,
-            height: mapStrategy.size(for: proxy.size).height
-          )
+        KnockoutShapeView(knockoutSize: store.canvasSize)
+          .setCornerRounding(4)
+          .setBackgroundColour(Color.white.opacity(0.03))
+          .frame(width: canvasSize.width, height: canvasSize.height)
+//          .clipShape(.rect(cornerRadius: 4))
+//          .frame(
+//            width: mapStrategy.size(for: proxy.size).width,
+//            height: mapStrategy.size(for: proxy.size).height
+//          )
+//          .border(Color.green.opacity(0.3))
           .scaleEffect(store.zoom)
           .position(proxy.size.midpoint)
           .offset(store.pan)

@@ -18,13 +18,12 @@ public struct TrackpadTouchesModifier: ViewModifier {
   let isEnabled: Bool
   let mapStrategy: TrackpadMapStrategy
   let shouldShowIndicators: Bool
-  let shouldShowOverlay: Bool
+//  let shouldShowOverlay: Bool
   let touchUpdates: TouchesModifierOutput
 
   public func body(content: Content) -> some View {
     GeometryReader { proxy in
       content
-      if isEnabled {
         if shouldShowIndicators {
           TouchIndicatorsView(
             touches: localMappedTouches.toArray,
@@ -33,12 +32,13 @@ public struct TrackpadTouchesModifier: ViewModifier {
             containerSize: proxy.size,
           )
         }
-        if shouldShowOverlay {
-          TrackpadShapeGuide(
-            containerSize: proxy.size,
-            mappingStrategy: mapStrategy
-          )
-        }
+//        if shouldShowOverlay {
+//          TrackpadShapeGuide(
+//            containerSize: proxy.size,
+//            mappingStrategy: mapStrategy
+//          )
+//        }
+      if isEnabled {
         TrackpadTouchesView(
           shouldUseVelocity: true
         ) { eventData in
@@ -68,7 +68,7 @@ extension View {
     isEnabled: Bool = true,
     mapStrategy: TrackpadMapStrategy,
     showIndicators: Bool = true,
-    shouldShowOverlay: Bool = true,
+//    shouldShowOverlay: Bool = true,
     touchUpdates: @escaping TouchesModifierOutput
   ) -> some View {
     self.modifier(
@@ -76,7 +76,7 @@ extension View {
         isEnabled: isEnabled,
         mapStrategy: mapStrategy,
         shouldShowIndicators: showIndicators,
-        shouldShowOverlay: shouldShowOverlay,
+//        shouldShowOverlay: shouldShowOverlay,
         touchUpdates: touchUpdates
       )
     )
