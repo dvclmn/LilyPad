@@ -7,6 +7,10 @@
 
 import Foundation
 
+/// Important:
+/// `MappedTouchPointsBuilder` scales a normalised touch
+/// from 0-1, to the supplied *size*. It does not handle positioning or
+/// centring this size within a viewport.
 public struct MappedTouchPointsBuilder {
   public let mappedTouches: Set<MappedTouchPoint>
   let mappedSize: CGSize

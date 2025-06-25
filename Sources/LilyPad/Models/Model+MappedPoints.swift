@@ -54,13 +54,6 @@ public struct MappedTouchPoint: TrackpadTouch {
       pressure: previousPoint.pressure,
       mappedSize: newMappingSize,
     )
-    //    self.id = previousPoint.id
-    //    self.phase = previousPoint.phase
-    //    self.position = newPoint
-    //    self.timestamp = previousPoint.timestamp
-    //    self.velocity = previousPoint.velocity
-    //    self.pressure = previousPoint.pressure
-    //    self.mappedSize = newMappingSize
   }
 
   public init(
@@ -82,17 +75,7 @@ public struct MappedTouchPoint: TrackpadTouch {
 }
 
 extension MappedTouchPoint {
-  //  public func applyingTransform(_ transform: CGAffineTransform) -> Self {
-  //
-  //    let newMappedPoint: MappedTouchPoint = .init(
-  //      previousPoint: self,
-  //      newMappingSize: self.mappedSize
-  //    )
-  //    return self.position.applying(transform)
-  ////    var updatedPosition = self.position.applying(transform)
-  ////    self.position = self.position.applying(transform)
-  ////    self.position = updatedPosition
-  //  }
+
 }
 
 extension MappedTouchPoint: CustomStringConvertible {

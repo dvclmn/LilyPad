@@ -16,16 +16,19 @@ public struct ZoomViewModifier: ViewModifier {
   @GestureState private var magnification: CGFloat = 1
   @GestureState private var zoomGestureAnchor: UnitPoint = .center
 
+  let isEnabled: Bool
   @Binding var zoom: CGFloat
   @Binding var pan: CGSize
   let didUpdateZoom: StartAnchorUpdate
 
   public init(
+    isEnabled: Bool,
     zoom: Binding<CGFloat>,
     pan: Binding<CGSize>,
     zoomRange: ClosedRange<Double>,
     didUpdateZoom: @escaping StartAnchorUpdate
   ) {
+    self.isEnabled = isEnabled
     self._zoom = zoom
     self._pan = pan
     self.didUpdateZoom = didUpdateZoom
@@ -37,7 +40,7 @@ public struct ZoomViewModifier: ViewModifier {
   public func body(content: Content) -> some View {
     GeometryReader { proxy in
       content
-        .simultaneousGesture(zoomGesture(in: proxy.size), isEnabled: true)
+        .simultaneousGesture(zoomGesture(in: proxy.size), isEnabled: isEnabled)
     }
   }
 }
@@ -83,6 +86,7 @@ extension ZoomViewModifier {
 }
 extension View {
   public func onZoomGesture(
+    isEnabled: Bool = true,
     zoom: Binding<CGFloat>,
     pan: Binding<CGSize>,
     zoomRange: ClosedRange<Double>,
@@ -90,6 +94,7 @@ extension View {
   ) -> some View {
     self.modifier(
       ZoomViewModifier(
+        isEnabled: isEnabled,
         zoom: zoom,
         pan: pan,
         zoomRange: zoomRange,
