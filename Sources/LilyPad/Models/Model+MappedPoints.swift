@@ -45,14 +45,54 @@ public struct MappedTouchPoint: TrackpadTouch {
       from: previousPoint.mappedSize.toCGRectZeroOrigin,
       to: newMappingSize.toCGRectZeroOrigin
     )
-    self.id = previousPoint.id
-    self.phase = previousPoint.phase
-    self.position = newPoint
-    self.timestamp = previousPoint.timestamp
-    self.velocity = previousPoint.velocity
-    self.pressure = previousPoint.pressure
-    self.mappedSize = newMappingSize
+    self.init(
+      id: previousPoint.id,
+      phase: previousPoint.phase,
+      position: newPoint,
+      timestamp: previousPoint.timestamp,
+      velocity: previousPoint.velocity,
+      pressure: previousPoint.pressure,
+      mappedSize: newMappingSize,
+    )
+    //    self.id = previousPoint.id
+    //    self.phase = previousPoint.phase
+    //    self.position = newPoint
+    //    self.timestamp = previousPoint.timestamp
+    //    self.velocity = previousPoint.velocity
+    //    self.pressure = previousPoint.pressure
+    //    self.mappedSize = newMappingSize
   }
+
+  public init(
+    currentPoint: Self,
+    with transform: CGAffineTransform,
+  ) {
+
+    let updatedPoint = currentPoint.position.applying(transform)
+    self.init(
+      id: currentPoint.id,
+      phase: currentPoint.phase,
+      position: updatedPoint,
+      timestamp: currentPoint.timestamp,
+      velocity: currentPoint.velocity,
+      pressure: currentPoint.pressure,
+      mappedSize: currentPoint.mappedSize
+    )
+  }
+}
+
+extension MappedTouchPoint {
+  //  public func applyingTransform(_ transform: CGAffineTransform) -> Self {
+  //
+  //    let newMappedPoint: MappedTouchPoint = .init(
+  //      previousPoint: self,
+  //      newMappingSize: self.mappedSize
+  //    )
+  //    return self.position.applying(transform)
+  ////    var updatedPosition = self.position.applying(transform)
+  ////    self.position = self.position.applying(transform)
+  ////    self.position = updatedPosition
+  //  }
 }
 
 extension MappedTouchPoint: CustomStringConvertible {
