@@ -36,40 +36,44 @@ public enum TrackpadMapStrategy {
   private var aspectRatio: CGFloat {
     Self.trackpadAspectRatio
   }
+  
+  private var viewportEdgeInset: CGFloat { 16 }
 
   public func size(for containerSize: CGSize) -> CGSize {
+    
+    let insetSize: CGSize = containerSize.inset(by: viewportEdgeInset)
     switch self {
       case .scaleToFit:
         let widthBased = CGSize(
-          width: containerSize.width,
-          height: containerSize.width * aspectRatio
+          width: insetSize.width,
+          height: insetSize.width * aspectRatio
         )
 
         guard widthBased.height <= containerSize.height else {
           return CGSize(
-            width: containerSize.height / aspectRatio,
-            height: containerSize.height
+            width: insetSize.height / aspectRatio,
+            height: insetSize.height
           )
         }
         return widthBased
 
       case .scaleToFill:
-        let containerRatio = containerSize.height / containerSize.width
+        let containerRatio = insetSize.height / insetSize.width
         guard containerRatio > aspectRatio else {
           /// Container is wider than trackpad → match width
           return CGSize(
-            width: containerSize.width,
-            height: containerSize.width * aspectRatio
+            width: insetSize.width,
+            height: insetSize.width * aspectRatio
           )
         }
         /// Container is taller than trackpad → match height
         return CGSize(
-          width: containerSize.height / aspectRatio,
-          height: containerSize.height
+          width: insetSize.height / aspectRatio,
+          height: insetSize.height
         )
 
       case .stretch:
-        return containerSize
+        return insetSize
 
       case .customFixed(let length, let axis):
         switch axis {

@@ -38,29 +38,65 @@ public struct MappedTouchPoint: TrackpadTouch {
   }
 
   public init(
-    previousPoint: Self,
+    currentPoint: Self,
     newMappingSize: CGSize,
   ) {
-    let newPoint: CGPoint = previousPoint.position.remapped(
-      from: previousPoint.mappedSize.toCGRectZeroOrigin,
+    let newPoint: CGPoint = currentPoint.position.remapped(
+      from: currentPoint.mappedSize.toCGRectZeroOrigin,
       to: newMappingSize.toCGRectZeroOrigin
     )
+    self.init(current: currentPoint, updatedPosition: newPoint, mappedSize: newMappingSize)
+//    self.init(
+//      id: currentPoint.id,
+//      phase: currentPoint.phase,
+//      position: newPoint,
+//      timestamp: currentPoint.timestamp,
+//      velocity: currentPoint.velocity,
+//      pressure: currentPoint.pressure,
+//      mappedSize: newMappingSize,
+//    )
+  }
+  
+  public init(
+    current: any TrackpadTouch,
+    updatedPosition: CGPoint,
+    mappedSize: CGSize,
+  ) {
     self.init(
-      id: previousPoint.id,
-      phase: previousPoint.phase,
-      position: newPoint,
-      timestamp: previousPoint.timestamp,
-      velocity: previousPoint.velocity,
-      pressure: previousPoint.pressure,
-      mappedSize: newMappingSize,
+      id: current.id,
+      phase: current.phase,
+      position: updatedPosition,
+      timestamp: current.timestamp,
+      velocity: current.velocity,
+      pressure: current.pressure,
+      mappedSize: mappedSize,
     )
   }
+  
+//  public init(
+//    currentPoint: MappedTouchPoint,
+//    newMappingSize: CGSize,
+//  ) {
+//    let newPoint: CGPoint = currentPoint.position.remapped(
+//      from: currentPoint.mappedSize.toCGRectZeroOrigin,
+//      to: newMappingSize.toCGRectZeroOrigin
+//    )
+//    self.init(current: currentPoint, updatedPosition: newPoint, mappedSize: newMappingSize)
+////    self.init(
+////      id: previousPoint.id,
+////      phase: previousPoint.phase,
+////      position: newPoint,
+////      timestamp: previousPoint.timestamp,
+////      velocity: previousPoint.velocity,
+////      pressure: previousPoint.pressure,
+////      mappedSize: newMappingSize,
+////    )
+//  }
 
   public init(
     currentPoint: Self,
     with transform: CGAffineTransform,
   ) {
-
     let updatedPoint = currentPoint.position.applying(transform)
     self.init(
       id: currentPoint.id,
