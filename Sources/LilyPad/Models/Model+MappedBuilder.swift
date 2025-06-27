@@ -37,15 +37,21 @@ public struct MappedTouchPointsBuilder {
   ) -> Set<MappedTouchPoint> {
     let mapped: [MappedTouchPoint] = touches.map { touchPoint in
       let newPosition = touchPoint.position.mapped(to: mappingSize.toCGRectZeroOrigin)
+      
       return MappedTouchPoint(
-        id: touchPoint.id,
-        phase: touchPoint.phase,
-        position: newPosition,
-        timestamp: touchPoint.timestamp,
-        velocity: touchPoint.velocity,
-        pressure: touchPoint.pressure,
+        current: touchPoint,
+        updatedPosition: newPosition,
         mappedSize: mappingSize
       )
+//      return MappedTouchPoint(
+//        id: touchPoint.id,
+//        phase: touchPoint.phase,
+//        position: newPosition,
+//        timestamp: touchPoint.timestamp,
+//        velocity: touchPoint.velocity,
+//        pressure: touchPoint.pressure,
+//        mappedSize: mappingSize
+//      )
     }
     return Set(mapped)
   }

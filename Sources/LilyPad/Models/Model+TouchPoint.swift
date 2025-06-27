@@ -10,23 +10,17 @@ import CoreGraphics
 import Foundation
 import MemberwiseInit
 
-public protocol TrackpadTouch: Identifiable, Sendable, Hashable, Equatable, Codable {
-  var id: Int { get }
-  var phase: TouchPhase { get }
-  var position: CGPoint { get set }
-  var timestamp: TimeInterval { get }
-  var velocity: CGVector { get }
-  var pressure: CGFloat { get }
-}
-
 public struct TouchPoint: TrackpadTouch {
   public let id: Int
-  public let phase: TouchPhase
+  public var phase: TouchPhase
+
   /// This is normalised, comes from `NSTouch.normalisedPosition`
   public var position: CGPoint
   public let timestamp: TimeInterval
   public let velocity: CGVector
   public let pressure: CGFloat
+  public let deviceSize: CGSize
+  public let isResting: Bool
 
   public init(
     id: Int,
@@ -35,6 +29,8 @@ public struct TouchPoint: TrackpadTouch {
     timestamp: TimeInterval,
     velocity: CGVector,
     pressure: CGFloat,
+    deviceSize: CGSize,
+    isResting: Bool
   ) {
     self.id = id
     self.phase = phase
@@ -42,6 +38,8 @@ public struct TouchPoint: TrackpadTouch {
     self.timestamp = timestamp
     self.velocity = velocity
     self.pressure = pressure
+    self.deviceSize = deviceSize
+    self.isResting = isResting
   }
 }
 
@@ -55,39 +53,31 @@ extension TouchPoint {
       timestamp: timestamp,
       velocity: velocity,
       pressure: pressure,
+      deviceSize: deviceSize,
+      isResting: isResting
     )
   }
 
-  public var direction: CGFloat {
-    return atan2(velocity.dy, velocity.dx)
-  }
 
-  /// Whether this touch has meaningful pressure data
-  public var hasPressure: Bool {
-    return pressure > 0
-  }
+  public static func generateDescription(for touch: any TrackpadTouch) -> String {
 
-  /// Normalized pressure between 0 and 1 for drawing operations
-  public var normalisedPressure: CGFloat {
-    return min(max(pressure, 0), 1)
-  }
-  
-  public static func generateDescription(for trackpadTouch: any TrackpadTouch) -> String {
+    let isMapped: Bool = touch as? MappedTouchPoint != nil
 
-    let isMapped: Bool = trackpadTouch as? MappedTouchPoint != nil
     return """
-    /////
-    Trackpad Touch \(isMapped ? "Mapped" : "")
-      - ID: \(trackpadTouch.id)
-      - Phase: \(trackpadTouch.phase.rawValue)
-      - Position: \(trackpadTouch.position.displayString)
-      - Timestamp: \(trackpadTouch.timestamp.displayString)
-      - Velocity: \(trackpadTouch.velocity.displayString)
-      - Pressure: \(trackpadTouch.pressure.displayString)
-    /////
-    
-    
-    """
+      /////
+      Trackpad Touch \(isMapped ? "Mapped" : "")
+        - ID: \(touch.id)
+        - Phase: \(touch.phase.rawValue)
+        - Position: \(touch.position.displayString)
+        - Timestamp: \(touch.timestamp.displayString)
+        - Velocity: \(touch.velocity.displayString)
+        - Pressure: \(touch.pressure.displayString)
+        - Device Size: \(touch.deviceSize.displayString)
+        - Pressure: \(touch.pressure.displayString)
+      /////
+
+
+      """
   }
 }
 

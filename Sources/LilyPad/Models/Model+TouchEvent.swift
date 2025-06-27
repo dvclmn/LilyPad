@@ -9,13 +9,19 @@ import AppKit
 import BaseHelpers
 
 public struct TouchEventData: Sendable, Equatable, Hashable {
+  
   public let touches: Set<TouchPoint>
-  public static let atRest = TouchEventData(touches: [])
+  
+  /// Pressure is provided on a per-touch basis, just a single
+  /// value alongside one or more touches
+  public let pressure: CGFloat
 
   public init(
     touches: Set<TouchPoint>,
+    pressure: CGFloat
   ) {
     self.touches = touches
+    self.pressure = pressure
   }
 }
 

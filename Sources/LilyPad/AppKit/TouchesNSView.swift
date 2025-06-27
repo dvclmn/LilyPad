@@ -42,24 +42,29 @@ public class TrackpadTouchesNSView: NSView {
 
   private func processFirstTouches(with event: NSEvent) {
 
-    let touches = event.allTouches()
-//    let pressure = CGFloat(event.pressure)
+    let touches: Set<NSTouch> = event.allTouches()
+    let pressure = CGFloat(event.pressure)
     
-    var touchesWithPressure: [NSTouch: CGFloat] = [:]
+    /// Important: NSTouches do not come with per-touch pressure,
+    /// so this doesn't work.
+//    var touchesWithPressure: [NSTouch: CGFloat] = [:]
     
-    for touch in touches {
-      touchesWithPressure[touch] = .zero
-    }
+//    for touch in touches {
+//      touchesWithPressure[touch] = .zero
+//    }
     
-    let eventData = touchManager.processCapturedTouches(
-      touchesWithPressure,
+    let processedTouches: Set<TouchPoint> = touchManager.processCapturedTouches(
+      touches,
       timestamp: event.timestamp
     )
+    let eventData = TouchEventData(touches: processedTouches, pressure: pressure)
     
     /// ⬇️ Important: If no touches remain,  should notify with nil
     if touchManager.activeTouches.isEmpty {
+      print("No active touches, should return nil")
       touchesDelegate?.touchesView(self, didUpdate: nil)
     } else {
+      
       touchesDelegate?.touchesView(self, didUpdate: eventData)
     }
 
