@@ -33,7 +33,8 @@ class TrackpadTouchManager {
   func processCapturedTouches(
     _ nsTouches: Set<NSTouch>,
     timestamp: TimeInterval,
-  ) -> Set<TouchPoint> {
+    pressure: CGFloat
+  ) -> TouchEventData {
 
     var updatedTouches = Set<TouchPoint>()
 
@@ -66,6 +67,7 @@ class TrackpadTouchManager {
         touchID: touchId,
         phase: phase,
         timestamp: timestamp,
+        pressure: pressure,
         deviceSize: nsTouch.deviceSize,
         isResting: nsTouch.isResting
       )
@@ -83,7 +85,9 @@ class TrackpadTouchManager {
       lastTouches[touchId] = enrichedTouch
 
     }
-    return updatedTouches
+    let eventData = TouchEventData(touches: updatedTouches, pressure: pressure)
+    return eventData
+//    return updatedTouches
   }
 
 

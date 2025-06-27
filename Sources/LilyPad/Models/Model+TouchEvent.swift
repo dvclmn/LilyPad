@@ -9,9 +9,9 @@ import AppKit
 import BaseHelpers
 
 public struct TouchEventData: Sendable, Equatable, Hashable {
-  
+
   public let touches: Set<TouchPoint>
-  
+
   /// Pressure is provided on a per-touch basis, just a single
   /// value alongside one or more touches
   public let pressure: CGFloat
@@ -29,9 +29,8 @@ extension TouchEventData: CustomStringConvertible {
   public var description: String {
     """
 
-    TouchEventData
-      - Touches (count: \(touches.count): 
-          \(touches)
+    TouchEventData (\(touches.count)x Touches):
+    \(touches)
 
 
     """

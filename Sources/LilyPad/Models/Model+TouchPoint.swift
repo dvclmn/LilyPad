@@ -48,6 +48,7 @@ public struct TouchPoint: TrackpadTouch {
     touchID: Int,
     phase: NSTouch.Phase,
     timestamp: TimeInterval,  // From NSEvent.timestamp
+    pressure: CGFloat,
     deviceSize: CGSize,
     isResting: Bool
   ) {
@@ -61,7 +62,7 @@ public struct TouchPoint: TrackpadTouch {
       position: position,
       timestamp: timestamp,
       velocity: .zero,  // This will be enriched in next step
-      pressure: .zero, // Will come later
+      pressure: pressure,
       deviceSize: deviceSize,
       isResting: isResting
     )
@@ -98,7 +99,7 @@ extension TouchPoint {
         - Velocity: \(touch.velocity.displayString)
         - Pressure: \(touch.pressure.displayString)
         - Device Size: \(touch.deviceSize.displayString)
-        - Pressure: \(touch.pressure.displayString)
+        - Is Resting?: \(touch.isResting)
       /////
 
 
