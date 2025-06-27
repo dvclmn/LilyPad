@@ -5,8 +5,8 @@
 //  Created by Dave Coleman on 5/5/2025.
 //
 
+import AppKit
 import BaseHelpers
-import CoreGraphics
 import Foundation
 import MemberwiseInit
 
@@ -40,6 +40,31 @@ public struct TouchPoint: TrackpadTouch {
     self.pressure = pressure
     self.deviceSize = deviceSize
     self.isResting = isResting
+  }
+
+  /// Create from AppKit native `NSTouch`
+  public init(
+    from nsTouch: NSTouch,
+    touchID: Int,
+    phase: NSTouch.Phase,
+    timestamp: TimeInterval,  // From NSEvent.timestamp
+    deviceSize: CGSize,
+    isResting: Bool
+  ) {
+    let position = CGPoint(
+      x: nsTouch.normalizedPosition.x,
+      y: 1.0 - nsTouch.normalizedPosition.y  // Flip Y
+    )
+    self.init(
+      id: touchID,
+      phase: phase.toDomainPhase,
+      position: position,
+      timestamp: timestamp,
+      velocity: .zero,  // This will be enriched in next step
+      pressure: .zero, // Will come later
+      deviceSize: deviceSize,
+      isResting: isResting
+    )
   }
 }
 

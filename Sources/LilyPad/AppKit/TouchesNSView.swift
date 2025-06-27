@@ -30,8 +30,10 @@ public class TrackpadTouchesNSView: NSView {
   }
 
   private func setupView() {
-    /// Only interested in trackpad touches, not direct touches
+    /// Direct == touches made directly onto a screen, like a Wacom
+    /// Indirect == touches made on a device like a trackpad
     allowedTouchTypes = [.indirect]
+    
     /// Include stationary touches in the updates
     wantsRestingTouches = true
 

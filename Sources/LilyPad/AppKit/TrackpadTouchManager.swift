@@ -33,42 +33,43 @@ public class TrackpadTouchManager {
   private let maxVelocity: Double = 10.0
 
   func processCapturedTouches(
-//    _ touches: [NSTouch: CGFloat],
-        _ touches: Set<NSTouch>,
+    //    _ touches: [NSTouch: CGFloat],
+    _ nsTouches: Set<NSTouch>,
     timestamp: TimeInterval,
 
   ) -> Set<TouchPoint> {
-//  ) -> TouchEventData? {
+    //  ) -> TouchEventData? {
 
     var updatedTouches = Set<TouchPoint>()
 
-    for touch in touches {
-      let touchId = touch.identity.hash
-      let phase = touch.phase
-      let location = touch.normalizedPosition
+    for nsTouch in nsTouches {
+      let touchId = nsTouch.identity.hash
+      let phase = nsTouch.phase
 
       /// Handle touch lifecycle
       switch phase {
         case .began, .moved:
           activeTouches.insert(touchId)
+
         case .ended, .cancelled:
           activeTouches.remove(touchId)
-          /// Clean up after processing this final touch
-          do {
-            touchHistories.removeValue(forKey: touchId)
-            lastTouches.removeValue(forKey: touchId)
-          }
+
+          /// Clean up after processing this touch, now that it is finished
+          touchHistories.removeValue(forKey: touchId)
+          lastTouches.removeValue(forKey: touchId)
+
         default:
           break
       }
 
       /// Create raw touch point
-      let rawTouch = makeTouchPoint(
-        from: touch,
-        touchId: touchId,
+      let rawTouch = TouchPoint(
+        from: nsTouch,
+        touchID: touchId,
         phase: phase,
         timestamp: timestamp,
-        pressure: pressure
+        deviceSize: nsTouch.deviceSize,
+        isResting: nsTouch.isResting
       )
 
       /// Update history
@@ -167,28 +168,29 @@ public class TrackpadTouchManager {
     )
   }
 
-  private func makeTouchPoint(
-    from nsTouch: NSTouch,
-    touchId: Int,
-    phase: NSTouch.Phase,
-    timestamp: TimeInterval,
-    pressure: CGFloat,
-  ) -> TouchPoint {
-    let position = CGPoint(
-      x: nsTouch.normalizedPosition.x,
-      y: 1.0 - nsTouch.normalizedPosition.y/// Flip Y
-    )
-
-    /// Extract pressure if available (some trackpads support this)
-    ///    let pressure = CGFloat(nsTouch.force)
-
-    return TouchPoint(
-      id: touchId,
-      phase: phase.toDomainPhase,
-      position: position,
-      timestamp: timestamp,
-      velocity: CGVector.zero,  // Will be populated by withVelocity()
-      pressure: pressure
-    )
-  }
+  //  private func makeTouchPoint(
+  //    from nsTouch: NSTouch,
+  //    touchId: Int,
+  //    phase: NSTouch.Phase,
+  //    timestamp: TimeInterval,
+  //    pressure: CGFloat,
+  //  ) -> TouchPoint {
+  //
+  //    let position = CGPoint(
+  //      x: nsTouch.normalizedPosition.x,
+  //      y: 1.0 - nsTouch.normalizedPosition.y/// Flip Y
+  //    )
+  //
+  //    /// Extract pressure if available (some trackpads support this)
+  //    ///    let pressure = CGFloat(nsTouch.force)
+  //
+  //    return TouchPoint(
+  //      id: touchId,
+  //      phase: phase.toDomainPhase,
+  //      position: position,
+  //      timestamp: timestamp,
+  //      velocity: CGVector.zero,  // Will be populated by withVelocity()
+  //      pressure: pressure
+  //    )
+  //  }
 }
