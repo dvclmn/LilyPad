@@ -16,38 +16,24 @@ class TrackpadTouchManager {
   /// Dictionary to store the last known touch for each touch ID
   private var lastTouches: [Int: TouchPoint] = [:]
 
-
   /// Dictionary to store touch history for each touch ID
   private var touchHistories: [Int: [TouchPoint]] = [:]
 
-  /// Weights for velocity calculation (most recent points weighted more heavily)
-  /// Should have maxHistoryLength - 1 elements for velocity pairs
-//  private let velocityWeights: [Double] = [0.05, 0.1, 0.15, 0.25, 0.35, 0.1]
-  
-  private let mappingRect: CGRect
-  
+  //  private let mappingRect: CGRect
+
   /// Maximum number of touch points to keep in history per stroke
   private let maxHistoryDepth: Int
   private let velocityCalculator: VelocityCalculator
-  
+
   init() {
     self.maxHistoryDepth = 8
     self.velocityCalculator = VelocityCalculator(maxHistoryDepth: maxHistoryDepth)
   }
 
-  /// Minimum time delta to consider for velocity calculation (avoid division by tiny numbers)
-//  private let minTimeDelta: TimeInterval = 0.001
-
-  /// Maximum reasonable velocity to prevent outliers (points per second)
-//  private let
-
   func processCapturedTouches(
-    //    _ touches: [NSTouch: CGFloat],
     _ nsTouches: Set<NSTouch>,
     timestamp: TimeInterval,
-
   ) -> Set<TouchPoint> {
-    //  ) -> TouchEventData? {
 
     var updatedTouches = Set<TouchPoint>()
 
@@ -68,7 +54,10 @@ class TrackpadTouchManager {
           lastTouches.removeValue(forKey: touchId)
 
         default:
-          break
+          /// This is to make sure that we don't have touches
+          /// being 'left on', resulting in the UI thinking there's
+          /// still an active touch, which often happens
+          activeTouches.remove(touchId)
       }
 
       /// Create raw touch point
@@ -95,7 +84,6 @@ class TrackpadTouchManager {
 
     }
     return updatedTouches
-//    return TouchEventData(touches: updatedTouches)
   }
 
 
