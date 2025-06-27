@@ -51,7 +51,7 @@ public class TrackpadTouchesNSView: NSView {
       let eventData = TouchEventData(touches: processedTouches, pressure: pressure)
 
       touchesDelegate?.touchesView(self, didUpdate: eventData)
-      touchBuffer.reset()
+//      touchBuffer.reset()
     }
 
   }
@@ -66,9 +66,11 @@ public class TrackpadTouchesNSView: NSView {
   
   public override func touchesEnded(with event: NSEvent) {
     processFirstTouches(with: event)
+    touchBuffer.reset()
   }
   public override func touchesCancelled(with event: NSEvent) {
     processFirstTouches(with: event)
+    touchBuffer.reset()
   }
   public override func pressureChange(with event: NSEvent) {
     processFirstTouches(with: event)
