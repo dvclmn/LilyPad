@@ -7,8 +7,9 @@
 
 import CoreGraphics
 import Foundation
+import BaseHelpers
 
-public protocol TrackpadTouch: Identifiable, Sendable, Hashable, Equatable, Codable {
+public protocol TrackpadTouch: TimestampedPosition, Identifiable, Sendable, Hashable, Equatable, Codable {
   var id: Int { get }
   var phase: TouchPhase { get }
   var position: CGPoint { get set }
