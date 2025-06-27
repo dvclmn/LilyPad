@@ -22,7 +22,9 @@ class TrackpadTouchManager {
 
   /// Weights for velocity calculation (most recent points weighted more heavily)
   /// Should have maxHistoryLength - 1 elements for velocity pairs
-  private let velocityWeights: [Double] = [0.05, 0.1, 0.15, 0.25, 0.35, 0.1]
+//  private let velocityWeights: [Double] = [0.05, 0.1, 0.15, 0.25, 0.35, 0.1]
+  
+  private let mappingRect: CGRect
   
   /// Maximum number of touch points to keep in history per stroke
   private let maxHistoryDepth: Int

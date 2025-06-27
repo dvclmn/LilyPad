@@ -25,24 +25,24 @@ public typealias TouchUpdates = (_ eventData: TouchEventData?) -> Void
 public struct TrackpadTouchesView: NSViewRepresentable {
 
 //  let isClickEnabled: Bool
-  let shouldUseVelocity: Bool
+//  let shouldUseVelocity: Bool
   /// Callback for touch updates
   private var onTouchesUpdate: TouchUpdates?
 
   public init(
 //    isClickEnabled: Bool,
-    shouldUseVelocity: Bool,
+//    shouldUseVelocity: Bool,
     onTouchesUpdate: TouchUpdates? = nil,
   ) {
 //    self.isClickEnabled = isClickEnabled
-    self.shouldUseVelocity = shouldUseVelocity
+//    self.shouldUseVelocity = shouldUseVelocity
     self.onTouchesUpdate = onTouchesUpdate
   }
 
   public func makeNSView(context: Context) -> TrackpadTouchesNSView {
     let view = TrackpadTouchesNSView()
 //    view.isClickEnabled = isClickEnabled
-    view.shouldUseVelocity = shouldUseVelocity
+//    view.shouldUseVelocity = shouldUseVelocity
     view.touchesDelegate = context.coordinator
     return view
   }
@@ -52,9 +52,9 @@ public struct TrackpadTouchesView: NSViewRepresentable {
 //      nsView.isClickEnabled = self.isClickEnabled
 //      print("`TrackpadTouchesNSView`'s Is Click Enabled changed. Value is now: `\(nsView.isClickEnabled)`")
 //    }
-    if nsView.shouldUseVelocity != self.shouldUseVelocity {
-      nsView.shouldUseVelocity = self.shouldUseVelocity
-    }
+//    if nsView.shouldUseVelocity != self.shouldUseVelocity {
+//      nsView.shouldUseVelocity = self.shouldUseVelocity
+//    }
   }
 
   public func makeCoordinator() -> Coordinator {

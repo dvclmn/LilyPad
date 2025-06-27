@@ -15,9 +15,11 @@ public class TrackpadTouchesNSView: NSView {
 
   /// Touch manager to handle touch tracking and velocity calculation
   private let touchManager = TrackpadTouchManager()
+  
+  private let touchBuffer = TouchBuffer()
 
 //  public var isClickEnabled: Bool = true
-  public var shouldUseVelocity: Bool = true
+//  public var shouldUseVelocity: Bool = true
 
   public override init(frame frameRect: NSRect) {
     super.init(frame: frameRect)
@@ -34,41 +36,40 @@ public class TrackpadTouchesNSView: NSView {
     /// Indirect == touches made on a device like a trackpad
     allowedTouchTypes = [.indirect]
     
+    self.pressureConfiguration = NSPressureConfiguration(pressureBehavior: .primaryGeneric)
+        
     /// Include stationary touches in the updates
     wantsRestingTouches = true
-
-    #warning("Use this in future for that annoying palm triggering I always get")
-    ///    wantsRestingTouches = false is fine; set it to true if you want to receive .stationary phase updates (like for palm resting detection).
 
   }
 
   private func processFirstTouches(with event: NSEvent) {
 
-    let touches: Set<NSTouch> = event.allTouches()
-    let pressure = CGFloat(event.pressure)
-    
-    /// Important: NSTouches do not come with per-touch pressure,
-    /// so this doesn't work.
-//    var touchesWithPressure: [NSTouch: CGFloat] = [:]
-    
-//    for touch in touches {
-//      touchesWithPressure[touch] = .zero
+//    let touches: Set<NSTouch> = event.allTouches()
+//    let pressure = CGFloat(event.pressure)
+//    
+//    /// Important: NSTouches do not come with per-touch pressure,
+//    /// so this doesn't work.
+////    var touchesWithPressure: [NSTouch: CGFloat] = [:]
+//    
+////    for touch in touches {
+////      touchesWithPressure[touch] = .zero
+////    }
+//    
+//    let processedTouches: Set<TouchPoint> = touchManager.processCapturedTouches(
+//      touches,
+//      timestamp: event.timestamp
+//    )
+//    let eventData = TouchEventData(touches: processedTouches, pressure: pressure)
+//    
+//    /// ⬇️ Important: If no touches remain,  should notify with nil
+//    if touchManager.activeTouches.isEmpty {
+//      print("No active touches, should return nil")
+//      touchesDelegate?.touchesView(self, didUpdate: nil)
+//    } else {
+//      
+//      touchesDelegate?.touchesView(self, didUpdate: eventData)
 //    }
-    
-    let processedTouches: Set<TouchPoint> = touchManager.processCapturedTouches(
-      touches,
-      timestamp: event.timestamp
-    )
-    let eventData = TouchEventData(touches: processedTouches, pressure: pressure)
-    
-    /// ⬇️ Important: If no touches remain,  should notify with nil
-    if touchManager.activeTouches.isEmpty {
-      print("No active touches, should return nil")
-      touchesDelegate?.touchesView(self, didUpdate: nil)
-    } else {
-      
-      touchesDelegate?.touchesView(self, didUpdate: eventData)
-    }
 
   }
 
@@ -83,7 +84,17 @@ public class TrackpadTouchesNSView: NSView {
     processFirstTouches(with: event)
   }
   public override func touchesCancelled(with event: NSEvent) {
+    
+    if let eventData = touchBuffer.update(with: event) {
+      delegate?.touchesView(self, didUpdate: eventData)
+      touchBuffer.reset()
+    }
+    
     processFirstTouches(with: event)
+  }
+  
+  public override func pressureChange(with event: NSEvent) {
+    <#code#>
   }
 }
 
