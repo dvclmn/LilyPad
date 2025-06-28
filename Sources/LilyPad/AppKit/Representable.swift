@@ -18,7 +18,7 @@ import SwiftUI
 //}
 
 /// There may not be any touches, so this needs to be optional
-public typealias TouchUpdates = (_ eventData: TouchEventData?) -> Void
+public typealias TouchOutput = (Set<TouchPoint>) -> Void
 
 // MARK: - SwiftUI Representable
 /// SwiftUI wrapper for the trackpad touches view
@@ -27,12 +27,12 @@ public struct TrackpadTouchesView: NSViewRepresentable {
   //  let isClickEnabled: Bool
   //  let shouldUseVelocity: Bool
   /// Callback for touch updates
-  private var onTouchesUpdate: TouchUpdates?
+  private var onTouchesUpdate: TouchOutput?
 
   public init(
     //    isClickEnabled: Bool,
     //    shouldUseVelocity: Bool,
-    onTouchesUpdate: TouchUpdates? = nil,
+    onTouchesUpdate: TouchOutput? = nil,
   ) {
     //    self.isClickEnabled = isClickEnabled
     //    self.shouldUseVelocity = shouldUseVelocity
@@ -40,8 +40,8 @@ public struct TrackpadTouchesView: NSViewRepresentable {
   }
 
   public func makeNSView(context: Context) -> TrackpadTouchesNSView {
-    let view = TrackpadTouchesNSView { eventData in
-      onTouchesUpdate?(eventData)
+    let view = TrackpadTouchesNSView { touchOutput in
+      onTouchesUpdate?(touchOutput)
     }
 
     //    view.isClickEnabled = isClickEnabled

@@ -15,12 +15,12 @@ public class TrackpadTouchesNSView: NSView {
   /// Touch manager to handle touch tracking and velocity calculation
   private let touchManager = TrackpadTouchManager()
 
-  let didUpdateTouches: (TouchEventData?) -> Void
+  let didUpdateTouches: TouchOutput
 
   private var latestPressure: CGFloat = 1.0
 
   public init(
-    didUpdateTouches: @escaping (TouchEventData?) -> Void
+    didUpdateTouches: @escaping TouchOutput
   ) {
     self.didUpdateTouches = didUpdateTouches
     super.init(frame: .zero)
@@ -52,10 +52,10 @@ public class TrackpadTouchesNSView: NSView {
   private func processFirstTouches(with event: NSEvent) {
 
     let nsTouches = event.allTouches()
-    guard !nsTouches.isEmpty else {
-      didUpdateTouches(nil)
-      return
-    }
+//    guard !nsTouches.isEmpty else {
+//      didUpdateTouches(nil)
+//      return
+//    }
 
     /// Note: Could a pressure decay model
     /// Avoid pressure values staying artificially high after a hard press,
