@@ -10,14 +10,16 @@ import AppKit
 // MARK: - Custom NSView for Pan Tracking
 public class PanTrackingNSView: NSView {
   
-  weak var panDelegate: PanDelegate?
-//  var onPanGesture: ((PanPhase) -> Void)?
+  var didUpdatePanGesture: PanGestureOutput?
   
-  override init(frame frameRect: NSRect) {
-    super.init(frame: frameRect)
-    setupView()
+  public init(
+    didUpdatePanGesture: @escaping PanGestureOutput
+  ) {
+    self.didUpdatePanGesture = didUpdatePanGesture
+    super.init(frame: .zero)
+    self.setupView()
   }
-  
+
   required init?(coder: NSCoder) {
     super.init(coder: coder)
     setupView()

@@ -7,55 +7,51 @@
 
 import SwiftUI
 
-public protocol PanDelegate: AnyObject {
-  func panView(
-    _ view: PanTrackingNSView,
-    didUpdate panData: PanPhase
-  )
-}
+//public protocol PanDelegate: AnyObject {
+//  func panView(
+//    _ view: PanTrackingNSView,
+//    didUpdate panData: PanPhase
+//  )
+//}
 
+public typealias PanGestureOutput = (PanPhase) -> Void
 
 // MARK: - SwiftUI Representable
 public struct PanGestureView: NSViewRepresentable {
-  let onPanGesture: (PanPhase) -> Void
-  
-  public init(onPanGesture: @escaping (PanPhase) -> Void) {
+  let onPanGesture: PanGestureOutput
+
+  public init(onPanGesture: @escaping PanGestureOutput) {
     self.onPanGesture = onPanGesture
   }
-  
+
   public func makeNSView(context: Context) -> PanTrackingNSView {
-    print("Ran `makeNSView`")
-    let view = PanTrackingNSView()
-    view.panDelegate = context.coordinator
-    
-//    view.onPanGesture = onPanGesture
+    let view = PanTrackingNSView { panOutput in
+      onPanGesture(panOutput)
+    }
+
     return view
   }
-  
-  public func updateNSView(_ nsView: PanTrackingNSView, context: Context) {
-    //    print("Ran `updateNSView`")
-    //    updateIfChanged(onPanGesture, into: &nsView.onPanGesture)
-    //    nsView.onPanGesture = onPanGesture
-  }
-  public func makeCoordinator() -> Coordinator {
-    Coordinator(self)
-  }
-  
-  public class Coordinator: NSObject, PanDelegate {
-    let parent: PanGestureView
-    
-    init(_ parent: PanGestureView) {
-      self.parent = parent
-    }
-    
-    public func panView(
-      _ view: PanTrackingNSView,
-      didUpdate panData: PanPhase
-    ) {
-//      Task { @MainActor in
-        self.parent.onPanGesture(panData)
-//      }
-    }
-  }
-}
 
+  public func updateNSView(_ nsView: PanTrackingNSView, context: Context) {
+  }
+//  public func makeCoordinator() -> Coordinator {
+//    Coordinator(self)
+//  }
+//
+//  public class Coordinator: NSObject, PanDelegate {
+//    let parent: PanGestureView
+//
+//    init(_ parent: PanGestureView) {
+//      self.parent = parent
+//    }
+//
+//    public func panView(
+//      _ view: PanTrackingNSView,
+//      didUpdate panData: PanPhase
+//    ) {
+//      //      Task { @MainActor in
+//
+//      //      }
+//    }
+//  }
+}
