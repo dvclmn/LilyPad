@@ -10,7 +10,7 @@ import AppKit
 // MARK: - Custom NSView for Pan Tracking
 public class PanTrackingNSView: NSView {
   
-  var didUpdatePanGesture: PanGestureOutput?
+  var didUpdatePanGesture: PanGestureOutput
   
   public init(
     didUpdatePanGesture: @escaping PanGestureOutput
@@ -21,25 +21,23 @@ public class PanTrackingNSView: NSView {
   }
 
   required init?(coder: NSCoder) {
+    self.didUpdatePanGesture = { _ in }
     super.init(coder: coder)
-    setupView()
   }
   
   private func setupView() {
     print("Set up `PanTrackingView`")
-    wantsLayer = true
-    /// Make background transparent so it doesn't interfere with SwiftUI content
-    //    layer?.backgroundColor = NSColor.clear.cgColor
+//    wantsLayer = true
   }
   
-  public override var acceptsFirstResponder: Bool {
-    return true
-  }
+//  public override var acceptsFirstResponder: Bool {
+//    return true
+//  }
   
-  public override func viewDidMoveToWindow() {
-    super.viewDidMoveToWindow()
-    window?.makeFirstResponder(self)
-  }
+//  public override func viewDidMoveToWindow() {
+//    super.viewDidMoveToWindow()
+//    window?.makeFirstResponder(self)
+//  }
   
   // MARK: - Two-Finger Pan via ScrollWheel
   public override func scrollWheel(with event: NSEvent) {
@@ -71,7 +69,7 @@ public class PanTrackingNSView: NSView {
         return
     }
     
-    panDelegate?.panView(self, didUpdate: panPhase)
+    didUpdatePanGesture(panPhase)
     
 //    onPanGesture?(panPhase)
   }
@@ -79,7 +77,7 @@ public class PanTrackingNSView: NSView {
   public override func mouseExited(with event: NSEvent) {
     print("Mouse exited with event: \(event)")
     super.mouseExited(with: event)
-    panDelegate?.panView(self, didUpdate: .inactive)
+    didUpdatePanGesture(.inactive)
 //    onPanGesture?(.inactive)
   }
 }
