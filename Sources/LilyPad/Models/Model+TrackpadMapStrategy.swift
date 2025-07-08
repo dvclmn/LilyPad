@@ -7,15 +7,6 @@
 
 import SwiftUI
 
-//public enum CustomMapStrategy {
-//
-//  /// Respect trackpad aspect ratio, scale to fixed width
-//  case width(CGFloat)
-//
-//  /// Respect trackpad aspect ratio, scale to fixed height
-//  case height(CGFloat)
-//}
-
 public enum TrackpadMapStrategy {
 
   /// Fit trackpad within container width and height.
