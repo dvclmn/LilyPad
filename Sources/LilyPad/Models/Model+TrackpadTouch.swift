@@ -9,18 +9,19 @@ import CoreGraphics
 import Foundation
 import BaseHelpers
 
-public protocol TrackpadTouch: TimestampedPosition, Identifiable, Sendable, Hashable, Equatable, Codable {
-  var id: Int { get }
-  var phase: TouchPhase { get }
-  var position: CGPoint { get set }
-  var timestamp: TimeInterval { get }
-  var velocity: CGVector { get }
-  var pressure: CGFloat { get }
-  var deviceSize: CGSize { get }
-  var isResting: Bool { get }
-}
+//public protocol TrackpadTouch: TimestampedPosition, Identifiable, Sendable, Hashable, Equatable, Codable {
+//  var id: Int { get }
+//  var phase: TouchPhase { get }
+//  var position: CGPoint { get set }
+//  var timestamp: TimeInterval { get }
+//  var velocity: CGVector { get }
+//  var pressure: CGFloat { get }
+//  var deviceSize: CGSize { get }
+//  var isResting: Bool { get }
+//}
 
-extension TrackpadTouch {
+extension TouchPoint {
+//extension TrackpadTouch {
 
   public var direction: CGFloat {
     return atan2(velocity.dy, velocity.dx)
@@ -37,13 +38,13 @@ extension TrackpadTouch {
   }
 }
 
-extension Array where Element: TrackpadTouch {
+extension Array where Element: Self {
   public var cgPoints: [CGPoint] {
     return self.map(\.position)
   }
 }
 
-extension Set where Element: TrackpadTouch {
+extension Set where Element: Self {
   public var cgPoints: [CGPoint] {
     return self.map(\.position)
   }
