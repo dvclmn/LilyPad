@@ -7,9 +7,9 @@
 
 import Foundation
 
-public enum TrackpadGesturePhase: String, Sendable, Equatable, Codable {
-  case moved
-  case ending
-  case none
-}
+//public enum TrackpadGesturePhase: String, Sendable, Equatable, Codable {
+//  case moved
+//  case ending
+//  case none
+//}
 
