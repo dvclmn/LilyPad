@@ -38,13 +38,13 @@ extension TouchPoint {
   }
 }
 
-extension Array where Element: Self {
+extension Array where Element == TouchPoint {
   public var cgPoints: [CGPoint] {
     return self.map(\.position)
   }
 }
 
-extension Set where Element: Self {
+extension Set where Element == TouchPoint {
   public var cgPoints: [CGPoint] {
     return self.map(\.position)
   }

@@ -7,6 +7,14 @@
 
 import SwiftUI
 
+extension CGSize {
+  public static let trackpad = CGSize(
+    width: 700,
+    height: 438
+  )
+}
+
+
 public enum TrackpadMapStrategy {
 
   /// Fit trackpad within container width and height.

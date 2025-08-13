@@ -12,7 +12,8 @@ import Foundation
 /// from 0-1, to the supplied *size*. It does not handle positioning or
 /// centring this size within a viewport.
 public struct MappedTouchPointsBuilder {
-  public let mappedTouches: Set<MappedTouchPoint>
+  public let mappedTouches: Set<TouchPoint>
+//  public let mappedTouches: Set<MappedTouchPoint>
   let mappedSize: CGSize
   
   public init(
@@ -34,11 +35,14 @@ public struct MappedTouchPointsBuilder {
   private static func mapTouches(
     _ touches: Set<TouchPoint>,
     mappingSize: CGSize
-  ) -> Set<MappedTouchPoint> {
-    let mapped: [MappedTouchPoint] = touches.map { touchPoint in
+  ) -> Set<TouchPoint> {
+//  ) -> Set<MappedTouchPoint> {
+    let mapped: [TouchPoint] = touches.map { touchPoint in
+//    let mapped: [MappedTouchPoint] = touches.map { touchPoint in
       let newPosition = touchPoint.position.mapped(to: mappingSize.toCGRectZeroOrigin)
       
-      return MappedTouchPoint(
+      return TouchPoint(
+//      return MappedTouchPoint(
         current: touchPoint,
         updatedPosition: newPosition,
         mappedSize: mappingSize
@@ -56,7 +60,8 @@ public struct MappedTouchPointsBuilder {
     return Set(mapped)
   }
   
-  public func mappedTouch(withID id: TouchPoint.ID) -> MappedTouchPoint? {
+  public func mappedTouch(withID id: TouchPoint.ID) -> TouchPoint? {
+//  public func mappedTouch(withID id: TouchPoint.ID) -> MappedTouchPoint? {
     guard let touch = mappedTouches.first(where: { $0.id == id }) else {
       print("Couldn't find TouchPoint matching id: \(id)")
       return nil

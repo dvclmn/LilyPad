@@ -13,7 +13,8 @@ import SwiftUI
 
 public struct TrackpadTouchesModifier: ViewModifier {
 
-  @State private var localMappedTouches: Set<MappedTouchPoint> = []
+  @State private var localMappedTouches: Set<TouchPoint> = []
+//  @State private var localMappedTouches: Set<MappedTouchPoint> = []
 
   let isEnabled: Bool
   let mapStrategy: TrackpadMapStrategy
@@ -25,7 +26,7 @@ public struct TrackpadTouchesModifier: ViewModifier {
       content
       if shouldShowIndicators {
         TouchIndicatorsView(
-          touches: localMappedTouches.toArray,
+          mappedTouches: localMappedTouches.toArray,
           mappingStrategy: mapStrategy,
           containerSize: proxy.size,
         )

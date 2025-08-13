@@ -10,7 +10,7 @@ import BaseHelpers
 import Foundation
 import MemberwiseInit
 
-public struct TouchPoint: TrackpadTouch {
+public struct TouchPoint: TimestampedPosition, Identifiable, Sendable, Hashable, Equatable, Codable {
   public let id: Int
   public var phase: TouchPhase
 
@@ -21,6 +21,8 @@ public struct TouchPoint: TrackpadTouch {
   public let pressure: CGFloat
   public let deviceSize: CGSize
   public let isResting: Bool
+  
+  public let mappedSize: CGSize?
 
   public init(
     id: Int,
@@ -30,7 +32,8 @@ public struct TouchPoint: TrackpadTouch {
     velocity: CGVector,
     pressure: CGFloat,
     deviceSize: CGSize,
-    isResting: Bool
+    isResting: Bool,
+    mappedSize: CGSize? = nil
   ) {
     self.id = id
     self.phase = phase
@@ -40,6 +43,7 @@ public struct TouchPoint: TrackpadTouch {
     self.pressure = pressure
     self.deviceSize = deviceSize
     self.isResting = isResting
+    self.mappedSize = mappedSize
   }
 
   /// Create from AppKit native `NSTouch`
@@ -50,7 +54,7 @@ public struct TouchPoint: TrackpadTouch {
     timestamp: TimeInterval,  // From NSEvent.timestamp
     pressure: CGFloat,
     deviceSize: CGSize,
-    isResting: Bool
+    isResting: Bool,
   ) {
     let position = CGPoint(
       x: nsTouch.normalizedPosition.x,
@@ -64,12 +68,48 @@ public struct TouchPoint: TrackpadTouch {
       velocity: .zero,  // This will be enriched in next step
       pressure: pressure,
       deviceSize: deviceSize,
-      isResting: isResting
+      isResting: isResting,
     )
   }
 }
 
 extension TouchPoint {
+
+  /// Allows creation of a 'mapped' touch point for special case of
+  /// a click-based point, when using the click + drag style drawing mode.
+  /// As opposed to 'finger painting' trackpad style
+  public init(clickTouch: TouchPoint) {
+    self.init(
+      id: clickTouch.id,
+      phase: clickTouch.phase,
+      position: clickTouch.position,
+      timestamp: clickTouch.timestamp,
+      velocity: clickTouch.velocity,
+      pressure: clickTouch.pressure,
+      deviceSize: clickTouch.deviceSize,
+      isResting: clickTouch.isResting,
+      mappedSize: CGSize(width: 1, height: 1)
+    )
+  }
+  
+    public init(
+      current: TouchPoint,
+      updatedPosition: CGPoint,
+      mappedSize: CGSize,
+    ) {
+      precondition(current.position.isNormalised, "Touch point must be normalised (0.0 to 1.0). Cannot perform mapping on a non-normalised point.")
+      self.init(
+        id: current.id,
+        phase: current.phase,
+        position: updatedPosition,
+        timestamp: current.timestamp,
+        velocity: current.velocity,
+        pressure: current.pressure,
+        deviceSize: current.deviceSize,
+        isResting: current.isResting,
+        mappedSize: mappedSize,
+      )
+    }
 
   public func withVelocity(_ velocity: CGVector) -> TouchPoint {
     TouchPoint(
@@ -84,14 +124,14 @@ extension TouchPoint {
     )
   }
 
+  public static func generateDescription(for touch: TouchPoint) -> String {
 
-  public static func generateDescription(for touch: any TrackpadTouch) -> String {
-
-    let isMapped: Bool = touch as? MappedTouchPoint != nil
+    //    let isMapped: Bool = touch as? TouchPoint != nil
+    //    let isMapped: Bool = touch as? MappedTouchPoint != nil
 
     return """
       /////
-      Trackpad Touch \(isMapped ? "Mapped" : "")
+      Trackpad Touch
         - ID: \(touch.id)
         - Phase: \(touch.phase.rawValue)
         - Position: \(touch.position.displayString)
@@ -112,7 +152,6 @@ extension TouchPoint: CustomStringConvertible {
     return Self.generateDescription(for: self)
   }
 }
-
 
 extension Array where Element == TouchPoint {
   public func hasFourPoints() -> Bool {
